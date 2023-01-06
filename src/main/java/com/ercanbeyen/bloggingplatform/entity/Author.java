@@ -2,6 +2,7 @@ package com.ercanbeyen.bloggingplatform.entity;
 
 import com.ercanbeyen.bloggingplatform.constants.Location;
 import com.ercanbeyen.bloggingplatform.constants.Gender;
+import lombok.Builder;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -12,7 +13,8 @@ import java.util.List;
 
 @Data
 @Document
-public class Person {
+@Builder
+public class Author {
     @Id
     private String id;
     private String firstName;
@@ -26,16 +28,4 @@ public class Person {
     private Location location;
     private List<String> favoriteTopics;
     LocalDateTime createdAt;
-
-    public Person(String firstName, String lastName, String username, String email, String about, Gender gender, Location location, List<String> favoriteTopics, LocalDateTime createdAt) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.username = username;
-        this.email = email;
-        this.about = about;
-        this.gender = gender;
-        this.location = location;
-        this.favoriteTopics = favoriteTopics;
-        this.createdAt = createdAt;
-    }
 }
