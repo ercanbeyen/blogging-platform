@@ -1,19 +1,15 @@
-package com.ercanbeyen.bloggingplatform.entity;
+package com.ercanbeyen.bloggingplatform.dto;
 
+import com.ercanbeyen.bloggingplatform.entity.Comment;
 import lombok.Builder;
 import lombok.Data;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
 @Builder
-@Document
-public class Post {
-    @Id
-    private String id;
+public class PostDto {
     private String author;
     private String title;
     private String text;

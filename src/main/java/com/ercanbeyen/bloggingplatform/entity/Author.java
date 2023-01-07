@@ -12,8 +12,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
-@Document
 @Builder
+@Document
 public class Author {
     @Id
     private String id;

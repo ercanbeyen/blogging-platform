@@ -39,22 +39,21 @@ public class AuthorServiceImpl implements AuthorService {
 
     @Override
     public AuthorDto updateAuthor(String id, AuthorDto authorDto) {
-        Optional<Author> authorInDbOptional = authorRepository.findById(id);
+        Author authorInDb = authorRepository.findById(id)
+                        .orElseThrow(
+                                () -> new DocumentNotFound("Author " + id + " is not found")
+                        );
 
-        authorInDbOptional.ifPresentOrElse(
-                author -> {
-                    author.setFirstName(authorDto.getFirstName());
-                    author.setLastName(authorDto.getLastName());
-                    author.setAbout(authorDto.getAbout());
-                    author.setGender(authorDto.getGender());
-                    author.setFavoriteTopics(authorDto.getFavoriteTopics());
-                    authorRepository.save(author);
-                }, () -> {
-                    throw new DocumentNotFound("Author " + id + " is not found");
-                }
-        );
 
-        return authorInDbOptional.map(authorDtoConverter::convert).orElseThrow();
+        authorInDb.setFirstName(authorDto.getFirstName());
+        authorInDb.setLastName(authorDto.getLastName());
+        authorInDb.setAbout(authorDto.getAbout());
+        authorInDb.setGender(authorDto.getGender());
+        authorInDb.setFavoriteTopics(authorDto.getFavoriteTopics());
+        authorRepository.save(authorInDb);
+
+
+        return authorDtoConverter.convert(authorRepository.save(authorInDb));
     }
 
     @Override
