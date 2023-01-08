@@ -1,6 +1,6 @@
 package com.ercanbeyen.bloggingplatform.repository;
 
-import com.ercanbeyen.bloggingplatform.entity.Author;
+import com.ercanbeyen.bloggingplatform.document.Author;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.Optional;

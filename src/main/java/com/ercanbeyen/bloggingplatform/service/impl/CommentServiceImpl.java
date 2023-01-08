@@ -2,7 +2,9 @@ package com.ercanbeyen.bloggingplatform.service.impl;
 
 import com.ercanbeyen.bloggingplatform.dto.CommentDto;
 import com.ercanbeyen.bloggingplatform.dto.converter.CommentDtoConverter;
-import com.ercanbeyen.bloggingplatform.entity.Comment;
+import com.ercanbeyen.bloggingplatform.dto.request.create.CreateCommentRequest;
+import com.ercanbeyen.bloggingplatform.dto.request.update.UpdateCommentRequest;
+import com.ercanbeyen.bloggingplatform.document.Comment;
 import com.ercanbeyen.bloggingplatform.exception.DocumentNotFound;
 import com.ercanbeyen.bloggingplatform.repository.CommentRepository;
 import com.ercanbeyen.bloggingplatform.service.CommentService;
@@ -20,10 +22,11 @@ public class CommentServiceImpl implements CommentService {
     private final CommentDtoConverter commentDtoConverter;
 
     @Override
-    public CommentDto createComment(CommentDto commentDto) {
+    public CommentDto createComment(CreateCommentRequest request) {
         Comment createdComment = Comment.builder()
-                .author(commentDto.getAuthor())
-                .text(commentDto.getText())
+                .author("Trial")
+                .postId(request.getPostId())
+                .text(request.getText())
                 .latestChangeAt(LocalDateTime.now())
                 .build();
 
@@ -31,13 +34,13 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public CommentDto updateComment(String id, CommentDto commentDto) {
+    public CommentDto updateComment(String id, UpdateCommentRequest request) {
         Comment commentInDb = commentRepository.findById(id)
                 .orElseThrow(
                         () -> new DocumentNotFound("Comment " + id + " is not found")
                 );
 
-        commentInDb.setText(commentDto.getText());
+        commentInDb.setText(request.getText());
         commentInDb.setLatestChangeAt(LocalDateTime.now());
 
         return commentDtoConverter.convert(commentRepository.save(commentInDb));

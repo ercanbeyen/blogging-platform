@@ -1,4 +1,4 @@
-package com.ercanbeyen.bloggingplatform.entity;
+package com.ercanbeyen.bloggingplatform.document;
 
 import com.ercanbeyen.bloggingplatform.constants.Location;
 import com.ercanbeyen.bloggingplatform.constants.Gender;
@@ -27,5 +27,5 @@ public class Author {
     private Gender gender;
     private Location location;
     private List<String> favoriteTopics;
-    LocalDateTime createdAt;
+    private LocalDateTime createdAt;
 }

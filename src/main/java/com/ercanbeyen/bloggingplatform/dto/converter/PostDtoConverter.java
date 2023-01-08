@@ -1,7 +1,7 @@
 package com.ercanbeyen.bloggingplatform.dto.converter;
 
 import com.ercanbeyen.bloggingplatform.dto.PostDto;
-import com.ercanbeyen.bloggingplatform.entity.Post;
+import com.ercanbeyen.bloggingplatform.document.Post;
 import org.springframework.stereotype.Component;
 
 @Component

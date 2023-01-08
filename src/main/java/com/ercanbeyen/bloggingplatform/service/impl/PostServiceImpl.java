@@ -2,7 +2,9 @@ package com.ercanbeyen.bloggingplatform.service.impl;
 
 import com.ercanbeyen.bloggingplatform.dto.PostDto;
 import com.ercanbeyen.bloggingplatform.dto.converter.PostDtoConverter;
-import com.ercanbeyen.bloggingplatform.entity.Post;
+import com.ercanbeyen.bloggingplatform.dto.request.create.CreatePostRequest;
+import com.ercanbeyen.bloggingplatform.dto.request.update.UpdatePostRequest;
+import com.ercanbeyen.bloggingplatform.document.Post;
 import com.ercanbeyen.bloggingplatform.exception.DocumentNotFound;
 import com.ercanbeyen.bloggingplatform.repository.PostRepository;
 import com.ercanbeyen.bloggingplatform.service.PostService;
@@ -20,32 +22,31 @@ public class PostServiceImpl implements PostService {
     private final PostDtoConverter postDtoConverter;
 
     @Override
-    public PostDto createPost(PostDto postDto) {
+    public PostDto createPost(CreatePostRequest request) {
         Post createdPost = Post.builder()
-                .author(postDto.getAuthor())
-                .title(postDto.getTitle())
-                .text(postDto.getText())
-                .category(postDto.getCategory())
-                .numberOfLikes(postDto.getNumberOfLikes())
-                .tags(postDto.getTags())
-                .comments(postDto.getComments())
+                .author("Trial")
+                .title(request.getTitle())
+                .text(request.getText())
+                .category(request.getCategory())
+                .tags(request.getTags())
                 .latestChangeAt(LocalDateTime.now())
                 .build();
         return postDtoConverter.convert(postRepository.save(createdPost));
     }
 
     @Override
-    public PostDto updatePost(String id, PostDto postDto) {
+    public PostDto updatePost(String id, UpdatePostRequest request) {
         Post postInDb = postRepository.findById(id)
                 .orElseThrow(
                         () -> new DocumentNotFound("Post " + id + " is not found")
                 );
 
-        postInDb.setAuthor(postDto.getAuthor());
-        postInDb.setTitle(postDto.getTitle());
-        postInDb.setText(postDto.getText());
-        postInDb.setCategory(postDto.getCategory());
-        postInDb.setTags(postDto.getTags());
+        postInDb.setAuthor("Trial");
+        postInDb.setTitle(request.getTitle());
+        postInDb.setText(request.getText());
+        postInDb.setCategory(request.getCategory());
+        postInDb.setTags(request.getTags());
+        postInDb.setLatestChangeAt(LocalDateTime.now());
 
         return postDtoConverter.convert(postRepository.save(postInDb));
     }

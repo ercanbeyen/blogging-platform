@@ -1,7 +1,7 @@
 package com.ercanbeyen.bloggingplatform.dto.converter;
 
 import com.ercanbeyen.bloggingplatform.dto.AuthorDto;
-import com.ercanbeyen.bloggingplatform.entity.Author;
+import com.ercanbeyen.bloggingplatform.document.Author;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -16,6 +16,7 @@ public class AuthorDtoConverter {
                 .gender(author.getGender())
                 .location(author.getLocation())
                 .favoriteTopics(author.getFavoriteTopics())
+                .createdAt(author.getCreatedAt())
                 .build();
     }
 }

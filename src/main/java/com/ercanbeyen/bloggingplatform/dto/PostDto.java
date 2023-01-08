@@ -1,6 +1,6 @@
 package com.ercanbeyen.bloggingplatform.dto;
 
-import com.ercanbeyen.bloggingplatform.entity.Comment;
+import com.ercanbeyen.bloggingplatform.document.Comment;
 import lombok.Builder;
 import lombok.Data;
 

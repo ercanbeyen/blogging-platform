@@ -1,6 +1,8 @@
 package com.ercanbeyen.bloggingplatform.controller;
 
 import com.ercanbeyen.bloggingplatform.dto.PostDto;
+import com.ercanbeyen.bloggingplatform.dto.request.create.CreatePostRequest;
+import com.ercanbeyen.bloggingplatform.dto.request.update.UpdatePostRequest;
 import com.ercanbeyen.bloggingplatform.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -26,13 +28,13 @@ public class PostController {
     }
 
     @PostMapping
-    public ResponseEntity<PostDto> createPost(@RequestBody PostDto postDto) {
-        return new ResponseEntity<>(postService.createPost(postDto), HttpStatus.CREATED);
+    public ResponseEntity<PostDto> createPost(@RequestBody CreatePostRequest request) {
+        return new ResponseEntity<>(postService.createPost(request), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PostDto> updatePost(@PathVariable("id") String id, @RequestBody PostDto postDto) {
-        return ResponseEntity.ok(postService.updatePost(id, postDto));
+    public ResponseEntity<PostDto> updatePost(@PathVariable("id") String id, @RequestBody UpdatePostRequest request) {
+        return ResponseEntity.ok(postService.updatePost(id, request));
     }
 
     @DeleteMapping("/{id}")

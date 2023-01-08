@@ -1,6 +1,8 @@
 package com.ercanbeyen.bloggingplatform.controller;
 
 import com.ercanbeyen.bloggingplatform.dto.CommentDto;
+import com.ercanbeyen.bloggingplatform.dto.request.create.CreateCommentRequest;
+import com.ercanbeyen.bloggingplatform.dto.request.update.UpdateCommentRequest;
 import com.ercanbeyen.bloggingplatform.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -26,13 +28,13 @@ public class CommentController {
     }
 
     @PostMapping
-    public ResponseEntity<CommentDto> createComment(@RequestBody CommentDto commentDto) {
-        return new ResponseEntity<>(commentService.createComment(commentDto), HttpStatus.CREATED);
+    public ResponseEntity<CommentDto> createComment(@RequestBody CreateCommentRequest request) {
+        return new ResponseEntity<>(commentService.createComment(request), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CommentDto> updateComment(@PathVariable("id") String id, CommentDto commentDto) {
-        return ResponseEntity.ok(commentService.updateComment(id, commentDto));
+    public ResponseEntity<CommentDto> updateComment(@PathVariable("id") String id, UpdateCommentRequest request) {
+        return ResponseEntity.ok(commentService.updateComment(id, request));
     }
 
     @DeleteMapping("/{id}")

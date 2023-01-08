@@ -1,6 +1,8 @@
 package com.ercanbeyen.bloggingplatform.controller;
 
 import com.ercanbeyen.bloggingplatform.dto.AuthorDto;
+import com.ercanbeyen.bloggingplatform.dto.request.create.CreateAuthorRequest;
+import com.ercanbeyen.bloggingplatform.dto.request.update.UpdateAuthorRequest;
 import com.ercanbeyen.bloggingplatform.service.AuthorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -26,13 +28,13 @@ public class AuthorController {
     }
 
     @PostMapping
-    public ResponseEntity<AuthorDto> createAuthor(@RequestBody AuthorDto authorDto) {
-        return new ResponseEntity<>(authorService.createAuthor(authorDto), HttpStatus.CREATED);
+    public ResponseEntity<AuthorDto> createAuthor(@RequestBody CreateAuthorRequest request) {
+        return new ResponseEntity<>(authorService.createAuthor(request), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<AuthorDto> updateAuthor(@PathVariable("id") String id, @RequestBody AuthorDto authorDto) {
-        return ResponseEntity.ok(authorService.updateAuthor(id, authorDto));
+    public ResponseEntity<AuthorDto> updateAuthor(@PathVariable("id") String id, @RequestBody UpdateAuthorRequest request) {
+        return ResponseEntity.ok(authorService.updateAuthor(id, request));
     }
 
     @DeleteMapping("/{id}")

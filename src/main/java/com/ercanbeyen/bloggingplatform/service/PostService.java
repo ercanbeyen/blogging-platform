@@ -1,12 +1,14 @@
 package com.ercanbeyen.bloggingplatform.service;
 
 import com.ercanbeyen.bloggingplatform.dto.PostDto;
+import com.ercanbeyen.bloggingplatform.dto.request.create.CreatePostRequest;
+import com.ercanbeyen.bloggingplatform.dto.request.update.UpdatePostRequest;
 
 import java.util.List;
 
 public interface PostService {
-    PostDto createPost(PostDto postDto);
-    PostDto updatePost(String id, PostDto postDto);
+    PostDto createPost(CreatePostRequest request);
+    PostDto updatePost(String id, UpdatePostRequest request);
     List<PostDto> getPosts();
     PostDto getPost(String id);
     String deletePost(String id);
