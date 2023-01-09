@@ -1,7 +1,7 @@
 package com.ercanbeyen.bloggingplatform.document;
 
-import com.ercanbeyen.bloggingplatform.constants.Location;
-import com.ercanbeyen.bloggingplatform.constants.Gender;
+import com.ercanbeyen.bloggingplatform.constant.Location;
+import com.ercanbeyen.bloggingplatform.constant.Gender;
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.data.annotation.Id;

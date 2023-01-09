@@ -8,8 +8,7 @@ import org.springframework.stereotype.Component;
 public class CommentDtoConverter {
     public CommentDto convert(Comment comment) {
         return CommentDto.builder()
-                .author(comment.getAuthor())
-                .postId(comment.getPostId())
+                .authorId(comment.getAuthorId())
                 .text(comment.getText())
                 .latestChangeAt(comment.getLatestChangeAt())
                 .build();

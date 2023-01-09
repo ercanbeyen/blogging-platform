@@ -13,8 +13,7 @@ import java.time.LocalDateTime;
 public class Comment {
     @Id
     private String id;
-    private String postId;
-    private String author;
+    private String authorId;
     private String text;
     private LocalDateTime latestChangeAt;
 }

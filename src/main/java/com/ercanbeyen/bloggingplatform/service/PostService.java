@@ -1,5 +1,7 @@
 package com.ercanbeyen.bloggingplatform.service;
 
+import com.ercanbeyen.bloggingplatform.document.Comment;
+import com.ercanbeyen.bloggingplatform.document.Post;
 import com.ercanbeyen.bloggingplatform.dto.PostDto;
 import com.ercanbeyen.bloggingplatform.dto.request.create.CreatePostRequest;
 import com.ercanbeyen.bloggingplatform.dto.request.update.UpdatePostRequest;
@@ -12,4 +14,7 @@ public interface PostService {
     List<PostDto> getPosts();
     PostDto getPost(String id);
     String deletePost(String id);
+    Post getPostById(String id);
+    void addCommentToPost(String id, Comment comment);
+    void deleteCommentFromPost(String postId, String commentId);
 }

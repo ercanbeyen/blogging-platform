@@ -8,8 +8,7 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 public class CommentDto {
-    private String author;
-    private String postId;
+    private String authorId;
     private String text;
     LocalDateTime latestChangeAt;
 }

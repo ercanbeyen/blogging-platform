@@ -1,7 +1,7 @@
 package com.ercanbeyen.bloggingplatform.dto.request.base;
 
-import com.ercanbeyen.bloggingplatform.constants.Gender;
-import com.ercanbeyen.bloggingplatform.constants.Location;
+import com.ercanbeyen.bloggingplatform.constant.Gender;
+import com.ercanbeyen.bloggingplatform.constant.Location;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 

@@ -1,7 +1,7 @@
 package com.ercanbeyen.bloggingplatform.dto;
 
-import com.ercanbeyen.bloggingplatform.constants.Gender;
-import com.ercanbeyen.bloggingplatform.constants.Location;
+import com.ercanbeyen.bloggingplatform.constant.Gender;
+import com.ercanbeyen.bloggingplatform.constant.Location;
 import lombok.Builder;
 import lombok.Data;
 
