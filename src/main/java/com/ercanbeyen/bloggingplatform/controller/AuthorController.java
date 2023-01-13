@@ -3,6 +3,7 @@ package com.ercanbeyen.bloggingplatform.controller;
 import com.ercanbeyen.bloggingplatform.dto.AuthorDto;
 import com.ercanbeyen.bloggingplatform.dto.request.create.CreateAuthorRequest;
 import com.ercanbeyen.bloggingplatform.dto.request.update.UpdateAuthorRequest;
+import com.ercanbeyen.bloggingplatform.dto.request.update.UpdateAuthorRolesRequest;
 import com.ercanbeyen.bloggingplatform.service.AuthorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -32,7 +33,7 @@ public class AuthorController {
         return new ResponseEntity<>(authorService.createAuthor(request), HttpStatus.CREATED);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{id}/details")
     public ResponseEntity<AuthorDto> updateAuthor(@PathVariable("id") String id, @RequestBody UpdateAuthorRequest request) {
         return ResponseEntity.ok(authorService.updateAuthor(id, request));
     }
@@ -41,5 +42,10 @@ public class AuthorController {
     public ResponseEntity<Void> deleteAuthor(@PathVariable("id") String id) {
         authorService.deleteAuthor(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}/roles")
+    public ResponseEntity<AuthorDto> updateRolesOfAuthor(@PathVariable("id") String id, @RequestBody UpdateAuthorRolesRequest request) {
+        return ResponseEntity.ok(authorService.updateRolesOfAuthor(id, request));
     }
 }

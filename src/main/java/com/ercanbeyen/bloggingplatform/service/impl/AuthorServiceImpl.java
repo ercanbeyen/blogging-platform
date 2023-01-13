@@ -2,6 +2,7 @@ package com.ercanbeyen.bloggingplatform.service.impl;
 
 import com.ercanbeyen.bloggingplatform.dto.request.create.CreateAuthorRequest;
 import com.ercanbeyen.bloggingplatform.dto.request.update.UpdateAuthorRequest;
+import com.ercanbeyen.bloggingplatform.dto.request.update.UpdateAuthorRolesRequest;
 import com.ercanbeyen.bloggingplatform.exception.DocumentNotFound;
 import com.ercanbeyen.bloggingplatform.dto.AuthorDto;
 import com.ercanbeyen.bloggingplatform.dto.converter.AuthorDtoConverter;
@@ -63,6 +64,8 @@ public class AuthorServiceImpl implements AuthorService {
                         () -> new DocumentNotFound("Author " + id + " is not found")
                 );
 
+        authorInDb.getRoles().forEach(System.out::println);
+
         return authorDtoConverter.convert(authorInDb);
     }
 
@@ -77,5 +80,16 @@ public class AuthorServiceImpl implements AuthorService {
     @Override
     public void deleteAuthor(String id) {
         authorRepository.deleteById(id);
+    }
+
+    @Override
+    public AuthorDto updateRolesOfAuthor(String id, UpdateAuthorRolesRequest request) {
+        Author authorInDb = authorRepository.findById(id)
+                .orElseThrow(() -> new DocumentNotFound("Author " + id + " is not found"));
+
+        authorInDb.setRoles(request.getRoles());
+        Author updatedAuthor = authorRepository.save(authorInDb);
+
+        return authorDtoConverter.convert(updatedAuthor);
     }
 }

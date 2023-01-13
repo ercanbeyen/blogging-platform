@@ -11,6 +11,7 @@ public class AuthorDtoConverter {
                 .firstName(author.getFirstName())
                 .lastName(author.getLastName())
                 .username(author.getUsername())
+                .roles(author.getRoles())
                 .about(author.getAbout())
                 .email(author.getEmail())
                 .gender(author.getGender())

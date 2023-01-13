@@ -8,6 +8,7 @@ import com.ercanbeyen.bloggingplatform.dto.request.auth.AuthenticationRequest;
 import com.ercanbeyen.bloggingplatform.dto.request.auth.RegistrationRequest;
 import com.ercanbeyen.bloggingplatform.exception.DocumentNotFound;
 import com.ercanbeyen.bloggingplatform.repository.AuthorRepository;
+import com.ercanbeyen.bloggingplatform.repository.RoleRepository;
 import com.ercanbeyen.bloggingplatform.security.jwt.JwtService;
 import com.ercanbeyen.bloggingplatform.service.AuthenticationService;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +18,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +29,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final RoleRepository roleRepository;
     @Override
     public Response<Object> authenticate(AuthenticationRequest request) {
         authenticationManager.authenticate(
@@ -49,16 +53,25 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public Response<Object> register(RegistrationRequest request) {
+        Optional<Role> optionalRole = roleRepository.findByRoleName(RoleName.USER);
+
+        if (optionalRole.isEmpty()) {
+            throw new DocumentNotFound("Role " + RoleName.USER + " is not found");
+        }
+
+        Role role = optionalRole.get();
+
+        HashSet<Role> roles = new HashSet<>();
+        roles.add(role);
+
         Author createdAuthor = Author.builder()
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .username(request.getUsername())
+                .roles(roles)
                 .email(request.getEmail())
                 .createdAt(LocalDateTime.now())
-                .roles(List.of(Role.builder()
-                        .roleName(RoleName.USER)
-                        .build()))
                 .build();
 
         authorRepository.save(createdAuthor);

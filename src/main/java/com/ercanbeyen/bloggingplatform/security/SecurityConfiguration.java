@@ -1,5 +1,7 @@
 package com.ercanbeyen.bloggingplatform.security;
 
+import com.ercanbeyen.bloggingplatform.constant.RoleName;
+import com.ercanbeyen.bloggingplatform.document.Role;
 import com.ercanbeyen.bloggingplatform.security.jwt.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -24,7 +26,7 @@ public class SecurityConfiguration {
                 .csrf()
                 .disable()
                 .authorizeHttpRequests()
-                .requestMatchers("/v1/auth/**")
+                .requestMatchers("/v1/auth/**", "/v1/roles/**")
                 .permitAll()
                 .anyRequest()
                 .authenticated()
