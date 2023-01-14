@@ -12,6 +12,5 @@ import lombok.ToString;
 @Setter
 @ToString
 public class UpdatePostRequest extends BasePostRequest {
-    @NotBlank(message = "Author id should not be blank")
-    private String authorId;
+
 }

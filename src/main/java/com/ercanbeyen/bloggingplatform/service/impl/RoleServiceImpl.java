@@ -9,7 +9,6 @@ import com.ercanbeyen.bloggingplatform.exception.DocumentNotFound;
 import com.ercanbeyen.bloggingplatform.repository.RoleRepository;
 import com.ercanbeyen.bloggingplatform.service.RoleService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -63,18 +62,11 @@ public class RoleServiceImpl implements RoleService {
 
         roleRepository.deleteById(id);
         return "Role " + roleId + " is successfully deleted";
-
-    }
-
-    @Override
-    public Role getRoleById(String id) {
-        return roleRepository.findById(id)
-                .orElseThrow(() -> new DocumentNotFound("Role " + id + " is not found"));
     }
 
     @Override
     public Role getRoleByRoleName(RoleName roleName) {
-        return  roleRepository.findByRoleName(roleName)
+        return roleRepository.findByRoleName(roleName)
                 .orElseThrow(() -> new DocumentNotFound("Role " + roleName + " is not found"));
     }
 }

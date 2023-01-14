@@ -39,7 +39,6 @@ public class AuthorServiceImpl implements AuthorService {
         HashSet<Role> roles = new HashSet<>();
         roles.add(role);
 
-
         Author newAuthor = Author.builder()
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
@@ -57,16 +56,6 @@ public class AuthorServiceImpl implements AuthorService {
 
     @Override
     public AuthorDto updateAuthor(String id, UpdateAuthorDetailsRequest request) {
-                /*var x = SecurityContextHolder.getContext().getAuthentication().getAuthorities();
-        for (var auth : x) {
-            System.out.println(auth);
-        }
-
-        var y = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        System.out.println(y);*/
-
-        //Collection<? extends GrantedAuthority> x = SecurityContextHolder.getContext().getAuthentication().getAuthorities();
-
         Author loggedIn_author = (Author) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String loggedIn_authorId = loggedIn_author.getId();
 
@@ -136,12 +125,6 @@ public class AuthorServiceImpl implements AuthorService {
         Author updatedAuthor = authorRepository.save(authorInDb);
 
         return authorDtoConverter.convert(updatedAuthor);
-    }
-
-    @Override
-    public Author getAuthorById(String id) {
-        return authorRepository.findById(id)
-                .orElseThrow(() -> new DocumentNotFound("Author " + id + " is not found"));
     }
 
     @Override

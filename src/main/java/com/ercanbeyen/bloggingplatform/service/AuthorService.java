@@ -15,6 +15,5 @@ public interface AuthorService {
     List<AuthorDto> getAuthors();
     void deleteAuthor(String id);
     AuthorDto updateRolesOfAuthor(String id, UpdateAuthorRolesRequest request);
-    Author getAuthorById(String id);
     Author getAuthorByUsername(String username);
 }

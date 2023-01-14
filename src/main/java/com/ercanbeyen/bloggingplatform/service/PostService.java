@@ -14,7 +14,6 @@ public interface PostService {
     List<PostDto> getPosts();
     PostDto getPost(String id);
     String deletePost(String id);
-    Post getPostById(String id);
     void addCommentToPost(String id, Comment comment);
     void deleteCommentFromPost(String postId, String commentId);
 }

@@ -11,6 +11,5 @@ import lombok.ToString;
 @Setter
 @ToString
 public class UpdateCommentRequest extends BaseCommentRequest {
-    @NotBlank(message = "Author id should not be blank")
-    private String authorId;
+
 }

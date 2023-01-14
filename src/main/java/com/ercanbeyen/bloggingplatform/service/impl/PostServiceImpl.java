@@ -13,7 +13,6 @@ import com.ercanbeyen.bloggingplatform.exception.DocumentForbidden;
 import com.ercanbeyen.bloggingplatform.exception.DocumentNotFound;
 import com.ercanbeyen.bloggingplatform.repository.PostRepository;
 import com.ercanbeyen.bloggingplatform.service.AuthorService;
-import com.ercanbeyen.bloggingplatform.service.CommentService;
 import com.ercanbeyen.bloggingplatform.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,14 +27,13 @@ import java.util.stream.Collectors;
 public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
     private final PostDtoConverter postDtoConverter;
-    private final AuthorService authorService;
 
     @Override
     public PostDto createPost(CreatePostRequest request) {
-        Author author_posted = authorService.getAuthorById(request.getAuthorId());
+        Author loggedInAuthor = (Author) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         Post createdPost = Post.builder()
-                .author(author_posted)
+                .author(loggedInAuthor)
                 .title(request.getTitle())
                 .text(request.getText())
                 .category(request.getCategory())
@@ -54,7 +52,7 @@ public class PostServiceImpl implements PostService {
                         () -> new DocumentNotFound("Post " + id + " is not found")
                 );
 
-        Author author_posted = authorService.getAuthorById(request.getAuthorId());
+        Author author_posted = postInDb.getAuthor();
         Author loggedIn_author = (Author) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         if (!author_posted.getId().equals(loggedIn_author.getId())) {
@@ -105,14 +103,6 @@ public class PostServiceImpl implements PostService {
         }
         postRepository.deleteById(id);
         return "Post " + id + " is successfully deleted";
-    }
-
-    @Override
-    public Post getPostById(String id) {
-        return postRepository.findById(id)
-                .orElseThrow(
-                        () -> new DocumentNotFound("Post " + id + " is not found")
-                );
     }
 
     @Override

@@ -37,15 +37,15 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public CommentDto createComment(CreateCommentRequest request) {
-        Author loggedIn_author = (Author) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Author loggedInAuthor = (Author) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        Comment createdComment = Comment.builder()
-                .author(loggedIn_author)
+        Comment newComment = Comment.builder()
+                .author(loggedInAuthor)
                 .text(request.getText())
                 .latestChangeAt(LocalDateTime.now())
                 .build();
 
-        Comment commentInDb = commentRepository.save(createdComment);
+        Comment commentInDb = commentRepository.save(newComment);
         postService.addCommentToPost(request.getPostId(), commentInDb);
 
         return commentDtoConverter.convert(commentInDb);
@@ -56,7 +56,7 @@ public class CommentServiceImpl implements CommentService {
         Comment commentInDb = commentRepository.findById(id)
                 .orElseThrow(() -> new DocumentNotFound("Comment " + id + " is not found"));
 
-        Author author_commented = authorService.getAuthorById(request.getAuthorId());
+        Author author_commented = commentInDb.getAuthor();
         Author loggedIn_author = (Author) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         if (!author_commented.getId().equals(loggedIn_author.getId())) {

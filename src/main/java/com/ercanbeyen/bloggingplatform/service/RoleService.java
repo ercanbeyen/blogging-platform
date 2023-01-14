@@ -12,6 +12,5 @@ public interface RoleService {
     List<RoleDto> getRoles();
     RoleDto getRole(String id);
     String deleteRole(String id);
-    Role getRoleById(String id);
     Role getRoleByRoleName(RoleName roleName);
 }
