@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/v1/posts")
+@RequestMapping("/api/v1/posts")
 @RequiredArgsConstructor
 public class PostController {
     private final PostService postService;
@@ -42,4 +42,5 @@ public class PostController {
         postService.deletePost(id);
         return ResponseEntity.ok(postService.deletePost(id));
     }
+
 }

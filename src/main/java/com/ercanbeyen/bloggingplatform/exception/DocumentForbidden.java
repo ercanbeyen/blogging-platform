@@ -3,10 +3,9 @@ package com.ercanbeyen.bloggingplatform.exception;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-
-@ResponseStatus(HttpStatus.NOT_FOUND)
-public class DocumentNotFound extends RuntimeException {
-    public DocumentNotFound(String message) {
+@ResponseStatus(HttpStatus.FORBIDDEN)
+public class DocumentForbidden extends RuntimeException {
+    public DocumentForbidden(String message) {
         super(message);
     }
 }

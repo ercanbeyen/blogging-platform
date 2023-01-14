@@ -1,14 +1,18 @@
-package com.ercanbeyen.bloggingplatform.dto.request.base;
+package com.ercanbeyen.bloggingplatform.dto.request.update;
 
 import com.ercanbeyen.bloggingplatform.constant.Gender;
 import com.ercanbeyen.bloggingplatform.constant.Location;
 import jakarta.validation.constraints.NotBlank;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.util.List;
 
-@Data
-public class BaseAuthorRequest {
+@Getter
+@Setter
+@ToString
+public class UpdateAuthorDetailsRequest {
     @NotBlank(message = "First name should not be empty")
     private String firstName;
     @NotBlank(message = "Last name should not be empty")
@@ -17,4 +21,5 @@ public class BaseAuthorRequest {
     private Gender gender;
     private Location location;
     private List<String> favoriteTopics;
+
 }

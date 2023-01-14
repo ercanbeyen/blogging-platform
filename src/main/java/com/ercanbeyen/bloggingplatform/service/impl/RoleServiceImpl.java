@@ -65,4 +65,16 @@ public class RoleServiceImpl implements RoleService {
         return "Role " + roleId + " is successfully deleted";
 
     }
+
+    @Override
+    public Role getRoleById(String id) {
+        return roleRepository.findById(id)
+                .orElseThrow(() -> new DocumentNotFound("Role " + id + " is not found"));
+    }
+
+    @Override
+    public Role getRoleByRoleName(RoleName roleName) {
+        return  roleRepository.findByRoleName(roleName)
+                .orElseThrow(() -> new DocumentNotFound("Role " + roleName + " is not found"));
+    }
 }

@@ -10,8 +10,17 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 public class ExceptionAdvisor extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(DocumentNotFound.class)
-    public ResponseEntity<?> documentNotFoundExceptionHandler(DocumentNotFound exception) {
+    public ResponseEntity<?> documentNotFoundExceptionHandler(Exception exception) {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(DocumentForbidden.class)
+    public ResponseEntity<?> documentForbiddenException(Exception exception) {
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.FORBIDDEN);
+    }
+
+    public ResponseEntity<?> documentConflictedExceptionHandler(Exception exception) {
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(Exception.class)

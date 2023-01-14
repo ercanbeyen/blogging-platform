@@ -1,23 +1,26 @@
 package com.ercanbeyen.bloggingplatform.service.impl;
 
+import com.ercanbeyen.bloggingplatform.constant.RoleName;
+import com.ercanbeyen.bloggingplatform.document.Author;
 import com.ercanbeyen.bloggingplatform.document.Comment;
+import com.ercanbeyen.bloggingplatform.document.Role;
 import com.ercanbeyen.bloggingplatform.dto.PostDto;
 import com.ercanbeyen.bloggingplatform.dto.converter.PostDtoConverter;
 import com.ercanbeyen.bloggingplatform.dto.request.create.CreatePostRequest;
 import com.ercanbeyen.bloggingplatform.dto.request.update.UpdatePostRequest;
 import com.ercanbeyen.bloggingplatform.document.Post;
+import com.ercanbeyen.bloggingplatform.exception.DocumentForbidden;
 import com.ercanbeyen.bloggingplatform.exception.DocumentNotFound;
 import com.ercanbeyen.bloggingplatform.repository.PostRepository;
+import com.ercanbeyen.bloggingplatform.service.AuthorService;
 import com.ercanbeyen.bloggingplatform.service.CommentService;
 import com.ercanbeyen.bloggingplatform.service.PostService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,11 +28,14 @@ import java.util.stream.Collectors;
 public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
     private final PostDtoConverter postDtoConverter;
+    private final AuthorService authorService;
 
     @Override
     public PostDto createPost(CreatePostRequest request) {
+        Author author_posted = authorService.getAuthorById(request.getAuthorId());
+
         Post createdPost = Post.builder()
-                .authorId("Trial_Author")
+                .author(author_posted)
                 .title(request.getTitle())
                 .text(request.getText())
                 .category(request.getCategory())
@@ -47,6 +53,13 @@ public class PostServiceImpl implements PostService {
                 .orElseThrow(
                         () -> new DocumentNotFound("Post " + id + " is not found")
                 );
+
+        Author author_posted = authorService.getAuthorById(request.getAuthorId());
+        Author loggedIn_author = (Author) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (!author_posted.getId().equals(loggedIn_author.getId())) {
+            throw new DocumentForbidden("You are not authorized");
+        }
 
         postInDb.setTitle(request.getTitle());
         postInDb.setText(request.getText());
@@ -78,6 +91,18 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public String deletePost(String id) {
+        Post postInDb = postRepository.findById(id)
+                .orElseThrow(() -> new DocumentNotFound("Post " + id + " is not found"));
+
+        Author loggedInAuthor = (Author) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Set<Role> loggedInAuthorRoles = loggedInAuthor.getRoles();
+        Set<RoleName> roles = loggedInAuthorRoles.stream()
+                .map(Role::getRoleName)
+                .collect(Collectors.toSet());
+
+        if (!roles.contains(RoleName.ADMIN) && postInDb.getAuthor().getId().equals(loggedInAuthor.getId())) {
+            throw new DocumentForbidden("You are not authorized");
+        }
         postRepository.deleteById(id);
         return "Post " + id + " is successfully deleted";
     }

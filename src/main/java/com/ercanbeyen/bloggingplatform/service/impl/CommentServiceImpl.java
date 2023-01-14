@@ -1,21 +1,30 @@
 package com.ercanbeyen.bloggingplatform.service.impl;
 
+import com.ercanbeyen.bloggingplatform.constant.RoleName;
+import com.ercanbeyen.bloggingplatform.document.Author;
 import com.ercanbeyen.bloggingplatform.document.Post;
+import com.ercanbeyen.bloggingplatform.document.Role;
 import com.ercanbeyen.bloggingplatform.dto.CommentDto;
 import com.ercanbeyen.bloggingplatform.dto.PostDto;
 import com.ercanbeyen.bloggingplatform.dto.converter.CommentDtoConverter;
 import com.ercanbeyen.bloggingplatform.dto.request.create.CreateCommentRequest;
 import com.ercanbeyen.bloggingplatform.dto.request.update.UpdateCommentRequest;
 import com.ercanbeyen.bloggingplatform.document.Comment;
+import com.ercanbeyen.bloggingplatform.exception.DocumentForbidden;
 import com.ercanbeyen.bloggingplatform.exception.DocumentNotFound;
+import com.ercanbeyen.bloggingplatform.repository.AuthorRepository;
 import com.ercanbeyen.bloggingplatform.repository.CommentRepository;
+import com.ercanbeyen.bloggingplatform.service.AuthorService;
 import com.ercanbeyen.bloggingplatform.service.CommentService;
 import com.ercanbeyen.bloggingplatform.service.PostService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,11 +33,14 @@ public class CommentServiceImpl implements CommentService {
     private final CommentRepository commentRepository;
     private final CommentDtoConverter commentDtoConverter;
     private final PostService postService;
+    private final AuthorService authorService;
 
     @Override
     public CommentDto createComment(CreateCommentRequest request) {
+        Author loggedIn_author = (Author) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
         Comment createdComment = Comment.builder()
-                .authorId("Trial")
+                .author(loggedIn_author)
                 .text(request.getText())
                 .latestChangeAt(LocalDateTime.now())
                 .build();
@@ -42,9 +54,14 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public CommentDto updateComment(String id, UpdateCommentRequest request) {
         Comment commentInDb = commentRepository.findById(id)
-                .orElseThrow(
-                        () -> new DocumentNotFound("Comment " + id + " is not found")
-                );
+                .orElseThrow(() -> new DocumentNotFound("Comment " + id + " is not found"));
+
+        Author author_commented = authorService.getAuthorById(request.getAuthorId());
+        Author loggedIn_author = (Author) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (!author_commented.getId().equals(loggedIn_author.getId())) {
+            throw new DocumentForbidden("You are not authorized");
+        }
 
         commentInDb.setText(request.getText());
         commentInDb.setLatestChangeAt(LocalDateTime.now());
@@ -63,9 +80,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public CommentDto getComment(String id) {
         Comment commentInDb = commentRepository.findById(id)
-                .orElseThrow(
-                        () -> new DocumentNotFound("Comment " + id + " is not found")
-                );
+                .orElseThrow(() -> new DocumentNotFound("Comment " + id + " is not found"));
 
         return commentDtoConverter.convert(commentInDb);
     }
@@ -73,9 +88,17 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public String deleteComment(String commentId, String postId) {
         Comment commentInDb = commentRepository.findById(commentId)
-                        .orElseThrow(
-                                () -> new DocumentNotFound("Comment " + commentId + " is not found")
-                        );
+                .orElseThrow(() -> new DocumentNotFound("Comment " + commentId + " is not found"));
+
+        Author loggedInAuthor = (Author) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Set<Role> loggedInAuthorRoles = loggedInAuthor.getRoles();
+        Set<RoleName> roles = loggedInAuthorRoles.stream()
+                .map(Role::getRoleName)
+                .collect(Collectors.toSet());
+
+        if (!roles.contains(RoleName.ADMIN) && commentInDb.getAuthor().getId().equals(loggedInAuthor.getId())) {
+            throw new DocumentForbidden("You are not authorized");
+        }
 
         postService.deleteCommentFromPost(postId, commentId);
 

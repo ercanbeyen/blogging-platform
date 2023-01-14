@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DocumentReference;
 
 import java.time.LocalDateTime;
 
@@ -13,7 +14,8 @@ import java.time.LocalDateTime;
 public class Comment {
     @Id
     private String id;
-    private String authorId;
+    @DocumentReference
+    private Author author;
     private String text;
     private LocalDateTime latestChangeAt;
 }

@@ -16,7 +16,8 @@ import java.util.List;
 public class Post {
     @Id
     private String id;
-    private String authorId;
+    @DocumentReference
+    private Author author;
     private String title;
     private String text;
     private String category;

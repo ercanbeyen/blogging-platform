@@ -1,6 +1,6 @@
 package com.ercanbeyen.bloggingplatform.dto.request.update;
 
-import com.ercanbeyen.bloggingplatform.document.Role;
+import com.ercanbeyen.bloggingplatform.constant.RoleName;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,5 +13,5 @@ import java.util.Set;
 @ToString
 public class UpdateAuthorRolesRequest {
     @NotEmpty(message = "Author should have a role")
-    Set<Role> roles;
+    Set<RoleName> roles;
 }
