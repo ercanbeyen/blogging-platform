@@ -16,4 +16,8 @@ public interface AuthorService {
     void deleteAuthor(String id);
     AuthorDto updateRolesOfAuthor(String id, UpdateAuthorRolesRequest request);
     Author getAuthorByUsername(String username);
+    String followAuthor(String id, String authorId);
+    String unFollowAuthor(String id, String authorId);
+    List<String> getFollowedAuthors(String id);
+    List<String> getFollowers(String id);
 }

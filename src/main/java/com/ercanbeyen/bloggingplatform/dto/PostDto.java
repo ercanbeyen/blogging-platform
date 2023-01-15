@@ -10,7 +10,7 @@ import java.util.List;
 @Data
 @Builder
 public class PostDto {
-    private String author;
+    private String authorId;
     private String title;
     private String text;
     private String category;

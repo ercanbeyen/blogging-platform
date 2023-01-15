@@ -3,9 +3,7 @@ package com.ercanbeyen.bloggingplatform.document;
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.DBRef;
-import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.DocumentReference;
+import org.springframework.data.mongodb.core.mapping.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -14,7 +12,7 @@ import java.util.List;
 @Builder
 @Document
 public class Post {
-    @Id
+    @MongoId(FieldType.OBJECT_ID)
     private String id;
     @DocumentReference
     private Author author;

@@ -42,4 +42,24 @@ public class AuthorController {
     public ResponseEntity<AuthorDto> updateRolesOfAuthor(@PathVariable("id") String id, @RequestBody UpdateAuthorRolesRequest request) {
         return ResponseEntity.ok(authorService.updateRolesOfAuthor(id, request));
     }
+
+    @PutMapping("/{id}/follow")
+    public ResponseEntity<String> followAuthor(@PathVariable("id") String id, @RequestParam String authorId) {
+        return ResponseEntity.ok(authorService.followAuthor(id, authorId));
+    }
+
+    @PutMapping("/{id}/unfollow")
+    public ResponseEntity<String> unFollowAuthor(@PathVariable("id") String id, @RequestParam String authorId) {
+        return ResponseEntity.ok(authorService.unFollowAuthor(id, authorId));
+    }
+
+    @GetMapping("/{id}/followers")
+    public ResponseEntity<List<String>> getFollowers(@PathVariable("id") String id) {
+        return ResponseEntity.ok(authorService.getFollowers(id));
+    }
+
+    @GetMapping("/{id}/followed")
+    public ResponseEntity<List<String>> getFollowedAuthors(@PathVariable("id") String id) {
+        return ResponseEntity.ok(authorService.getFollowedAuthors(id));
+    }
 }

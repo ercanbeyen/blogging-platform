@@ -28,10 +28,9 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class AuthenticationServiceImpl implements AuthenticationService {
     private final AuthorService authorService;
-    private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
-    private final RoleService roleService;
+
     @Override
     public Response<Object> authenticate(AuthenticationRequest request) {
         authenticationManager.authenticate(

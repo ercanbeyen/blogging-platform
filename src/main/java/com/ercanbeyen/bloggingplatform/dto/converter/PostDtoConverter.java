@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 public class PostDtoConverter {
     public PostDto convert(Post post) {
         return PostDto.builder()
-                .author(post.getAuthor().getId())
+                .authorId(post.getAuthor().getId())
                 .title(post.getTitle())
                 .text(post.getText())
                 .category(post.getCategory())

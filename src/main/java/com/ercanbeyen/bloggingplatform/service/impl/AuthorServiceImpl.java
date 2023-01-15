@@ -15,11 +15,14 @@ import com.ercanbeyen.bloggingplatform.repository.AuthorRepository;
 import com.ercanbeyen.bloggingplatform.service.AuthorService;
 import com.ercanbeyen.bloggingplatform.service.RoleService;
 import lombok.RequiredArgsConstructor;
+import org.bson.types.ObjectId;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -47,6 +50,8 @@ public class AuthorServiceImpl implements AuthorService {
                 .roles(roles)
                 .email(request.getEmail())
                 .createdAt(LocalDateTime.now())
+                .followed(new ArrayList<>())
+                .followers(new ArrayList<>())
                 .build();
 
         return authorRepository.save(newAuthor);
@@ -131,5 +136,121 @@ public class AuthorServiceImpl implements AuthorService {
     public Author getAuthorByUsername(String username) {
         return authorRepository.findByUsername(username)
                 .orElseThrow(() -> new DocumentNotFound("Author " + username + " is not found"));
+    }
+
+    @Transactional
+    @Override
+    public String followAuthor(String id, String authorId) {
+        Author loggedInAuthor = (Author) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        Author follower = authorRepository.findById(id)
+                .orElseThrow(() -> new DocumentNotFound("Author " + id + " is not found"));
+
+        if (!follower.getId().equals(loggedInAuthor.getId())) {
+            throw new DocumentConflict("You are not authorized");
+        }
+
+        Author unfollowed = authorRepository.findById(authorId)
+                .orElseThrow(() -> new DocumentNotFound("Author " + authorId + " is not found"));
+
+        if (follower.getId().equals(unfollowed.getId())) {
+            throw new DocumentConflict("You cannot follow yourself");
+        }
+
+        /*if (follower.getFollowed().contains(unfollowed)) {
+            throw new DocumentConflict("You are already following Author " + followedId);
+        }*/
+
+        boolean isFollowed = follower.getFollowed().stream()
+                        .anyMatch(followed -> followed.getId().equals(unfollowed.getId()));
+
+        if (isFollowed) {
+            throw new DocumentConflict("You are already following Author " + authorId);
+        }
+
+        follower.getFollowed().add(unfollowed);
+        unfollowed.getFollowers().add(follower);
+
+        authorRepository.save(follower);
+        authorRepository.save(unfollowed);
+
+        return "Author " + authorId + " is added to your followed authors";
+    }
+
+    @Transactional
+    @Override
+    public String unFollowAuthor(String id, String authorId) {
+        Author loggedInAuthor = (Author) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        Author follower = authorRepository.findById(id)
+                .orElseThrow(() -> new DocumentNotFound("Author " + id + " is not found"));
+
+        if (!follower.getId().equals(loggedInAuthor.getId())) {
+            throw new DocumentConflict("You are not authorized");
+        }
+
+        Author followed = authorRepository.findById(authorId)
+                .orElseThrow(() -> new DocumentNotFound("Author " + authorId + " is not found"));
+
+        if (follower.getId().equals(followed.getId())) {
+            throw new DocumentConflict("You cannot unfollow yourself");
+        }
+
+        /*if (!follower.getFollowed().contains(followed)) {
+            throw new DocumentConflict("You are already not following Author " + unFollowedId);
+        }*/
+
+        boolean isFollowed = follower.getFollowed().stream()
+                        .anyMatch(followedAuthor -> followedAuthor.getId().equals(authorId));
+
+        if (!isFollowed) {
+            throw new DocumentConflict("You are already not following Author " + authorId);
+        }
+
+        List<Author> followedAuthors = follower.getFollowed();
+        if (followedAuthors.remove(followed)) {
+            System.out.println("Removed");
+        } else {
+            System.out.println("Not removed");
+        }
+        follower.setFollowed(followedAuthors);
+        authorRepository.save(follower);
+
+        List<Author> followers = followed.getFollowers();
+        if (followers.remove(follower)) {
+            System.out.println("Removed");
+        } else {
+            System.out.println("Not removed");
+        }
+        followed.setFollowers(followers);
+        authorRepository.save(followed);
+
+        /*follower.getFollowed().remove(followed);
+        followed.getFollowers().remove(follower);
+
+        authorRepository.save(follower);
+        authorRepository.save(followed);*/
+
+        return "Author " + authorId + " is removed from your followed authors";
+    }
+
+    @Override
+    public List<String> getFollowedAuthors(String id) {
+        Author follower = authorRepository.findById(id)
+                .orElseThrow(() -> new DocumentNotFound("Author " + id + " is not found"));
+
+        return follower.getFollowed().stream()
+                .map(Author::getId)
+                .toList();
+    }
+
+    @Override
+    public List<String> getFollowers(String id) {
+        Author followed = authorRepository.findById(id)
+                .orElseThrow(() -> new DocumentNotFound("Author " + id + " is not found"));
+
+        return followed.getFollowers().stream()
+                .map(Author::getId)
+                .toList();
     }
 }

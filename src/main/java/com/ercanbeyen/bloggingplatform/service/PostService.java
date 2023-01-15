@@ -5,6 +5,7 @@ import com.ercanbeyen.bloggingplatform.document.Post;
 import com.ercanbeyen.bloggingplatform.dto.PostDto;
 import com.ercanbeyen.bloggingplatform.dto.request.create.CreatePostRequest;
 import com.ercanbeyen.bloggingplatform.dto.request.update.UpdatePostRequest;
+import org.bson.types.ObjectId;
 
 import java.util.List;
 

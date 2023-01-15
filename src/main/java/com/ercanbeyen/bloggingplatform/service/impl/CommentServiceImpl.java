@@ -96,7 +96,7 @@ public class CommentServiceImpl implements CommentService {
                 .map(Role::getRoleName)
                 .collect(Collectors.toSet());
 
-        if (!roles.contains(RoleName.ADMIN) && commentInDb.getAuthor().getId().equals(loggedInAuthor.getId())) {
+        if (!roles.contains(RoleName.ADMIN) && !commentInDb.getAuthor().getId().equals(loggedInAuthor.getId())) {
             throw new DocumentForbidden("You are not authorized");
         }
 
