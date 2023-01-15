@@ -12,7 +12,6 @@ public class PostDtoConverter {
                 .title(post.getTitle())
                 .text(post.getText())
                 .category(post.getCategory())
-                .numberOfLikes(post.getNumberOfLikes())
                 .tags(post.getTags())
                 .comments(post.getComments())
                 .latestChangeAt(post.getLatestChangeAt())

@@ -20,4 +20,5 @@ public interface AuthorService {
     String unFollowAuthor(String id, String authorId);
     List<String> getFollowedAuthors(String id);
     List<String> getFollowers(String id);
+    Author getAuthorById(String id);
 }

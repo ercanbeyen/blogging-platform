@@ -17,4 +17,7 @@ public interface PostService {
     String deletePost(String id);
     void addCommentToPost(String id, Comment comment);
     void deleteCommentFromPost(String postId, String commentId);
+    String likePost(String id);
+    String dislikePost(String id);
+    String removeStatus(String id);
 }

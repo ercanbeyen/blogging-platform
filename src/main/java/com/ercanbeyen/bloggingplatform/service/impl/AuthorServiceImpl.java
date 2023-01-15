@@ -196,10 +196,6 @@ public class AuthorServiceImpl implements AuthorService {
             throw new DocumentConflict("You cannot unfollow yourself");
         }
 
-        /*if (!follower.getFollowed().contains(followed)) {
-            throw new DocumentConflict("You are already not following Author " + unFollowedId);
-        }*/
-
         boolean isFollowed = follower.getFollowed().stream()
                         .anyMatch(followedAuthor -> followedAuthor.getId().equals(authorId));
 
@@ -207,29 +203,11 @@ public class AuthorServiceImpl implements AuthorService {
             throw new DocumentConflict("You are already not following Author " + authorId);
         }
 
-        List<Author> followedAuthors = follower.getFollowed();
-        if (followedAuthors.remove(followed)) {
-            System.out.println("Removed");
-        } else {
-            System.out.println("Not removed");
-        }
-        follower.setFollowed(followedAuthors);
-        authorRepository.save(follower);
-
-        List<Author> followers = followed.getFollowers();
-        if (followers.remove(follower)) {
-            System.out.println("Removed");
-        } else {
-            System.out.println("Not removed");
-        }
-        followed.setFollowers(followers);
-        authorRepository.save(followed);
-
-        /*follower.getFollowed().remove(followed);
+        follower.getFollowed().remove(followed);
         followed.getFollowers().remove(follower);
 
         authorRepository.save(follower);
-        authorRepository.save(followed);*/
+        authorRepository.save(followed);
 
         return "Author " + authorId + " is removed from your followed authors";
     }
@@ -252,5 +230,11 @@ public class AuthorServiceImpl implements AuthorService {
         return followed.getFollowers().stream()
                 .map(Author::getId)
                 .toList();
+    }
+
+    @Override
+    public Author getAuthorById(String id) {
+        return authorRepository.findById(id)
+                .orElseThrow(() -> new DocumentNotFound("Author " + id + " is not found"));
     }
 }

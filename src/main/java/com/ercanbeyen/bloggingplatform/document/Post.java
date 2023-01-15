@@ -19,9 +19,12 @@ public class Post {
     private String title;
     private String text;
     private String category;
-    private int numberOfLikes;
     private List<String> tags;
     @DocumentReference
     private List<Comment> comments;
     private LocalDateTime latestChangeAt;
+    @DocumentReference
+    private List<Author> likedAuthors;
+    @DocumentReference
+    private List<Author> dislikedAuthors;
 }

@@ -14,7 +14,6 @@ public class PostDto {
     private String title;
     private String text;
     private String category;
-    private int numberOfLikes;
     private List<String> tags;
     private List<Comment> comments;
     private LocalDateTime latestChangeAt;

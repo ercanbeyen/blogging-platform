@@ -39,8 +39,22 @@ public class PostController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deletePost(@PathVariable("id") String id) {
-        postService.deletePost(id);
         return ResponseEntity.ok(postService.deletePost(id));
+    }
+
+    @PutMapping("/{id}/status/like")
+    public ResponseEntity<String> likePost(@PathVariable("id") String id) {
+        return ResponseEntity.ok(postService.likePost(id));
+    }
+
+    @PutMapping("/{id}/status/dislike")
+    public ResponseEntity<String> dislikePost(@PathVariable("id") String id) {
+        return ResponseEntity.ok(postService.dislikePost(id));
+    }
+
+    @PutMapping("/{id}/status/remove")
+    public ResponseEntity<String> removeStatus(@PathVariable("id") String id) {
+        return ResponseEntity.ok(postService.removeStatus(id));
     }
 
 }
