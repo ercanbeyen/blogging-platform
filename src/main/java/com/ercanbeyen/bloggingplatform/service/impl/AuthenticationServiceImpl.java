@@ -1,28 +1,17 @@
 package com.ercanbeyen.bloggingplatform.service.impl;
 
-import com.ercanbeyen.bloggingplatform.constant.RoleName;
+import com.ercanbeyen.bloggingplatform.constant.Message;
 import com.ercanbeyen.bloggingplatform.document.Author;
 import com.ercanbeyen.bloggingplatform.document.Response;
-import com.ercanbeyen.bloggingplatform.document.Role;
 import com.ercanbeyen.bloggingplatform.dto.request.auth.AuthenticationRequest;
 import com.ercanbeyen.bloggingplatform.dto.request.auth.RegistrationRequest;
-import com.ercanbeyen.bloggingplatform.exception.DocumentNotFound;
-import com.ercanbeyen.bloggingplatform.repository.AuthorRepository;
-import com.ercanbeyen.bloggingplatform.repository.RoleRepository;
 import com.ercanbeyen.bloggingplatform.security.jwt.JwtService;
 import com.ercanbeyen.bloggingplatform.service.AuthenticationService;
 import com.ercanbeyen.bloggingplatform.service.AuthorService;
-import com.ercanbeyen.bloggingplatform.service.RoleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -46,7 +35,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         return Response.builder()
                 .success(true)
-                .message("Successfully authenticated")
+                .message(Message.SUCCESS)
                 .data(jwtToken)
                 .build();
     }
@@ -58,7 +47,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         return Response.builder()
                 .success(true)
-                .message("Successfully registered")
+                .message(Message.SUCCESS)
                 .data(jwtToken)
                 .build();
     }

@@ -1,6 +1,7 @@
 package com.ercanbeyen.bloggingplatform.service;
 
 import com.ercanbeyen.bloggingplatform.document.Author;
+import com.ercanbeyen.bloggingplatform.document.Response;
 import com.ercanbeyen.bloggingplatform.dto.AuthorDto;
 import com.ercanbeyen.bloggingplatform.dto.request.auth.RegistrationRequest;
 import com.ercanbeyen.bloggingplatform.dto.request.update.UpdateAuthorDetailsRequest;
@@ -10,15 +11,14 @@ import java.util.List;
 
 public interface AuthorService {
     Author createAuthor(RegistrationRequest request);
-    AuthorDto updateAuthor(String id, UpdateAuthorDetailsRequest request);
-    AuthorDto getAuthor(String id);
-    List<AuthorDto> getAuthors();
+    Response<Object> updateAuthor(String id, UpdateAuthorDetailsRequest request);
+    Response<Object> getAuthor(String id);
+    Response<Object> getAuthors();
     void deleteAuthor(String id);
-    AuthorDto updateRolesOfAuthor(String id, UpdateAuthorRolesRequest request);
+    Response<Object> updateRolesOfAuthor(String id, UpdateAuthorRolesRequest request);
     Author getAuthorByUsername(String username);
-    String followAuthor(String id, String authorId);
-    String unFollowAuthor(String id, String authorId);
-    List<String> getFollowedAuthors(String id);
-    List<String> getFollowers(String id);
-    Author getAuthorById(String id);
+    Response<Object> followAuthor(String id, String authorId);
+    Response<Object> unFollowAuthor(String id, String authorId);
+    Response<Object> getFollowedAuthors(String id);
+    Response<Object> getFollowers(String id);
 }

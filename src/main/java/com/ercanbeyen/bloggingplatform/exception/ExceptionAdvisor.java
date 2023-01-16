@@ -1,5 +1,6 @@
 package com.ercanbeyen.bloggingplatform.exception;
 
+import com.ercanbeyen.bloggingplatform.document.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -11,20 +12,37 @@ public class ExceptionAdvisor extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(DocumentNotFound.class)
     public ResponseEntity<?> documentNotFoundExceptionHandler(Exception exception) {
-        return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_FOUND);
+        Response<Object> response = Response.builder()
+                .success(false)
+                .message(exception.getMessage())
+                .build();
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(DocumentForbidden.class)
     public ResponseEntity<?> documentForbiddenException(Exception exception) {
-        return new ResponseEntity<>(exception.getMessage(), HttpStatus.FORBIDDEN);
+        Response<Object> response = Response.builder()
+                .success(false)
+                .message(exception.getMessage())
+                .build();
+        return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
     }
 
+    @ExceptionHandler(DocumentConflict.class)
     public ResponseEntity<?> documentConflictedExceptionHandler(Exception exception) {
-        return new ResponseEntity<>(exception.getMessage(), HttpStatus.CONFLICT);
+        Response<Object> response = Response.builder()
+                .success(false)
+                .message(exception.getMessage())
+                .build();
+        return new ResponseEntity<>(response, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> generalExceptionHandler(Exception exception) {
-        return new ResponseEntity<>(exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        Response<Object> response = Response.builder()
+                .success(false)
+                .message(exception.getMessage())
+                .build();
+        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

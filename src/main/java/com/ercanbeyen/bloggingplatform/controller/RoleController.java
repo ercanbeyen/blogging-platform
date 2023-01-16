@@ -16,22 +16,22 @@ public class RoleController {
     private final RoleService roleService;
 
     @PostMapping
-    public ResponseEntity<RoleDto> createRole(@RequestBody CreateRoleRequest request) {
+    public ResponseEntity<Object> createRole(@RequestBody CreateRoleRequest request) {
         return ResponseEntity.ok(roleService.createRole(request));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<RoleDto> getRole(@PathVariable("id") String id) {
+    public ResponseEntity<Object> getRole(@PathVariable("id") String id) {
         return ResponseEntity.ok(roleService.getRole(id));
     }
 
     @GetMapping
-    public ResponseEntity<List<RoleDto>> getRoles() {
+    public ResponseEntity<Object> getRoles() {
         return ResponseEntity.ok(roleService.getRoles());
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteRole(@PathVariable("id") String id) {
+    public ResponseEntity<Object> deleteRole(@PathVariable("id") String id) {
         return ResponseEntity.ok(roleService.deleteRole(id));
     }
 }

@@ -1,16 +1,12 @@
 package com.ercanbeyen.bloggingplatform.service.impl;
 
+import com.ercanbeyen.bloggingplatform.constant.Message;
 import com.ercanbeyen.bloggingplatform.constant.RoleName;
-import com.ercanbeyen.bloggingplatform.document.Author;
-import com.ercanbeyen.bloggingplatform.document.Comment;
-import com.ercanbeyen.bloggingplatform.document.Role;
-import com.ercanbeyen.bloggingplatform.dto.AuthorDto;
-import com.ercanbeyen.bloggingplatform.dto.PostDto;
+import com.ercanbeyen.bloggingplatform.document.*;
 import com.ercanbeyen.bloggingplatform.dto.converter.AuthorDtoConverter;
 import com.ercanbeyen.bloggingplatform.dto.converter.PostDtoConverter;
 import com.ercanbeyen.bloggingplatform.dto.request.create.CreatePostRequest;
 import com.ercanbeyen.bloggingplatform.dto.request.update.UpdatePostRequest;
-import com.ercanbeyen.bloggingplatform.document.Post;
 import com.ercanbeyen.bloggingplatform.exception.DocumentConflict;
 import com.ercanbeyen.bloggingplatform.exception.DocumentForbidden;
 import com.ercanbeyen.bloggingplatform.exception.DocumentNotFound;
@@ -32,7 +28,7 @@ public class PostServiceImpl implements PostService {
     private final AuthorDtoConverter authorDtoConverter;
 
     @Override
-    public PostDto createPost(CreatePostRequest request) {
+    public Response<Object> createPost(CreatePostRequest request) {
         Author loggedInAuthor = (Author) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         Post createdPost = Post.builder()
@@ -45,11 +41,15 @@ public class PostServiceImpl implements PostService {
                 .latestChangeAt(LocalDateTime.now())
                 .build();
 
-        return postDtoConverter.convert(postRepository.save(createdPost));
+        return Response.builder()
+                .success(true)
+                .message(Message.SUCCESS)
+                .data(postDtoConverter.convert(postRepository.save(createdPost)))
+                .build();
     }
 
     @Override
-    public PostDto updatePost(String id, UpdatePostRequest request) {
+    public Response<Object> updatePost(String id, UpdatePostRequest request) {
         Post postInDb = postRepository.findById(id)
                 .orElseThrow(
                         () -> new DocumentNotFound("Post " + id + " is not found")
@@ -59,7 +59,7 @@ public class PostServiceImpl implements PostService {
         Author loggedIn_author = (Author) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         if (!author_posted.getId().equals(loggedIn_author.getId())) {
-            throw new DocumentForbidden("You are not authorized");
+            throw new DocumentForbidden(Message.NOT_AUTHORIZED);
         }
 
         postInDb.setTitle(request.getTitle());
@@ -68,30 +68,42 @@ public class PostServiceImpl implements PostService {
         postInDb.setTags(request.getTags());
         postInDb.setLatestChangeAt(LocalDateTime.now());
 
-        return postDtoConverter.convert(postRepository.save(postInDb));
+        return Response.builder()
+                .success(true)
+                .message(Message.SUCCESS)
+                .data(postDtoConverter.convert(postRepository.save(postInDb)))
+                .build();
     }
 
     @Override
-    public List<PostDto> getPosts() {
+    public Response<Object> getPosts() {
         List<Post> posts = postRepository.findAll();
 
-        return posts.stream()
-                .map(postDtoConverter::convert)
-                .collect(Collectors.toList());
+         return Response.builder()
+                 .success(true)
+                 .message(Message.SUCCESS)
+                 .data(posts.stream()
+                         .map(postDtoConverter::convert)
+                         .collect(Collectors.toList()))
+                 .build();
     }
 
     @Override
-    public PostDto getPost(String id) {
+    public Response<Object> getPost(String id) {
         Post postInDb = postRepository.findById(id)
                 .orElseThrow(
                         () -> new DocumentNotFound("Post " + id + " is not found")
                 );
 
-        return postDtoConverter.convert(postInDb);
+        return Response.builder()
+                .success(true)
+                .message(Message.SUCCESS)
+                .data(postDtoConverter.convert(postInDb))
+                .build();
     }
 
     @Override
-    public String deletePost(String id) {
+    public Response<Object> deletePost(String id) {
         Post postInDb = postRepository.findById(id)
                 .orElseThrow(() -> new DocumentNotFound("Post " + id + " is not found"));
 
@@ -102,10 +114,16 @@ public class PostServiceImpl implements PostService {
                 .collect(Collectors.toSet());
 
         if (!roles.contains(RoleName.ADMIN) && postInDb.getAuthor().getId().equals(loggedInAuthor.getId())) {
-            throw new DocumentForbidden("You are not authorized");
+            throw new DocumentForbidden(Message.NOT_AUTHORIZED);
         }
         postRepository.deleteById(id);
-        return "Post " + id + " is successfully deleted";
+        String message = "Post " + id + " is successfully deleted";
+
+        return Response.builder()
+                .success(true)
+                .message(Message.SUCCESS)
+                .data(message)
+                .build();
     }
 
     @Override
@@ -138,7 +156,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public String likePost(String id) {
+    public Response<Object> likePost(String id) {
         Post postInDb = postRepository.findById(id)
                 .orElseThrow(() -> new DocumentNotFound("Post " + id + " is not found"));
 
@@ -155,11 +173,17 @@ public class PostServiceImpl implements PostService {
         postInDb.getAuthorsLiked().add(loggedInAuthor);
         postRepository.save(postInDb);
 
-        return "You liked post " + postInDb.getId();
+        String message = "You liked post " + postInDb.getId();
+
+        return Response.builder()
+                .success(true)
+                .message(Message.SUCCESS)
+                .data(message)
+                .build();
     }
 
     @Override
-    public String dislikePost(String id) {
+    public Response<Object> dislikePost(String id) {
         Post postInDb = postRepository.findById(id)
                 .orElseThrow(() -> new DocumentNotFound("Post " + id + " is not found"));
 
@@ -176,11 +200,17 @@ public class PostServiceImpl implements PostService {
         postInDb.getAuthorsDisliked().add(loggedInAuthor);
         postRepository.save(postInDb);
 
-        return "You disliked post " + postInDb.getId();
+        String message = "You disliked post " + postInDb.getId();
+
+        return Response.builder()
+                .success(true)
+                .message(Message.SUCCESS)
+                .data(message)
+                .build();
     }
 
     @Override
-    public String removeStatus(String id) {
+    public Response<Object> removeStatus(String id) {
         Post postInDb = postRepository.findById(id)
                 .orElseThrow(() -> new DocumentNotFound("Post " + id + " is not found"));
 
@@ -208,43 +238,57 @@ public class PostServiceImpl implements PostService {
 
         postRepository.save(postInDb);
 
-        return "Your " + status + " for post " + postInDb.getId() + " is removed";
+        String message = "Your " + status + " for post " + postInDb.getId() + " is removed";
+
+        return Response.builder()
+                .success(true)
+                .message(Message.SUCCESS)
+                .data(message)
+                .build();
     }
 
     @Override
-    public List<AuthorDto> getAuthorsLiked(String id) {
+    public Response<Object> getAuthorsLiked(String id) {
         Post postInDb = postRepository.findById(id)
                 .orElseThrow(() -> new DocumentNotFound("Post " + id + " is not found"));
 
         Author loggedInAuthor = (Author) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         if (!postInDb.getAuthor().getId().equals(loggedInAuthor.getId())) {
-            throw new DocumentForbidden("You are not authorized");
+            throw new DocumentForbidden(Message.NOT_AUTHORIZED);
         }
 
         List<Author> authors = postInDb.getAuthorsLiked();
 
-        return authors.stream()
-                .map(authorDtoConverter::convert)
-                .collect(Collectors.toList());
+        return Response.builder()
+                .success(true)
+                .message(Message.SUCCESS)
+                .data(authors.stream()
+                        .map(authorDtoConverter::convert)
+                        .collect(Collectors.toList()))
+                .build();
     }
 
     @Override
-    public List<AuthorDto> getAuthorsDisliked(String id) {
+    public Response<Object> getAuthorsDisliked(String id) {
         Post postInDb = postRepository.findById(id)
                 .orElseThrow(() -> new DocumentNotFound("Post " + id + " is not found"));
 
         Author loggedInAuthor = (Author) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         if (!postInDb.getAuthor().getId().equals(loggedInAuthor.getId())) {
-            throw new DocumentForbidden("You are not authorized");
+            throw new DocumentForbidden(Message.NOT_AUTHORIZED);
         }
 
         List<Author> authors = postInDb.getAuthorsDisliked();
 
-        return authors.stream()
-                .map(authorDtoConverter::convert)
-                .collect(Collectors.toList());
+        return Response.builder()
+                .success(true)
+                .message(Message.SUCCESS)
+                .data(authors.stream()
+                        .map(authorDtoConverter::convert)
+                        .collect(Collectors.toList()))
+                .build();
     }
 
 }

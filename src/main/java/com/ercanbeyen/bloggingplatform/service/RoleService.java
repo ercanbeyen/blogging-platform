@@ -1,6 +1,7 @@
 package com.ercanbeyen.bloggingplatform.service;
 
 import com.ercanbeyen.bloggingplatform.constant.RoleName;
+import com.ercanbeyen.bloggingplatform.document.Response;
 import com.ercanbeyen.bloggingplatform.document.Role;
 import com.ercanbeyen.bloggingplatform.dto.RoleDto;
 import com.ercanbeyen.bloggingplatform.dto.request.create.CreateRoleRequest;
@@ -8,9 +9,9 @@ import com.ercanbeyen.bloggingplatform.dto.request.create.CreateRoleRequest;
 import java.util.List;
 
 public interface RoleService {
-    RoleDto createRole(CreateRoleRequest request);
-    List<RoleDto> getRoles();
-    RoleDto getRole(String id);
-    String deleteRole(String id);
+    Response<Object> createRole(CreateRoleRequest request);
+    Response<Object> getRoles();
+    Response<Object> getRole(String id);
+    Response<Object> deleteRole(String id);
     Role getRoleByRoleName(RoleName roleName);
 }

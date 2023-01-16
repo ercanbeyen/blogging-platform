@@ -19,52 +19,52 @@ public class PostController {
     private final PostService postService;
 
     @GetMapping
-    public ResponseEntity<List<PostDto>> getPosts() {
+    public ResponseEntity<Object> getPosts() {
         return ResponseEntity.ok(postService.getPosts());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PostDto> getPost(@PathVariable("id") String id) {
+    public ResponseEntity<Object> getPost(@PathVariable("id") String id) {
         return ResponseEntity.ok(postService.getPost(id));
     }
 
     @PostMapping
-    public ResponseEntity<PostDto> createPost(@RequestBody CreatePostRequest request) {
+    public ResponseEntity<Object> createPost(@RequestBody CreatePostRequest request) {
         return new ResponseEntity<>(postService.createPost(request), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PostDto> updatePost(@PathVariable("id") String id, @RequestBody UpdatePostRequest request) {
+    public ResponseEntity<Object> updatePost(@PathVariable("id") String id, @RequestBody UpdatePostRequest request) {
         return ResponseEntity.ok(postService.updatePost(id, request));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deletePost(@PathVariable("id") String id) {
+    public ResponseEntity<Object> deletePost(@PathVariable("id") String id) {
         return ResponseEntity.ok(postService.deletePost(id));
     }
 
     @PutMapping("/{id}/status/like")
-    public ResponseEntity<String> likePost(@PathVariable("id") String id) {
+    public ResponseEntity<Object> likePost(@PathVariable("id") String id) {
         return ResponseEntity.ok(postService.likePost(id));
     }
 
     @PutMapping("/{id}/status/dislike")
-    public ResponseEntity<String> dislikePost(@PathVariable("id") String id) {
+    public ResponseEntity<Object> dislikePost(@PathVariable("id") String id) {
         return ResponseEntity.ok(postService.dislikePost(id));
     }
 
     @PutMapping("/{id}/status/remove")
-    public ResponseEntity<String> removeStatus(@PathVariable("id") String id) {
+    public ResponseEntity<Object> removeStatus(@PathVariable("id") String id) {
         return ResponseEntity.ok(postService.removeStatus(id));
     }
 
     @GetMapping("/{id}/likes")
-    public ResponseEntity<List<AuthorDto>> getAuthorsLiked(@PathVariable("id") String id) {
+    public ResponseEntity<Object> getAuthorsLiked(@PathVariable("id") String id) {
         return ResponseEntity.ok(postService.getAuthorsLiked(id));
     }
 
     @GetMapping("/{id}/dislikes")
-    public ResponseEntity<List<AuthorDto>> getAuthorsDisliked(@PathVariable("id") String id) {
+    public ResponseEntity<Object> getAuthorsDisliked(@PathVariable("id") String id) {
         return ResponseEntity.ok(postService.getAuthorsDisliked(id));
     }
 
