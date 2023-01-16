@@ -1,5 +1,6 @@
 package com.ercanbeyen.bloggingplatform.controller;
 
+import com.ercanbeyen.bloggingplatform.dto.AuthorDto;
 import com.ercanbeyen.bloggingplatform.dto.PostDto;
 import com.ercanbeyen.bloggingplatform.dto.request.create.CreatePostRequest;
 import com.ercanbeyen.bloggingplatform.dto.request.update.UpdatePostRequest;
@@ -55,6 +56,16 @@ public class PostController {
     @PutMapping("/{id}/status/remove")
     public ResponseEntity<String> removeStatus(@PathVariable("id") String id) {
         return ResponseEntity.ok(postService.removeStatus(id));
+    }
+
+    @GetMapping("/{id}/likes")
+    public ResponseEntity<List<AuthorDto>> getAuthorsLiked(@PathVariable("id") String id) {
+        return ResponseEntity.ok(postService.getAuthorsLiked(id));
+    }
+
+    @GetMapping("/{id}/dislikes")
+    public ResponseEntity<List<AuthorDto>> getAuthorsDisliked(@PathVariable("id") String id) {
+        return ResponseEntity.ok(postService.getAuthorsDisliked(id));
     }
 
 }

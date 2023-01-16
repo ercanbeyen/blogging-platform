@@ -2,7 +2,6 @@ package com.ercanbeyen.bloggingplatform.document;
 
 import lombok.Builder;
 import lombok.Data;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.*;
 
 import java.time.LocalDateTime;
@@ -24,7 +23,7 @@ public class Post {
     private List<Comment> comments;
     private LocalDateTime latestChangeAt;
     @DocumentReference
-    private List<Author> likedAuthors;
+    private List<Author> authorsLiked;
     @DocumentReference
-    private List<Author> dislikedAuthors;
+    private List<Author> authorsDisliked;
 }

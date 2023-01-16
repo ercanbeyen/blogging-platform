@@ -4,7 +4,9 @@ import com.ercanbeyen.bloggingplatform.constant.RoleName;
 import com.ercanbeyen.bloggingplatform.document.Author;
 import com.ercanbeyen.bloggingplatform.document.Comment;
 import com.ercanbeyen.bloggingplatform.document.Role;
+import com.ercanbeyen.bloggingplatform.dto.AuthorDto;
 import com.ercanbeyen.bloggingplatform.dto.PostDto;
+import com.ercanbeyen.bloggingplatform.dto.converter.AuthorDtoConverter;
 import com.ercanbeyen.bloggingplatform.dto.converter.PostDtoConverter;
 import com.ercanbeyen.bloggingplatform.dto.request.create.CreatePostRequest;
 import com.ercanbeyen.bloggingplatform.dto.request.update.UpdatePostRequest;
@@ -13,10 +15,8 @@ import com.ercanbeyen.bloggingplatform.exception.DocumentConflict;
 import com.ercanbeyen.bloggingplatform.exception.DocumentForbidden;
 import com.ercanbeyen.bloggingplatform.exception.DocumentNotFound;
 import com.ercanbeyen.bloggingplatform.repository.PostRepository;
-import com.ercanbeyen.bloggingplatform.service.AuthorService;
 import com.ercanbeyen.bloggingplatform.service.PostService;
 import lombok.RequiredArgsConstructor;
-import org.bson.types.ObjectId;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
     private final PostDtoConverter postDtoConverter;
+    private final AuthorDtoConverter authorDtoConverter;
 
     @Override
     public PostDto createPost(CreatePostRequest request) {
@@ -143,15 +144,15 @@ public class PostServiceImpl implements PostService {
 
         Author loggedInAuthor = (Author) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        boolean isLiked = postInDb.getLikedAuthors().stream()
+        boolean isLiked = postInDb.getAuthorsLiked().stream()
                 .anyMatch(author -> author.getId().equals(loggedInAuthor.getId()));
 
         if (isLiked) {
             throw new DocumentConflict("You have already liked the post");
         }
 
-        postInDb.getDislikedAuthors().remove(loggedInAuthor);
-        postInDb.getLikedAuthors().add(loggedInAuthor);
+        postInDb.getAuthorsDisliked().remove(loggedInAuthor);
+        postInDb.getAuthorsLiked().add(loggedInAuthor);
         postRepository.save(postInDb);
 
         return "You liked post " + postInDb.getId();
@@ -164,15 +165,15 @@ public class PostServiceImpl implements PostService {
 
         Author loggedInAuthor = (Author) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        boolean isDisliked = postInDb.getDislikedAuthors().stream()
+        boolean isDisliked = postInDb.getAuthorsDisliked().stream()
                 .anyMatch(author -> author.getId().equals(loggedInAuthor.getId()));
 
         if (isDisliked) {
             throw new DocumentConflict("You have already disliked the post");
         }
 
-        postInDb.getLikedAuthors().remove(loggedInAuthor);
-        postInDb.getDislikedAuthors().add(loggedInAuthor);
+        postInDb.getAuthorsLiked().remove(loggedInAuthor);
+        postInDb.getAuthorsDisliked().add(loggedInAuthor);
         postRepository.save(postInDb);
 
         return "You disliked post " + postInDb.getId();
@@ -185,10 +186,10 @@ public class PostServiceImpl implements PostService {
 
         Author loggedInAuthor = (Author) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        boolean isLiked = postInDb.getLikedAuthors().stream()
+        boolean isLiked = postInDb.getAuthorsLiked().stream()
                 .anyMatch(author -> author.getId().equals(loggedInAuthor.getId()));
 
-        boolean isDisliked = postInDb.getDislikedAuthors().stream()
+        boolean isDisliked = postInDb.getAuthorsDisliked().stream()
                 .anyMatch(author -> author.getId().equals(loggedInAuthor.getId()));
 
         if (!isLiked && !isDisliked) {
@@ -198,16 +199,52 @@ public class PostServiceImpl implements PostService {
         String status;
 
         if (isLiked) {
-            postInDb.getLikedAuthors().remove(loggedInAuthor);
+            postInDb.getAuthorsLiked().remove(loggedInAuthor);
             status = "like";
         } else {
-            postInDb.getDislikedAuthors().remove(loggedInAuthor);
+            postInDb.getAuthorsDisliked().remove(loggedInAuthor);
             status = "dislike";
         }
 
         postRepository.save(postInDb);
 
         return "Your " + status + " for post " + postInDb.getId() + " is removed";
+    }
+
+    @Override
+    public List<AuthorDto> getAuthorsLiked(String id) {
+        Post postInDb = postRepository.findById(id)
+                .orElseThrow(() -> new DocumentNotFound("Post " + id + " is not found"));
+
+        Author loggedInAuthor = (Author) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (!postInDb.getAuthor().getId().equals(loggedInAuthor.getId())) {
+            throw new DocumentForbidden("You are not authorized");
+        }
+
+        List<Author> authors = postInDb.getAuthorsLiked();
+
+        return authors.stream()
+                .map(authorDtoConverter::convert)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<AuthorDto> getAuthorsDisliked(String id) {
+        Post postInDb = postRepository.findById(id)
+                .orElseThrow(() -> new DocumentNotFound("Post " + id + " is not found"));
+
+        Author loggedInAuthor = (Author) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (!postInDb.getAuthor().getId().equals(loggedInAuthor.getId())) {
+            throw new DocumentForbidden("You are not authorized");
+        }
+
+        List<Author> authors = postInDb.getAuthorsDisliked();
+
+        return authors.stream()
+                .map(authorDtoConverter::convert)
+                .collect(Collectors.toList());
     }
 
 }
