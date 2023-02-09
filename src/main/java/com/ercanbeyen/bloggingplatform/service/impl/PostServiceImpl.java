@@ -3,6 +3,7 @@ package com.ercanbeyen.bloggingplatform.service.impl;
 import com.ercanbeyen.bloggingplatform.constant.Message;
 import com.ercanbeyen.bloggingplatform.constant.RoleName;
 import com.ercanbeyen.bloggingplatform.document.*;
+import com.ercanbeyen.bloggingplatform.dto.PostDto;
 import com.ercanbeyen.bloggingplatform.dto.converter.AuthorDtoConverter;
 import com.ercanbeyen.bloggingplatform.dto.converter.PostDtoConverter;
 import com.ercanbeyen.bloggingplatform.dto.request.create.CreatePostRequest;
@@ -13,6 +14,7 @@ import com.ercanbeyen.bloggingplatform.exception.DocumentNotFound;
 import com.ercanbeyen.bloggingplatform.repository.PostRepository;
 import com.ercanbeyen.bloggingplatform.service.PostService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +28,7 @@ public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
     private final PostDtoConverter postDtoConverter;
     private final AuthorDtoConverter authorDtoConverter;
+    private final KafkaTemplate<String, String> kafkaTemplate;
 
     @Override
     public Response<Object> createPost(CreatePostRequest request) {
@@ -41,10 +44,23 @@ public class PostServiceImpl implements PostService {
                 .latestChangeAt(LocalDateTime.now())
                 .build();
 
+        Post savedPost = postRepository.save(createdPost);
+
+        String senderMessage = "Dear " + loggedInAuthor.getUsername() + ", you posted a new article called.";
+        kafkaTemplate.send("blog-notification", senderMessage);
+
+        PostDto postDto = postDtoConverter.convert(savedPost);
+        List<Author> followers = loggedInAuthor.getFollowers();
+
+        for (Author follower : followers) {
+            String receiverMessage = "Dear " + follower.getUsername() + ", author " + loggedInAuthor.getUsername() + " posted a new article.";
+            kafkaTemplate.send("blog-notification", receiverMessage);
+        }
+
         return Response.builder()
                 .success(true)
                 .message(Message.SUCCESS)
-                .data(postDtoConverter.convert(postRepository.save(createdPost)))
+                .data(postDto)
                 .build();
     }
 
@@ -68,10 +84,24 @@ public class PostServiceImpl implements PostService {
         postInDb.setTags(request.getTags());
         postInDb.setLatestChangeAt(LocalDateTime.now());
 
+        Post savedPost = postRepository.save(postInDb);
+
+        String senderMessage = "Dear " + loggedIn_author.getUsername() + ", you successfully updated post " + postInDb.getTitle() + ".";
+        kafkaTemplate.send("blog-notification", senderMessage);
+
+
+        PostDto postDto = postDtoConverter.convert(savedPost);
+        List<Author> followers = loggedIn_author.getFollowers();
+
+        for (Author follower: followers) {
+            String receiverMessage = "Dear " + follower.getUsername() + ", author " + loggedIn_author.getUsername() + " updated the article " + postInDb.getTitle() + ".";
+            kafkaTemplate.send("blog-notification", receiverMessage);
+        }
+
         return Response.builder()
                 .success(true)
                 .message(Message.SUCCESS)
-                .data(postDtoConverter.convert(postRepository.save(postInDb)))
+                .data(postDto)
                 .build();
     }
 
