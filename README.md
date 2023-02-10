@@ -26,6 +26,7 @@ There are 2 roles among authors
 - Java 18
 - Spring 
 - Spring Security
+- Kafka
 - Spring Data MongoDB
 - MongoDB
 
