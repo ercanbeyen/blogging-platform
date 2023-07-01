@@ -1,8 +1,7 @@
 package com.ercanbeyen.bloggingplatform.service.impl;
 
-import com.ercanbeyen.bloggingplatform.constant.messages.AuthMessage;
+import com.ercanbeyen.bloggingplatform.constant.messages.ResponseMessage;
 import com.ercanbeyen.bloggingplatform.constant.RoleName;
-import com.ercanbeyen.bloggingplatform.constant.messages.ExceptionMessage;
 import com.ercanbeyen.bloggingplatform.document.Response;
 import com.ercanbeyen.bloggingplatform.document.Role;
 import com.ercanbeyen.bloggingplatform.dto.converter.RoleDtoConverter;
@@ -40,7 +39,7 @@ public class RoleServiceImpl implements RoleService {
 
         return Response.builder()
                 .success(true)
-                .message(AuthMessage.SUCCESS)
+                .message(ResponseMessage.SUCCESS)
                 .data(roleDtoConverter.convert(createdRole))
                 .build();
     }
@@ -50,7 +49,7 @@ public class RoleServiceImpl implements RoleService {
         List<Role> roles = roleRepository.findAll();
         return Response.builder()
                 .success(true)
-                .message(AuthMessage.SUCCESS)
+                .message(ResponseMessage.SUCCESS)
                 .data(roles.stream()
                         .map(roleDtoConverter::convert)
                         .collect(Collectors.toList()))
@@ -61,11 +60,11 @@ public class RoleServiceImpl implements RoleService {
     public Response<Object> getRole(String id) {
         Role roleInDb = roleRepository
                 .findById(id)
-                .orElseThrow(() -> new DocumentNotFound(String.format(ExceptionMessage.NOT_FOUND, "Role", id)));
+                .orElseThrow(() -> new DocumentNotFound(String.format(ResponseMessage.NOT_FOUND, "Role", id)));
 
         return Response.builder()
                 .success(true)
-                .message(AuthMessage.SUCCESS)
+                .message(ResponseMessage.SUCCESS)
                 .data(roleDtoConverter.convert(roleInDb))
                 .build();
     }
@@ -74,7 +73,7 @@ public class RoleServiceImpl implements RoleService {
     public Response<Object> deleteRole(String id) {
         Role roleInDb = roleRepository
                 .findById(id)
-                .orElseThrow(() -> new DocumentNotFound(String.format(ExceptionMessage.NOT_FOUND, "Role", id)));
+                .orElseThrow(() -> new DocumentNotFound(String.format(ResponseMessage.NOT_FOUND, "Role", id)));
 
         String roleId = roleInDb.getId();
 
@@ -83,7 +82,7 @@ public class RoleServiceImpl implements RoleService {
 
         return Response.builder()
                 .success(true)
-                .message(AuthMessage.SUCCESS)
+                .message(ResponseMessage.SUCCESS)
                 .data(message)
                 .build();
     }
@@ -91,6 +90,6 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public Role getRoleByRoleName(RoleName roleName) {
         return roleRepository.findByRoleName(roleName)
-                .orElseThrow(() -> new DocumentNotFound(String.format(ExceptionMessage.NOT_FOUND, "Role", roleName)));
+                .orElseThrow(() -> new DocumentNotFound(String.format(ResponseMessage.NOT_FOUND, "Role", roleName)));
     }
 }

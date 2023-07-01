@@ -1,6 +1,6 @@
 package com.ercanbeyen.bloggingplatform.service.impl;
 
-import com.ercanbeyen.bloggingplatform.constant.messages.AuthMessage;
+import com.ercanbeyen.bloggingplatform.constant.messages.ResponseMessage;
 import com.ercanbeyen.bloggingplatform.document.Author;
 import com.ercanbeyen.bloggingplatform.document.Response;
 import com.ercanbeyen.bloggingplatform.dto.request.auth.AuthenticationRequest;
@@ -35,7 +35,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         return Response.builder()
                 .success(true)
-                .message(AuthMessage.SUCCESS)
+                .message(ResponseMessage.SUCCESS)
                 .data(jwtToken)
                 .build();
     }
@@ -47,7 +47,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         return Response.builder()
                 .success(true)
-                .message(AuthMessage.SUCCESS)
+                .message(ResponseMessage.SUCCESS)
                 .data(jwtToken)
                 .build();
     }

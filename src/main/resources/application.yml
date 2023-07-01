@@ -9,10 +9,10 @@ spring:
     producer:
       bootstrap-servers: localhost:9092
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: com.ercanbeyen.bloggingplatform.dto.serialization.NotificationDtoSerializer
     consumer:
       bootstrap-servers: localhost:9092
       group-id: group-id
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: com.ercanbeyen.bloggingplatform.dto.serialization.NotificationDtoDeserializer

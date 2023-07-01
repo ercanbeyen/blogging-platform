@@ -1,8 +1,7 @@
 package com.ercanbeyen.bloggingplatform.service.impl;
 
-import com.ercanbeyen.bloggingplatform.constant.messages.AuthMessage;
+import com.ercanbeyen.bloggingplatform.constant.messages.ResponseMessage;
 import com.ercanbeyen.bloggingplatform.constant.RoleName;
-import com.ercanbeyen.bloggingplatform.constant.messages.ExceptionMessage;
 import com.ercanbeyen.bloggingplatform.document.*;
 import com.ercanbeyen.bloggingplatform.dto.converter.CommentDtoConverter;
 import com.ercanbeyen.bloggingplatform.dto.request.create.CreateCommentRequest;
@@ -43,7 +42,7 @@ public class CommentServiceImpl implements CommentService {
 
         return Response.builder()
                 .success(true)
-                .message(AuthMessage.SUCCESS)
+                .message(ResponseMessage.SUCCESS)
                 .data(commentDtoConverter.convert(commentInDb))
                 .build();
     }
@@ -52,13 +51,13 @@ public class CommentServiceImpl implements CommentService {
     public Response<Object> updateComment(String id, UpdateCommentRequest request) {
         Comment commentInDb = commentRepository
                 .findById(id)
-                .orElseThrow(() -> new DocumentNotFound(String.format(ExceptionMessage.NOT_FOUND, "Comment", id)));
+                .orElseThrow(() -> new DocumentNotFound(String.format(ResponseMessage.NOT_FOUND, "Comment", id)));
 
         Author author_commented = commentInDb.getAuthor();
         Author loggedIn_author = (Author) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         if (!author_commented.getId().equals(loggedIn_author.getId())) {
-            throw new DocumentForbidden(AuthMessage.NOT_AUTHORIZED);
+            throw new DocumentForbidden(ResponseMessage.NOT_AUTHORIZED);
         }
 
         commentInDb.setText(request.getText());
@@ -66,7 +65,7 @@ public class CommentServiceImpl implements CommentService {
 
         return Response.builder()
                 .success(true)
-                .message(AuthMessage.SUCCESS)
+                .message(ResponseMessage.SUCCESS)
                 .data(commentDtoConverter.convert(commentRepository.save(commentInDb)))
                 .build();
     }
@@ -76,7 +75,7 @@ public class CommentServiceImpl implements CommentService {
         List<Comment> comments = commentRepository.findAll();
         return Response.builder()
                 .success(true)
-                .message(AuthMessage.SUCCESS)
+                .message(ResponseMessage.SUCCESS)
                 .data(comments.stream()
                         .map(commentDtoConverter::convert)
                         .collect(Collectors.toList()))
@@ -87,11 +86,11 @@ public class CommentServiceImpl implements CommentService {
     public Response<Object> getComment(String id) {
         Comment commentInDb = commentRepository
                 .findById(id)
-                .orElseThrow(() -> new DocumentNotFound(String.format(ExceptionMessage.NOT_FOUND, "Comment", id)));
+                .orElseThrow(() -> new DocumentNotFound(String.format(ResponseMessage.NOT_FOUND, "Comment", id)));
 
         return Response.builder()
                 .success(true)
-                .message(AuthMessage.SUCCESS)
+                .message(ResponseMessage.SUCCESS)
                 .data(commentDtoConverter.convert(commentInDb))
                 .build();
     }
@@ -100,7 +99,7 @@ public class CommentServiceImpl implements CommentService {
     public Response<Object> deleteComment(String commentId, String postId) {
         Comment commentInDb = commentRepository
                 .findById(commentId)
-                .orElseThrow(() -> new DocumentNotFound(String.format(ExceptionMessage.NOT_FOUND, "Comment", commentId)));
+                .orElseThrow(() -> new DocumentNotFound(String.format(ResponseMessage.NOT_FOUND, "Comment", commentId)));
 
         Author loggedInAuthor = (Author) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Set<Role> loggedInAuthorRoles = loggedInAuthor.getRoles();
@@ -109,7 +108,7 @@ public class CommentServiceImpl implements CommentService {
                 .collect(Collectors.toSet());
 
         if (!roles.contains(RoleName.ADMIN) && !commentInDb.getAuthor().getId().equals(loggedInAuthor.getId())) {
-            throw new DocumentForbidden(AuthMessage.NOT_AUTHORIZED);
+            throw new DocumentForbidden(ResponseMessage.NOT_AUTHORIZED);
         }
 
         postService.deleteCommentFromPost(postId, commentId);
@@ -119,7 +118,7 @@ public class CommentServiceImpl implements CommentService {
 
         return Response.builder()
                 .success(true)
-                .message(AuthMessage.SUCCESS)
+                .message(ResponseMessage.SUCCESS)
                 .data(message)
                 .build();
     }
