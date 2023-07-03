@@ -2,8 +2,8 @@ package com.ercanbeyen.bloggingplatform.service.impl;
 
 import com.ercanbeyen.bloggingplatform.constant.messages.ResponseMessage;
 import com.ercanbeyen.bloggingplatform.constant.RoleName;
-import com.ercanbeyen.bloggingplatform.document.Response;
 import com.ercanbeyen.bloggingplatform.document.Role;
+import com.ercanbeyen.bloggingplatform.dto.AuthorDto;
 import com.ercanbeyen.bloggingplatform.dto.request.auth.RegistrationRequest;
 import com.ercanbeyen.bloggingplatform.dto.request.update.UpdateAuthorDetailsRequest;
 import com.ercanbeyen.bloggingplatform.dto.request.update.UpdateAuthorRolesRequest;
@@ -36,6 +36,7 @@ public class AuthorServiceImpl implements AuthorService {
     private final PasswordEncoder passwordEncoder;
     private final RoleService roleService;
 
+    @Transactional
     @Override
     public Author createAuthor(RegistrationRequest request) {
         Role role = roleService.getRoleByRoleName(RoleName.USER);
@@ -57,8 +58,9 @@ public class AuthorServiceImpl implements AuthorService {
         return authorRepository.save(newAuthor);
     }
 
+    @Transactional
     @Override
-    public Response<Object> updateAuthor(String id, UpdateAuthorDetailsRequest request) {
+    public AuthorDto updateAuthor(String id, UpdateAuthorDetailsRequest request) {
         Author loggedIn_author = (Author) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String loggedIn_authorId = loggedIn_author.getId();
 
@@ -66,8 +68,7 @@ public class AuthorServiceImpl implements AuthorService {
             throw new DocumentForbidden(ResponseMessage.NOT_AUTHORIZED);
         }
 
-        Author authorInDb = authorRepository
-                .findById(id)
+        Author authorInDb = authorRepository.findById(id)
                 .orElseThrow(() -> new DocumentNotFound(String.format(ResponseMessage.NOT_FOUND, "Author", id)));
 
         authorInDb.setFirstName(request.getFirstName());
@@ -79,47 +80,36 @@ public class AuthorServiceImpl implements AuthorService {
 
         Author updatedAuthor = authorRepository.save(authorInDb);
 
-        return Response.builder()
-                .success(true)
-                .message(ResponseMessage.SUCCESS)
-                .data(authorDtoConverter.convert(updatedAuthor))
-                .build();
+        return authorDtoConverter.convert(updatedAuthor);
     }
 
     @Override
-    public Response<Object> getAuthor(String id) {
-        Author authorInDb = authorRepository
-                .findById(id)
+    public AuthorDto getAuthor(String id) {
+        Author authorInDb = authorRepository.findById(id)
                 .orElseThrow(() -> new DocumentNotFound(String.format(ResponseMessage.NOT_FOUND, "Author", id)));
 
         authorInDb.getRoles().forEach(System.out::println);
 
-        return Response.builder()
-                .success(true)
-                .message(ResponseMessage.SUCCESS)
-                .data(authorDtoConverter.convert(authorInDb))
-                .build();
+        return authorDtoConverter.convert(authorInDb);
     }
 
     @Override
-    public Response<Object> getAuthors() {
-        List<Author> authors = authorRepository.findAll();
-        return Response.builder()
-                .success(true)
-                .message(ResponseMessage.SUCCESS)
-                .data(authors.stream()
-                        .map(authorDtoConverter::convert)
-                        .collect(Collectors.toList()))
-                .build();
+    public List<AuthorDto> getAuthors() {
+        return authorRepository.findAll()
+                .stream()
+                .map(authorDtoConverter::convert)
+                .collect(Collectors.toList());
     }
 
+    @Transactional
     @Override
     public void deleteAuthor(String id) {
         authorRepository.deleteById(id);
     }
 
+    @Transactional
     @Override
-    public Response<Object> updateRolesOfAuthor(String id, UpdateAuthorRolesRequest request) {
+    public AuthorDto updateRolesOfAuthor(String id, UpdateAuthorRolesRequest request) {
         Author authorInDb = authorRepository.findById(id)
                 .orElseThrow(() -> new DocumentNotFound(String.format(ResponseMessage.NOT_FOUND, "Author", id)));
 
@@ -140,43 +130,35 @@ public class AuthorServiceImpl implements AuthorService {
         authorInDb.setRoles(roles);
         Author updatedAuthor = authorRepository.save(authorInDb);
 
-        return Response.builder()
-                .success(true)
-                .message(ResponseMessage.SUCCESS)
-                .data(authorDtoConverter.convert(updatedAuthor))
-                .build();
+        return authorDtoConverter.convert(updatedAuthor);
     }
 
     @Override
     public Author getAuthorByUsername(String username) {
-        return authorRepository
-                .findByUsername(username)
+        return authorRepository.findByUsername(username)
                 .orElseThrow(() -> new DocumentNotFound(String.format(ResponseMessage.NOT_FOUND, "Author", username)));
     }
 
     @Transactional
     @Override
-    public Response<Object> followAuthor(String id, String authorId) {
+    public String followAuthor(String id, String authorId) {
         Author loggedInAuthor = (Author) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        Author follower = authorRepository
-                .findById(id)
+        Author follower = authorRepository.findById(id)
                 .orElseThrow(() -> new DocumentNotFound(String.format(ResponseMessage.NOT_FOUND, "Author", id)));
 
         if (!follower.getId().equals(loggedInAuthor.getId())) {
             throw new DocumentConflict(ResponseMessage.NOT_AUTHORIZED);
         }
 
-        Author unfollowed = authorRepository
-                .findById(authorId)
+        Author unfollowed = authorRepository.findById(authorId)
                 .orElseThrow(() -> new DocumentNotFound(String.format(ResponseMessage.NOT_FOUND, "Author", authorId)));
 
         if (follower.getId().equals(unfollowed.getId())) {
             throw new DocumentConflict("You cannot follow yourself");
         }
 
-        boolean isFollowed = follower
-                .getFollowed()
+        boolean isFollowed = follower.getFollowed()
                 .stream()
                 .anyMatch(followed -> followed.getId().equals(unfollowed.getId()));
 
@@ -190,38 +172,29 @@ public class AuthorServiceImpl implements AuthorService {
         authorRepository.save(follower);
         authorRepository.save(unfollowed);
 
-        String message = "Author " + authorId + " is added to your followed authors";
-
-        return Response.builder()
-                .success(true)
-                .message(ResponseMessage.SUCCESS)
-                .data(message)
-                .build();
+        return "Author " + authorId + " is added to your followed authors";
     }
 
     @Transactional
     @Override
-    public Response<Object> unFollowAuthor(String id, String authorId) {
+    public String unFollowAuthor(String id, String authorId) {
         Author loggedInAuthor = (Author) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        Author follower = authorRepository
-                .findById(id)
+        Author follower = authorRepository.findById(id)
                 .orElseThrow(() -> new DocumentNotFound(String.format(ResponseMessage.NOT_FOUND, "Author", id)));
 
         if (!follower.getId().equals(loggedInAuthor.getId())) {
             throw new DocumentConflict(ResponseMessage.NOT_AUTHORIZED);
         }
 
-        Author followed = authorRepository
-                .findById(authorId)
+        Author followed = authorRepository.findById(authorId)
                 .orElseThrow(() -> new DocumentNotFound(String.format(ResponseMessage.NOT_FOUND, "Author", authorId)));
 
         if (follower.getId().equals(followed.getId())) {
             throw new DocumentConflict("You cannot unfollow yourself");
         }
 
-        boolean isFollowed = follower
-                .getFollowed()
+        boolean isFollowed = follower.getFollowed()
                 .stream()
                 .anyMatch(followedAuthor -> followedAuthor.getId().equals(authorId));
 
@@ -235,51 +208,30 @@ public class AuthorServiceImpl implements AuthorService {
         authorRepository.save(follower);
         authorRepository.save(followed);
 
-        String message = "Author " + authorId + " is removed from your followed authors";
-
-        return Response.builder()
-                .success(true)
-                .message(ResponseMessage.SUCCESS)
-                .data(message)
-                .build();
+        return "Author " + authorId + " is removed from your followed authors";
     }
 
     @Override
-    public Response<Object> getFollowedAuthors(String id) {
+    public List<String> getFollowedAuthors(String id) {
         Author follower = authorRepository
                 .findById(id)
                 .orElseThrow(() -> new DocumentNotFound(String.format(ResponseMessage.NOT_FOUND, "Author", id)));
 
-        List<String> authors = follower
-                .getFollowed()
+        return follower.getFollowed()
                 .stream()
                 .map(Author::getId)
                 .toList();
-
-        return Response.builder()
-                .success(true)
-                .message(ResponseMessage.SUCCESS)
-                .data(authors)
-                .build();
     }
 
     @Override
-    public Response<Object> getFollowers(String id) {
-        Author followed = authorRepository
-                .findById(id)
+    public List<String> getFollowers(String id) {
+        Author followed = authorRepository.findById(id)
                 .orElseThrow(() -> new DocumentNotFound(String.format(ResponseMessage.NOT_FOUND, "Author", id)));
 
-        List<String> authors = followed
-                .getFollowers()
+        return followed.getFollowers()
                 .stream()
                 .map(Author::getId)
                 .toList();
-
-        return Response.builder()
-                .success(true)
-                .message(ResponseMessage.SUCCESS)
-                .data(authors)
-                .build();
     }
 
 }

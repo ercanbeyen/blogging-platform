@@ -3,6 +3,7 @@ package com.ercanbeyen.bloggingplatform.service.impl;
 import com.ercanbeyen.bloggingplatform.constant.messages.ResponseMessage;
 import com.ercanbeyen.bloggingplatform.constant.RoleName;
 import com.ercanbeyen.bloggingplatform.document.*;
+import com.ercanbeyen.bloggingplatform.dto.CommentDto;
 import com.ercanbeyen.bloggingplatform.dto.converter.CommentDtoConverter;
 import com.ercanbeyen.bloggingplatform.dto.request.create.CreateCommentRequest;
 import com.ercanbeyen.bloggingplatform.dto.request.update.UpdateCommentRequest;
@@ -28,7 +29,7 @@ public class CommentServiceImpl implements CommentService {
     private final PostService postService;
 
     @Override
-    public Response<Object> createComment(CreateCommentRequest request) {
+    public CommentDto createComment(CreateCommentRequest request) {
         Author loggedInAuthor = (Author) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         Comment newComment = Comment.builder()
@@ -40,17 +41,12 @@ public class CommentServiceImpl implements CommentService {
         Comment commentInDb = commentRepository.save(newComment);
         postService.addCommentToPost(request.getPostId(), commentInDb);
 
-        return Response.builder()
-                .success(true)
-                .message(ResponseMessage.SUCCESS)
-                .data(commentDtoConverter.convert(commentInDb))
-                .build();
+        return commentDtoConverter.convert(commentInDb);
     }
 
     @Override
-    public Response<Object> updateComment(String id, UpdateCommentRequest request) {
-        Comment commentInDb = commentRepository
-                .findById(id)
+    public CommentDto updateComment(String id, UpdateCommentRequest request) {
+        Comment commentInDb = commentRepository.findById(id)
                 .orElseThrow(() -> new DocumentNotFound(String.format(ResponseMessage.NOT_FOUND, "Comment", id)));
 
         Author author_commented = commentInDb.getAuthor();
@@ -63,47 +59,33 @@ public class CommentServiceImpl implements CommentService {
         commentInDb.setText(request.getText());
         commentInDb.setLatestChangeAt(LocalDateTime.now());
 
-        return Response.builder()
-                .success(true)
-                .message(ResponseMessage.SUCCESS)
-                .data(commentDtoConverter.convert(commentRepository.save(commentInDb)))
-                .build();
+        return commentDtoConverter.convert(commentRepository.save(commentInDb));
     }
 
     @Override
-    public Response<Object> getComments() {
-        List<Comment> comments = commentRepository.findAll();
-        return Response.builder()
-                .success(true)
-                .message(ResponseMessage.SUCCESS)
-                .data(comments.stream()
-                        .map(commentDtoConverter::convert)
-                        .collect(Collectors.toList()))
-                .build();
+    public List<CommentDto> getComments() {
+        return commentRepository.findAll()
+                .stream()
+                .map(commentDtoConverter::convert)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Response<Object> getComment(String id) {
-        Comment commentInDb = commentRepository
-                .findById(id)
+    public CommentDto getComment(String id) {
+        Comment commentInDb = commentRepository.findById(id)
                 .orElseThrow(() -> new DocumentNotFound(String.format(ResponseMessage.NOT_FOUND, "Comment", id)));
 
-        return Response.builder()
-                .success(true)
-                .message(ResponseMessage.SUCCESS)
-                .data(commentDtoConverter.convert(commentInDb))
-                .build();
+        return commentDtoConverter.convert(commentInDb);
     }
 
     @Override
-    public Response<Object> deleteComment(String commentId, String postId) {
-        Comment commentInDb = commentRepository
-                .findById(commentId)
+    public String deleteComment(String commentId, String postId) {
+        Comment commentInDb = commentRepository.findById(commentId)
                 .orElseThrow(() -> new DocumentNotFound(String.format(ResponseMessage.NOT_FOUND, "Comment", commentId)));
 
         Author loggedInAuthor = (Author) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Set<Role> loggedInAuthorRoles = loggedInAuthor.getRoles();
-        Set<RoleName> roles = loggedInAuthorRoles.stream()
+        Set<RoleName> roles = loggedInAuthor.getRoles()
+                .stream()
                 .map(Role::getRoleName)
                 .collect(Collectors.toSet());
 
@@ -112,15 +94,9 @@ public class CommentServiceImpl implements CommentService {
         }
 
         postService.deleteCommentFromPost(postId, commentId);
-
         commentRepository.deleteById(commentId);
-        String message = "Comment " + commentId + " is successfully deleted";
 
-        return Response.builder()
-                .success(true)
-                .message(ResponseMessage.SUCCESS)
-                .data(message)
-                .build();
+        return "Comment " + commentId + " is successfully deleted";
     }
 
 }

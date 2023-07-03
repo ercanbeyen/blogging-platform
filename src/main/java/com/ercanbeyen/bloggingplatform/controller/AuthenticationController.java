@@ -1,6 +1,5 @@
 package com.ercanbeyen.bloggingplatform.controller;
 
-import com.ercanbeyen.bloggingplatform.document.Response;
 import com.ercanbeyen.bloggingplatform.dto.request.auth.AuthenticationRequest;
 import com.ercanbeyen.bloggingplatform.dto.request.auth.RegistrationRequest;
 import com.ercanbeyen.bloggingplatform.service.AuthenticationService;
@@ -18,12 +17,12 @@ public class AuthenticationController {
     private final AuthenticationService authenticationService;
 
     @PostMapping("/login")
-    public ResponseEntity<Response<Object>> authenticate(@RequestBody AuthenticationRequest request) {
+    public ResponseEntity<Object> authenticate(@RequestBody AuthenticationRequest request) {
         return ResponseEntity.ok(authenticationService.authenticate(request));
     }
 
     @PostMapping("/registration")
-    public ResponseEntity<Response<Object>> register(@RequestBody RegistrationRequest request) {
+    public ResponseEntity<Object> register(@RequestBody RegistrationRequest request) {
         return ResponseEntity.ok(authenticationService.register(request));
     }
 }

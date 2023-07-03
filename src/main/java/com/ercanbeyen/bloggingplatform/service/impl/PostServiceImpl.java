@@ -4,6 +4,7 @@ import com.ercanbeyen.bloggingplatform.constant.messages.ResponseMessage;
 import com.ercanbeyen.bloggingplatform.constant.RoleName;
 import com.ercanbeyen.bloggingplatform.constant.messages.NotificationMessage;
 import com.ercanbeyen.bloggingplatform.document.*;
+import com.ercanbeyen.bloggingplatform.dto.AuthorDto;
 import com.ercanbeyen.bloggingplatform.dto.NotificationDto;
 import com.ercanbeyen.bloggingplatform.dto.PostDto;
 import com.ercanbeyen.bloggingplatform.dto.converter.AuthorDtoConverter;
@@ -19,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -32,8 +34,9 @@ public class PostServiceImpl implements PostService {
     private final AuthorDtoConverter authorDtoConverter;
     private final KafkaTemplate<String, NotificationDto> kafkaTemplate;
 
+    @Transactional
     @Override
-    public Response<Object> createPost(CreatePostRequest request) {
+    public PostDto createPost(CreatePostRequest request) {
         Author loggedInAuthor = (Author) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         Post createdPost = Post.builder()
@@ -47,33 +50,26 @@ public class PostServiceImpl implements PostService {
                 .build();
 
         Post savedPost = postRepository.save(createdPost);
-
-        /*String senderMessage = "Dear " + loggedInAuthor.getUsername() + ", you posted a new article called.";
-        kafkaTemplate.send(NotificationMessage.POST_NOTIFICATION, senderMessage);*/
-
-        PostDto postDto = postDtoConverter.convert(savedPost);
         List<Author> followers = loggedInAuthor.getFollowers();
 
         for (Author follower : followers) {
             String receiverMessage = "Dear " + follower.getUsername() + ", author " + loggedInAuthor.getUsername() + " posted a new article.";
+
             NotificationDto notificationDto = NotificationDto.builder()
                     .authorId(follower.getId())
                     .description(receiverMessage)
                     .build();
+
             kafkaTemplate.send(NotificationMessage.POST_NOTIFICATION, notificationDto);
         }
 
-        return Response.builder()
-                .success(true)
-                .message(ResponseMessage.SUCCESS)
-                .data(postDto)
-                .build();
+        return postDtoConverter.convert(savedPost);
     }
 
+    @Transactional
     @Override
-    public Response<Object> updatePost(String id, UpdatePostRequest request) {
-        Post postInDb = postRepository
-                .findById(id)
+    public PostDto updatePost(String id, UpdatePostRequest request) {
+        Post postInDb = postRepository.findById(id)
                 .orElseThrow(() -> new DocumentNotFound(String.format(ResponseMessage.NOT_FOUND, "Post", id)));
 
         Author author_posted = postInDb.getAuthor();
@@ -90,9 +86,6 @@ public class PostServiceImpl implements PostService {
         postInDb.setLatestChangeAt(LocalDateTime.now());
 
         Post savedPost = postRepository.save(postInDb);
-        PostDto postDto = postDtoConverter.convert(savedPost);
-
-
         List<Author> followers = loggedIn_author.getFollowers();
 
         for (Author follower: followers) {
@@ -105,68 +98,50 @@ public class PostServiceImpl implements PostService {
             kafkaTemplate.send(NotificationMessage.POST_NOTIFICATION, notificationDto);
         }
 
-        return Response.builder()
-                .success(true)
-                .message(ResponseMessage.SUCCESS)
-                .data(postDto)
-                .build();
+        return postDtoConverter.convert(savedPost);
     }
 
     @Override
-    public Response<Object> getPosts() {
+    public List<PostDto> getPosts() {
         List<Post> posts = postRepository.findAll();
 
-         return Response.builder()
-                 .success(true)
-                 .message(ResponseMessage.SUCCESS)
-                 .data(posts.stream()
-                         .map(postDtoConverter::convert)
-                         .collect(Collectors.toList()))
-                 .build();
+         return posts.stream()
+                 .map(postDtoConverter::convert)
+                 .collect(Collectors.toList());
     }
 
     @Override
-    public Response<Object> getPost(String id) {
-        Post postInDb = postRepository
-                .findById(id)
+    public PostDto getPost(String id) {
+        Post postInDb = postRepository.findById(id)
                 .orElseThrow(() -> new DocumentNotFound(String.format(ResponseMessage.NOT_FOUND, "Post", id)));
 
-        return Response.builder()
-                .success(true)
-                .message(ResponseMessage.SUCCESS)
-                .data(postDtoConverter.convert(postInDb))
-                .build();
+        return postDtoConverter.convert(postInDb);
     }
 
+    @Transactional
     @Override
-    public Response<Object> deletePost(String id) {
-        Post postInDb = postRepository
-                .findById(id)
+    public String deletePost(String id) {
+        Post postInDb = postRepository.findById(id)
                 .orElseThrow(() -> new DocumentNotFound(String.format(ResponseMessage.NOT_FOUND, "Post", id)));
 
         Author loggedInAuthor = (Author) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Set<Role> loggedInAuthorRoles = loggedInAuthor.getRoles();
-        Set<RoleName> roles = loggedInAuthorRoles.stream()
+        Set<RoleName> roles = loggedInAuthor.getRoles()
+                .stream()
                 .map(Role::getRoleName)
                 .collect(Collectors.toSet());
 
         if (!roles.contains(RoleName.ADMIN) && postInDb.getAuthor().getId().equals(loggedInAuthor.getId())) {
             throw new DocumentForbidden(ResponseMessage.NOT_AUTHORIZED);
         }
-        postRepository.deleteById(id);
-        String message = "Post " + id + " is successfully deleted";
 
-        return Response.builder()
-                .success(true)
-                .message(ResponseMessage.SUCCESS)
-                .data(message)
-                .build();
+        postRepository.deleteById(id);
+
+        return "Post " + id + " is successfully deleted";
     }
 
     @Override
     public void addCommentToPost(String id, Comment comment) {
-        Post postInDb = postRepository
-                .findById(id)
+        Post postInDb = postRepository.findById(id)
                 .orElseThrow(() -> new DocumentNotFound(String.format(ResponseMessage.NOT_FOUND, "Post", id)));
 
         postInDb.getComments().add(comment);
@@ -175,12 +150,10 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public void deleteCommentFromPost(String postId, String commentId) {
-        Post postInDb = postRepository
-                .findById(postId)
+        Post postInDb = postRepository.findById(postId)
                 .orElseThrow(() -> new DocumentNotFound(String.format(ResponseMessage.NOT_FOUND, "Post", postId)));
 
-        Comment commentInPost = postInDb
-                .getComments()
+        Comment commentInPost = postInDb.getComments()
                 .stream()
                 .filter(comment -> comment.getId().equals(commentId))
                 .findAny()
@@ -191,15 +164,13 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Response<Object> likePost(String id) {
-        Post postInDb = postRepository
-                .findById(id)
+    public String likePost(String id) {
+        Post postInDb = postRepository.findById(id)
                 .orElseThrow(() -> new DocumentNotFound(String.format(ResponseMessage.NOT_FOUND, "Post", id)));
 
         Author loggedInAuthor = (Author) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        boolean isLiked = postInDb
-                .getAuthorsLiked()
+        boolean isLiked = postInDb.getAuthorsLiked()
                 .stream()
                 .anyMatch(author -> author.getId().equals(loggedInAuthor.getId()));
 
@@ -211,25 +182,17 @@ public class PostServiceImpl implements PostService {
         postInDb.getAuthorsLiked().add(loggedInAuthor);
         postRepository.save(postInDb);
 
-        String message = "You liked post " + postInDb.getId();
-
-        return Response.builder()
-                .success(true)
-                .message(ResponseMessage.SUCCESS)
-                .data(message)
-                .build();
+        return "You liked post " + postInDb.getId();
     }
 
     @Override
-    public Response<Object> dislikePost(String id) {
-        Post postInDb = postRepository
-                .findById(id)
+    public String dislikePost(String id) {
+        Post postInDb = postRepository.findById(id)
                 .orElseThrow(() -> new DocumentNotFound(String.format(ResponseMessage.NOT_FOUND, "Post", id)));
 
         Author loggedInAuthor = (Author) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        boolean isDisliked = postInDb
-                .getAuthorsDisliked()
+        boolean isDisliked = postInDb.getAuthorsDisliked()
                 .stream()
                 .anyMatch(author -> author.getId().equals(loggedInAuthor.getId()));
 
@@ -241,30 +204,21 @@ public class PostServiceImpl implements PostService {
         postInDb.getAuthorsDisliked().add(loggedInAuthor);
         postRepository.save(postInDb);
 
-        String message = "You disliked post " + postInDb.getId();
-
-        return Response.builder()
-                .success(true)
-                .message(ResponseMessage.SUCCESS)
-                .data(message)
-                .build();
+        return "You disliked post " + postInDb.getId();
     }
 
     @Override
-    public Response<Object> removeStatus(String id) {
-        Post postInDb = postRepository
-                .findById(id)
+    public String removeStatus(String id) {
+        Post postInDb = postRepository.findById(id)
                 .orElseThrow(() -> new DocumentNotFound(String.format(ResponseMessage.NOT_FOUND, "Post", id)));
 
         Author loggedInAuthor = (Author) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        boolean isLiked = postInDb
-                .getAuthorsLiked()
+        boolean isLiked = postInDb.getAuthorsLiked()
                 .stream()
                 .anyMatch(author -> author.getId().equals(loggedInAuthor.getId()));
 
-        boolean isDisliked = postInDb
-                .getAuthorsDisliked()
+        boolean isDisliked = postInDb.getAuthorsDisliked()
                 .stream()
                 .anyMatch(author -> author.getId().equals(loggedInAuthor.getId()));
 
@@ -284,19 +238,12 @@ public class PostServiceImpl implements PostService {
 
         postRepository.save(postInDb);
 
-        String message = "Your " + status + " for post " + postInDb.getId() + " is removed";
-
-        return Response.builder()
-                .success(true)
-                .message(ResponseMessage.SUCCESS)
-                .data(message)
-                .build();
+        return "Your " + status + " for post " + postInDb.getId() + " is removed";
     }
 
     @Override
-    public Response<Object> getAuthorsLiked(String id) {
-        Post postInDb = postRepository
-                .findById(id)
+    public List<AuthorDto> getAuthorsLiked(String id) {
+        Post postInDb = postRepository.findById(id)
                 .orElseThrow(() -> new DocumentNotFound(String.format(ResponseMessage.NOT_FOUND, "Post", id)));
 
         Author loggedInAuthor = (Author) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -305,21 +252,15 @@ public class PostServiceImpl implements PostService {
             throw new DocumentForbidden(ResponseMessage.NOT_AUTHORIZED);
         }
 
-        List<Author> authors = postInDb.getAuthorsLiked();
-
-        return Response.builder()
-                .success(true)
-                .message(ResponseMessage.SUCCESS)
-                .data(authors.stream()
-                        .map(authorDtoConverter::convert)
-                        .collect(Collectors.toList()))
-                .build();
+        return postInDb.getAuthorsLiked()
+                .stream()
+                .map(authorDtoConverter::convert)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Response<Object> getAuthorsDisliked(String id) {
-        Post postInDb = postRepository
-                .findById(id)
+    public List<AuthorDto> getAuthorsDisliked(String id) {
+        Post postInDb = postRepository.findById(id)
                 .orElseThrow(() -> new DocumentNotFound(String.format(ResponseMessage.NOT_FOUND, "Post", id)));
 
         Author loggedInAuthor = (Author) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -328,15 +269,10 @@ public class PostServiceImpl implements PostService {
             throw new DocumentForbidden(ResponseMessage.NOT_AUTHORIZED);
         }
 
-        List<Author> authors = postInDb.getAuthorsDisliked();
-
-        return Response.builder()
-                .success(true)
-                .message(ResponseMessage.SUCCESS)
-                .data(authors.stream()
-                        .map(authorDtoConverter::convert)
-                        .collect(Collectors.toList()))
-                .build();
+        return postInDb.getAuthorsDisliked()
+                .stream()
+                .map(authorDtoConverter::convert)
+                .collect(Collectors.toList());
     }
 
 }

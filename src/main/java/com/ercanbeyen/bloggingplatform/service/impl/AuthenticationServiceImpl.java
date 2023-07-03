@@ -1,8 +1,6 @@
 package com.ercanbeyen.bloggingplatform.service.impl;
 
-import com.ercanbeyen.bloggingplatform.constant.messages.ResponseMessage;
 import com.ercanbeyen.bloggingplatform.document.Author;
-import com.ercanbeyen.bloggingplatform.document.Response;
 import com.ercanbeyen.bloggingplatform.dto.request.auth.AuthenticationRequest;
 import com.ercanbeyen.bloggingplatform.dto.request.auth.RegistrationRequest;
 import com.ercanbeyen.bloggingplatform.security.jwt.JwtService;
@@ -21,7 +19,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final AuthenticationManager authenticationManager;
 
     @Override
-    public Response<Object> authenticate(AuthenticationRequest request) {
+    public String authenticate(AuthenticationRequest request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getUsername(),
@@ -30,25 +28,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         );
 
         Author author = authorService.getAuthorByUsername(request.getUsername());
-        String jwtToken = jwtService.generateToken(author);
-
-
-        return Response.builder()
-                .success(true)
-                .message(ResponseMessage.SUCCESS)
-                .data(jwtToken)
-                .build();
+        return jwtService.generateToken(author);
     }
 
     @Override
-    public Response<Object> register(RegistrationRequest request) {
+    public String register(RegistrationRequest request) {
         Author newAuthor = authorService.createAuthor(request);
-        String jwtToken = jwtService.generateToken(newAuthor);
-
-        return Response.builder()
-                .success(true)
-                .message(ResponseMessage.SUCCESS)
-                .data(jwtToken)
-                .build();
+        return jwtService.generateToken(newAuthor);
     }
 }

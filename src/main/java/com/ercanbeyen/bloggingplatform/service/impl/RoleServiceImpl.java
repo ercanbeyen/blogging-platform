@@ -2,8 +2,8 @@ package com.ercanbeyen.bloggingplatform.service.impl;
 
 import com.ercanbeyen.bloggingplatform.constant.messages.ResponseMessage;
 import com.ercanbeyen.bloggingplatform.constant.RoleName;
-import com.ercanbeyen.bloggingplatform.document.Response;
 import com.ercanbeyen.bloggingplatform.document.Role;
+import com.ercanbeyen.bloggingplatform.dto.RoleDto;
 import com.ercanbeyen.bloggingplatform.dto.converter.RoleDtoConverter;
 import com.ercanbeyen.bloggingplatform.dto.request.create.CreateRoleRequest;
 import com.ercanbeyen.bloggingplatform.exception.DocumentConflict;
@@ -12,6 +12,7 @@ import com.ercanbeyen.bloggingplatform.repository.RoleRepository;
 import com.ercanbeyen.bloggingplatform.service.RoleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,8 +24,9 @@ public class RoleServiceImpl implements RoleService {
     private final RoleRepository roleRepository;
     private final RoleDtoConverter roleDtoConverter;
 
+    @Transactional
     @Override
-    public Response<Object> createRole(CreateRoleRequest request) {
+    public Role createRole(CreateRoleRequest request) {
         Optional<Role> role = roleRepository.findByRoleName(request.getRoleName());
 
         if (role.isPresent()) {
@@ -35,56 +37,39 @@ public class RoleServiceImpl implements RoleService {
                 .roleName(request.getRoleName())
                 .build();
 
-        Role createdRole = roleRepository.save(newRole);
-
-        return Response.builder()
-                .success(true)
-                .message(ResponseMessage.SUCCESS)
-                .data(roleDtoConverter.convert(createdRole))
-                .build();
+        return roleRepository.save(newRole);
     }
 
     @Override
-    public Response<Object> getRoles() {
-        List<Role> roles = roleRepository.findAll();
-        return Response.builder()
-                .success(true)
-                .message(ResponseMessage.SUCCESS)
-                .data(roles.stream()
-                        .map(roleDtoConverter::convert)
-                        .collect(Collectors.toList()))
-                .build();
+    public List<RoleDto> getRoles() {
+        return roleRepository.findAll()
+                .stream()
+                .map(roleDtoConverter::convert)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Response<Object> getRole(String id) {
-        Role roleInDb = roleRepository
-                .findById(id)
+    public RoleDto getRole(String id) {
+        Role roleInDb = roleRepository.findById(id)
                 .orElseThrow(() -> new DocumentNotFound(String.format(ResponseMessage.NOT_FOUND, "Role", id)));
 
-        return Response.builder()
-                .success(true)
-                .message(ResponseMessage.SUCCESS)
-                .data(roleDtoConverter.convert(roleInDb))
-                .build();
+        return roleDtoConverter.convert(roleInDb);
     }
 
+    @Transactional
     @Override
-    public Response<Object> deleteRole(String id) {
-        Role roleInDb = roleRepository
-                .findById(id)
-                .orElseThrow(() -> new DocumentNotFound(String.format(ResponseMessage.NOT_FOUND, "Role", id)));
+    public String deleteRole(String id) {
+        boolean isIdFound = roleRepository.findById(id)
+                .stream()
+                .anyMatch(role -> role.getId().equals(id));
 
-        String roleId = roleInDb.getId();
+        if (!isIdFound) {
+            throw new DocumentNotFound(String.format(ResponseMessage.NOT_FOUND, "Role", id));
+        }
 
         roleRepository.deleteById(id);
-        String message = "Role " + roleId + " is successfully deleted";
 
-        return Response.builder()
-                .success(true)
-                .message(ResponseMessage.SUCCESS)
-                .data(message)
-                .build();
+        return "Role " + id + " is successfully deleted";
     }
 
     @Override

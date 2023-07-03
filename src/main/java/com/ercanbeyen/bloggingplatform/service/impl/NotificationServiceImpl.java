@@ -25,6 +25,6 @@ public class NotificationServiceImpl {
                 .createdAt(LocalDateTime.now())
                 .build();
         notificationRepository.save(newNotification);
-        log.info(String.format("Message receiver\n %s", newNotification));
+        log.info(String.format("Message receiver\n %s", newNotification.getDescription()));
     }
 }
