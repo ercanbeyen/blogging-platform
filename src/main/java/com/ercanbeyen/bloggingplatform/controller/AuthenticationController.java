@@ -3,6 +3,8 @@ package com.ercanbeyen.bloggingplatform.controller;
 import com.ercanbeyen.bloggingplatform.dto.request.auth.AuthenticationRequest;
 import com.ercanbeyen.bloggingplatform.dto.request.auth.RegistrationRequest;
 import com.ercanbeyen.bloggingplatform.service.AuthenticationService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,12 +19,12 @@ public class AuthenticationController {
     private final AuthenticationService authenticationService;
 
     @PostMapping("/login")
-    public ResponseEntity<Object> authenticate(@RequestBody AuthenticationRequest request) {
-        return ResponseEntity.ok(authenticationService.authenticate(request));
+    public void login(@RequestBody AuthenticationRequest request, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+        authenticationService.authenticate(request, httpServletRequest, httpServletResponse);
     }
 
     @PostMapping("/registration")
-    public ResponseEntity<Object> register(@RequestBody RegistrationRequest request) {
-        return ResponseEntity.ok(authenticationService.register(request));
+    public void register(@RequestBody RegistrationRequest request, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+        authenticationService.register(request, httpServletRequest, httpServletResponse);
     }
 }

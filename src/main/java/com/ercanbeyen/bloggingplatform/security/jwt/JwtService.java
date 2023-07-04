@@ -1,10 +1,19 @@
 package com.ercanbeyen.bloggingplatform.security.jwt;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.ercanbeyen.bloggingplatform.constant.messages.JwtMessage;
+import com.ercanbeyen.bloggingplatform.constant.values.TokenTimes;
+import com.ercanbeyen.bloggingplatform.document.Author;
+import com.ercanbeyen.bloggingplatform.service.AuthorService;
+import com.ercanbeyen.bloggingplatform.util.JwtUtils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -17,15 +26,17 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
+@RequiredArgsConstructor
 public class JwtService {
-    private static final String SECRET_KEY = "67566B59703273357638792F423F4528482B4D6251655468576D5A7134743677";
+    private final AuthorService authorService;
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
-    public String generateToken(UserDetails userDetails) {
-        return generateToken(new HashMap<>(), userDetails);
+    public Map<String, String> generateTokens(UserDetails userDetails) {
+        return generateTokens(new HashMap<>(), userDetails);
     }
 
     public <T> T extractClaim(String token, Function<Claims, T> claimResolver) {
@@ -46,16 +57,30 @@ public class JwtService {
         return extractClaim(token, Claims::getExpiration);
     }
 
-    public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
+    public Map<String, String> generateTokens(Map<String, Object> extraClaims, UserDetails userDetails) {
+        Map<String, String> tokenMap = new HashMap<>();
 
-        return Jwts
-                .builder()
-                .setClaims(extraClaims)
-                .setSubject(userDetails.getUsername())
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 24))
-                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
-                .compact();
+        Algorithm algorithm = Algorithm.HMAC256(JwtMessage.SECRET_KEY.getBytes());
+
+        String access_token = JWT.create()
+                .withSubject(userDetails.getUsername())
+                .withExpiresAt(JwtUtils.calculateExpirationDate(TokenTimes.ACCESS_TOKEN))
+                .withClaim(JwtMessage.PAYLOAD_ROLES_KEY, userDetails.getAuthorities()
+                        .stream()
+                        .map(GrantedAuthority::getAuthority)
+                        .collect(Collectors.toList()))
+                .sign(algorithm);
+
+        tokenMap.put(JwtMessage.TOKEN_MAP_KEY_ACCESS_TOKEN, access_token);
+
+        String refresh_token = JWT.create()
+                .withSubject(userDetails.getUsername())
+                .withExpiresAt(JwtUtils.calculateExpirationDate(TokenTimes.REFRESH_TOKEN))
+                .sign(algorithm);
+
+        tokenMap.put(JwtMessage.TOKEN_MAP_KEY_REFRESH_TOKEN, refresh_token);
+
+        return tokenMap;
     }
 
     private Claims extractAllClaims(String token) {
@@ -68,7 +93,31 @@ public class JwtService {
     }
 
     private Key getSigningKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
+        //byte[] keyBytes = Decoders.BASE64.decode(TokenMessage.SECRET_KEY);
+        byte[] keyBytes = JwtMessage.SECRET_KEY.getBytes();
         return Keys.hmacShaKeyFor(keyBytes);
+    }
+
+    public Map<String, String> refreshToken(String authorizationHeader) {
+        String refreshToken = authorizationHeader.substring(JwtMessage.BEARER.length());
+        Algorithm algorithm = Algorithm.HMAC256(JwtMessage.SECRET_KEY.getBytes());
+        JWTVerifier jwtVerifier = JWT.require(algorithm).build();
+        DecodedJWT decodedJWT = jwtVerifier.verify(refreshToken);
+
+        Map<String, String> tokenMap = new HashMap<>();
+        tokenMap.put(JwtMessage.TOKEN_MAP_KEY_REFRESH_TOKEN, refreshToken);
+
+        String username = decodedJWT.getSubject();
+        Author author = authorService.getAuthorByUsername(username);
+
+        String accessToken = JWT.create()
+                .withSubject(author.getUsername())
+                .withExpiresAt(JwtUtils.calculateExpirationDate(TokenTimes.ACCESS_TOKEN))
+                .withClaim(JwtMessage.PAYLOAD_ROLES_KEY, author.getRoles().stream()
+                        .map(role -> String.valueOf(role.getRoleName())).toList())
+                .sign(algorithm);
+
+        tokenMap.put(JwtMessage.TOKEN_MAP_KEY_ACCESS_TOKEN, accessToken);
+        return tokenMap;
     }
 }

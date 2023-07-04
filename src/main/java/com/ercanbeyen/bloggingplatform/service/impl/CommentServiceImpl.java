@@ -7,8 +7,8 @@ import com.ercanbeyen.bloggingplatform.dto.CommentDto;
 import com.ercanbeyen.bloggingplatform.dto.converter.CommentDtoConverter;
 import com.ercanbeyen.bloggingplatform.dto.request.create.CreateCommentRequest;
 import com.ercanbeyen.bloggingplatform.dto.request.update.UpdateCommentRequest;
-import com.ercanbeyen.bloggingplatform.exception.DocumentForbidden;
-import com.ercanbeyen.bloggingplatform.exception.DocumentNotFound;
+import com.ercanbeyen.bloggingplatform.exception.DataForbidden;
+import com.ercanbeyen.bloggingplatform.exception.DataNotFound;
 import com.ercanbeyen.bloggingplatform.repository.CommentRepository;
 import com.ercanbeyen.bloggingplatform.service.CommentService;
 import com.ercanbeyen.bloggingplatform.service.PostService;
@@ -47,13 +47,13 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public CommentDto updateComment(String id, UpdateCommentRequest request) {
         Comment commentInDb = commentRepository.findById(id)
-                .orElseThrow(() -> new DocumentNotFound(String.format(ResponseMessage.NOT_FOUND, "Comment", id)));
+                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, "Comment", id)));
 
         Author author_commented = commentInDb.getAuthor();
         Author loggedIn_author = (Author) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         if (!author_commented.getId().equals(loggedIn_author.getId())) {
-            throw new DocumentForbidden(ResponseMessage.NOT_AUTHORIZED);
+            throw new DataForbidden(ResponseMessage.NOT_AUTHORIZED);
         }
 
         commentInDb.setText(request.getText());
@@ -73,7 +73,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public CommentDto getComment(String id) {
         Comment commentInDb = commentRepository.findById(id)
-                .orElseThrow(() -> new DocumentNotFound(String.format(ResponseMessage.NOT_FOUND, "Comment", id)));
+                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, "Comment", id)));
 
         return commentDtoConverter.convert(commentInDb);
     }
@@ -81,7 +81,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public String deleteComment(String commentId, String postId) {
         Comment commentInDb = commentRepository.findById(commentId)
-                .orElseThrow(() -> new DocumentNotFound(String.format(ResponseMessage.NOT_FOUND, "Comment", commentId)));
+                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, "Comment", commentId)));
 
         Author loggedInAuthor = (Author) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Set<RoleName> roles = loggedInAuthor.getRoles()
@@ -90,7 +90,7 @@ public class CommentServiceImpl implements CommentService {
                 .collect(Collectors.toSet());
 
         if (!roles.contains(RoleName.ADMIN) && !commentInDb.getAuthor().getId().equals(loggedInAuthor.getId())) {
-            throw new DocumentForbidden(ResponseMessage.NOT_AUTHORIZED);
+            throw new DataForbidden(ResponseMessage.NOT_AUTHORIZED);
         }
 
         postService.deleteCommentFromPost(postId, commentId);

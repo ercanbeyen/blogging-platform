@@ -6,8 +6,8 @@ import com.ercanbeyen.bloggingplatform.document.Role;
 import com.ercanbeyen.bloggingplatform.dto.RoleDto;
 import com.ercanbeyen.bloggingplatform.dto.converter.RoleDtoConverter;
 import com.ercanbeyen.bloggingplatform.dto.request.create.CreateRoleRequest;
-import com.ercanbeyen.bloggingplatform.exception.DocumentConflict;
-import com.ercanbeyen.bloggingplatform.exception.DocumentNotFound;
+import com.ercanbeyen.bloggingplatform.exception.DataConflict;
+import com.ercanbeyen.bloggingplatform.exception.DataNotFound;
 import com.ercanbeyen.bloggingplatform.repository.RoleRepository;
 import com.ercanbeyen.bloggingplatform.service.RoleService;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +30,7 @@ public class RoleServiceImpl implements RoleService {
         Optional<Role> role = roleRepository.findByRoleName(request.getRoleName());
 
         if (role.isPresent()) {
-            throw new DocumentConflict("Role " + request.getRoleName().name() + " is present");
+            throw new DataConflict("Role " + request.getRoleName().name() + " is present");
         }
 
         Role newRole = Role.builder()
@@ -51,7 +51,7 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public RoleDto getRole(String id) {
         Role roleInDb = roleRepository.findById(id)
-                .orElseThrow(() -> new DocumentNotFound(String.format(ResponseMessage.NOT_FOUND, "Role", id)));
+                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, "Role", id)));
 
         return roleDtoConverter.convert(roleInDb);
     }
@@ -64,7 +64,7 @@ public class RoleServiceImpl implements RoleService {
                 .anyMatch(role -> role.getId().equals(id));
 
         if (!isIdFound) {
-            throw new DocumentNotFound(String.format(ResponseMessage.NOT_FOUND, "Role", id));
+            throw new DataNotFound(String.format(ResponseMessage.NOT_FOUND, "Role", id));
         }
 
         roleRepository.deleteById(id);
@@ -75,6 +75,6 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public Role getRoleByRoleName(RoleName roleName) {
         return roleRepository.findByRoleName(roleName)
-                .orElseThrow(() -> new DocumentNotFound(String.format(ResponseMessage.NOT_FOUND, "Role", roleName)));
+                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, "Role", roleName)));
     }
 }
