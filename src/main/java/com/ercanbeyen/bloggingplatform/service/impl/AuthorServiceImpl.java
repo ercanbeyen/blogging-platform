@@ -1,11 +1,11 @@
 package com.ercanbeyen.bloggingplatform.service.impl;
 
+import com.ercanbeyen.bloggingplatform.constant.DocumentName;
 import com.ercanbeyen.bloggingplatform.constant.messages.ResponseMessage;
-import com.ercanbeyen.bloggingplatform.constant.RoleName;
+import com.ercanbeyen.bloggingplatform.constant.enums.RoleName;
 import com.ercanbeyen.bloggingplatform.document.Role;
 import com.ercanbeyen.bloggingplatform.dto.AuthorDto;
 import com.ercanbeyen.bloggingplatform.dto.NotificationDto;
-import com.ercanbeyen.bloggingplatform.dto.converter.NotificationDtoConverter;
 import com.ercanbeyen.bloggingplatform.dto.request.auth.RegistrationRequest;
 import com.ercanbeyen.bloggingplatform.dto.request.update.UpdateAuthorDetailsRequest;
 import com.ercanbeyen.bloggingplatform.dto.request.update.UpdateAuthorRolesRequest;
@@ -73,7 +73,7 @@ public class AuthorServiceImpl implements AuthorService {
         }
 
         Author authorInDb = authorRepository.findById(id)
-                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, "Author", id)));
+                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, DocumentName.AUTHOR, id)));
 
         authorInDb.setFirstName(request.getFirstName());
         authorInDb.setLastName(request.getLastName());
@@ -90,7 +90,7 @@ public class AuthorServiceImpl implements AuthorService {
     @Override
     public AuthorDto getAuthor(String id) {
         Author authorInDb = authorRepository.findById(id)
-                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, "Author", id)));
+                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, DocumentName.AUTHOR, id)));
 
         authorInDb.getRoles().forEach(System.out::println);
 
@@ -115,7 +115,7 @@ public class AuthorServiceImpl implements AuthorService {
     @Override
     public AuthorDto updateRolesOfAuthor(String id, UpdateAuthorRolesRequest request) {
         Author authorInDb = authorRepository.findById(id)
-                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, "Author", id)));
+                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, DocumentName.AUTHOR, id)));
 
         Set<Role> roles = new HashSet<>();
         Set<RoleName> roleNames = request.getRoles();
@@ -140,7 +140,7 @@ public class AuthorServiceImpl implements AuthorService {
     @Override
     public Author getAuthorByUsername(String username) {
         return authorRepository.findByUsername(username)
-                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, "Author", username)));
+                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, DocumentName.AUTHOR, username)));
     }
 
     @Transactional
@@ -149,14 +149,14 @@ public class AuthorServiceImpl implements AuthorService {
         Author loggedInAuthor = (Author) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         Author follower = authorRepository.findById(id)
-                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, "Author", id)));
+                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, DocumentName.AUTHOR, id)));
 
         if (!follower.getId().equals(loggedInAuthor.getId())) {
             throw new DataConflict(ResponseMessage.NOT_AUTHORIZED);
         }
 
         Author unfollowed = authorRepository.findById(authorId)
-                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, "Author", authorId)));
+                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, DocumentName.AUTHOR, authorId)));
 
         if (follower.getId().equals(unfollowed.getId())) {
             throw new DataConflict("You cannot follow yourself");
@@ -176,7 +176,7 @@ public class AuthorServiceImpl implements AuthorService {
         authorRepository.save(follower);
         authorRepository.save(unfollowed);
 
-        return "Author " + authorId + " is added to your followed authors";
+        return DocumentName.AUTHOR + " " + authorId + " is added to your followed authors";
     }
 
     @Transactional
@@ -185,14 +185,14 @@ public class AuthorServiceImpl implements AuthorService {
         Author loggedInAuthor = (Author) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         Author follower = authorRepository.findById(id)
-                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, "Author", id)));
+                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, DocumentName.AUTHOR, id)));
 
         if (!follower.getId().equals(loggedInAuthor.getId())) {
             throw new DataConflict(ResponseMessage.NOT_AUTHORIZED);
         }
 
         Author followed = authorRepository.findById(authorId)
-                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, "Author", authorId)));
+                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, DocumentName.AUTHOR, authorId)));
 
         if (follower.getId().equals(followed.getId())) {
             throw new DataConflict("You cannot unfollow yourself");
@@ -219,7 +219,7 @@ public class AuthorServiceImpl implements AuthorService {
     public List<String> getFollowedAuthors(String id) {
         Author follower = authorRepository
                 .findById(id)
-                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, "Author", id)));
+                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, DocumentName.AUTHOR, id)));
 
         return follower.getFollowed()
                 .stream()
@@ -230,7 +230,7 @@ public class AuthorServiceImpl implements AuthorService {
     @Override
     public List<String> getFollowers(String id) {
         Author followed = authorRepository.findById(id)
-                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, "Author", id)));
+                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, DocumentName.AUTHOR, id)));
 
         return followed.getFollowers()
                 .stream()
@@ -252,7 +252,7 @@ public class AuthorServiceImpl implements AuthorService {
                 .anyMatch(author -> author.getId().equals(toAuthorId));
 
         if (!isAuthorInDb) {
-            throw new DataNotFound(String.format(ResponseMessage.NOT_FOUND, "Author", toAuthorId));
+            throw new DataNotFound(String.format(ResponseMessage.NOT_FOUND, DocumentName.AUTHOR, toAuthorId));
         }
 
         return notificationService.getNotifications(toAuthorId);

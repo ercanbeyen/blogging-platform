@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @Document
-public class Notification implements Serializable {
+public class Notification {
     @MongoId(FieldType.OBJECT_ID)
     private String id;
     //@DocumentReference

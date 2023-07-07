@@ -1,7 +1,8 @@
 package com.ercanbeyen.bloggingplatform.service.impl;
 
+import com.ercanbeyen.bloggingplatform.constant.DocumentName;
 import com.ercanbeyen.bloggingplatform.constant.messages.ResponseMessage;
-import com.ercanbeyen.bloggingplatform.constant.RoleName;
+import com.ercanbeyen.bloggingplatform.constant.enums.RoleName;
 import com.ercanbeyen.bloggingplatform.document.Role;
 import com.ercanbeyen.bloggingplatform.dto.RoleDto;
 import com.ercanbeyen.bloggingplatform.dto.converter.RoleDtoConverter;
@@ -30,7 +31,7 @@ public class RoleServiceImpl implements RoleService {
         Optional<Role> role = roleRepository.findByRoleName(request.getRoleName());
 
         if (role.isPresent()) {
-            throw new DataConflict("Role " + request.getRoleName().name() + " is present");
+            throw new DataConflict(DocumentName.ROLE + " " + request.getRoleName().name() + " is present");
         }
 
         Role newRole = Role.builder()
@@ -51,7 +52,7 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public RoleDto getRole(String id) {
         Role roleInDb = roleRepository.findById(id)
-                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, "Role", id)));
+                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, DocumentName.ROLE, id)));
 
         return roleDtoConverter.convert(roleInDb);
     }
@@ -64,17 +65,17 @@ public class RoleServiceImpl implements RoleService {
                 .anyMatch(role -> role.getId().equals(id));
 
         if (!isIdFound) {
-            throw new DataNotFound(String.format(ResponseMessage.NOT_FOUND, "Role", id));
+            throw new DataNotFound(String.format(ResponseMessage.NOT_FOUND, DocumentName.ROLE, id));
         }
 
         roleRepository.deleteById(id);
 
-        return "Role " + id + " is successfully deleted";
+        return DocumentName.ROLE + " " + id + " is successfully deleted";
     }
 
     @Override
     public Role getRoleByRoleName(RoleName roleName) {
         return roleRepository.findByRoleName(roleName)
-                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, "Role", roleName)));
+                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, DocumentName.ROLE, roleName)));
     }
 }

@@ -1,7 +1,8 @@
 package com.ercanbeyen.bloggingplatform.service.impl;
 
+import com.ercanbeyen.bloggingplatform.constant.DocumentName;
 import com.ercanbeyen.bloggingplatform.constant.messages.ResponseMessage;
-import com.ercanbeyen.bloggingplatform.constant.RoleName;
+import com.ercanbeyen.bloggingplatform.constant.enums.RoleName;
 import com.ercanbeyen.bloggingplatform.constant.messages.NotificationMessage;
 import com.ercanbeyen.bloggingplatform.document.*;
 import com.ercanbeyen.bloggingplatform.dto.AuthorDto;
@@ -72,7 +73,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public PostDto updatePost(String id, UpdatePostRequest request) {
         Post postInDb = postRepository.findById(id)
-                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, "Post", id)));
+                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, DocumentName.POST, id)));
 
         Author author_posted = postInDb.getAuthor();
         Author loggedIn_author = (Author) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -117,7 +118,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public PostDto getPost(String id) {
         Post postInDb = postRepository.findById(id)
-                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, "Post", id)));
+                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, DocumentName.POST, id)));
 
         return postDtoConverter.convert(postInDb);
     }
@@ -126,7 +127,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public String deletePost(String id) {
         Post postInDb = postRepository.findById(id)
-                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, "Post", id)));
+                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, DocumentName.POST, id)));
 
         Author loggedInAuthor = (Author) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Set<RoleName> roles = loggedInAuthor.getRoles()
@@ -140,14 +141,14 @@ public class PostServiceImpl implements PostService {
 
         postRepository.deleteById(id);
 
-        return "Post " + id + " is successfully deleted";
+        return DocumentName.POST + " " + id + " is successfully deleted";
     }
 
     @Transactional
     @Override
     public void addCommentToPost(String id, Comment comment) {
         Post postInDb = postRepository.findById(id)
-                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, "Post", id)));
+                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, DocumentName.POST, id)));
 
         postInDb.getComments().add(comment);
         postRepository.save(postInDb);
@@ -156,13 +157,13 @@ public class PostServiceImpl implements PostService {
     @Override
     public void deleteCommentFromPost(String postId, String commentId) {
         Post postInDb = postRepository.findById(postId)
-                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, "Post", postId)));
+                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, DocumentName.POST, postId)));
 
         Comment commentInPost = postInDb.getComments()
                 .stream()
                 .filter(comment -> comment.getId().equals(commentId))
                 .findAny()
-                .orElseThrow(() -> new DataNotFound("Comment " + commentId + " is not found inside Post " + postId));
+                .orElseThrow(() -> new DataNotFound( DocumentName.COMMENT + " " + commentId + " is not found inside " + DocumentName.POST + " " + postId));
 
         postInDb.getComments().remove(commentInPost);
         postRepository.save(postInDb);
@@ -171,7 +172,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public String likePost(String id) {
         Post postInDb = postRepository.findById(id)
-                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, "Post", id)));
+                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, DocumentName.POST, id)));
 
         Author loggedInAuthor = (Author) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
@@ -193,7 +194,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public String dislikePost(String id) {
         Post postInDb = postRepository.findById(id)
-                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, "Post", id)));
+                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, DocumentName.POST, id)));
 
         Author loggedInAuthor = (Author) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
@@ -215,7 +216,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public String removeStatus(String id) {
         Post postInDb = postRepository.findById(id)
-                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, "Post", id)));
+                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, DocumentName.POST, id)));
 
         Author loggedInAuthor = (Author) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
@@ -249,7 +250,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public List<AuthorDto> getAuthorsLiked(String id) {
         Post postInDb = postRepository.findById(id)
-                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, "Post", id)));
+                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, DocumentName.POST, id)));
 
         Author loggedInAuthor = (Author) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
@@ -266,7 +267,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public List<AuthorDto> getAuthorsDisliked(String id) {
         Post postInDb = postRepository.findById(id)
-                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, "Post", id)));
+                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, DocumentName.POST, id)));
 
         Author loggedInAuthor = (Author) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 

@@ -1,6 +1,6 @@
 package com.ercanbeyen.bloggingplatform.security;
 
-import com.ercanbeyen.bloggingplatform.constant.RoleName;
+import com.ercanbeyen.bloggingplatform.constant.enums.RoleName;
 import com.ercanbeyen.bloggingplatform.security.jwt.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

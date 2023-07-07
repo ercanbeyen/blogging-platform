@@ -1,6 +1,6 @@
 package com.ercanbeyen.bloggingplatform.dto;
 
-import com.ercanbeyen.bloggingplatform.constant.RoleName;
+import com.ercanbeyen.bloggingplatform.constant.enums.RoleName;
 import lombok.Builder;
 import lombok.Data;
 

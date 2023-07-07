@@ -1,6 +1,6 @@
 package com.ercanbeyen.bloggingplatform.repository;
 
-import com.ercanbeyen.bloggingplatform.constant.RoleName;
+import com.ercanbeyen.bloggingplatform.constant.enums.RoleName;
 import com.ercanbeyen.bloggingplatform.document.Role;
 import org.springframework.data.mongodb.repository.MongoRepository;
 

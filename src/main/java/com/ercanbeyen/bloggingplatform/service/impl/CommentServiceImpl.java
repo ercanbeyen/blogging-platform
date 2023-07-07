@@ -1,8 +1,9 @@
 package com.ercanbeyen.bloggingplatform.service.impl;
 
+import com.ercanbeyen.bloggingplatform.constant.DocumentName;
 import com.ercanbeyen.bloggingplatform.constant.messages.NotificationMessage;
 import com.ercanbeyen.bloggingplatform.constant.messages.ResponseMessage;
-import com.ercanbeyen.bloggingplatform.constant.RoleName;
+import com.ercanbeyen.bloggingplatform.constant.enums.RoleName;
 import com.ercanbeyen.bloggingplatform.document.*;
 import com.ercanbeyen.bloggingplatform.dto.CommentDto;
 import com.ercanbeyen.bloggingplatform.dto.NotificationDto;
@@ -63,7 +64,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public CommentDto updateComment(String id, UpdateCommentRequest request) {
         Comment commentInDb = commentRepository.findById(id)
-                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, "Comment", id)));
+                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, DocumentName.COMMENT, id)));
 
         Author author_commented = commentInDb.getAuthor();
         Author loggedIn_author = (Author) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -89,7 +90,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public CommentDto getComment(String id) {
         Comment commentInDb = commentRepository.findById(id)
-                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, "Comment", id)));
+                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, DocumentName.COMMENT, id)));
 
         return commentDtoConverter.convert(commentInDb);
     }
@@ -98,7 +99,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public String deleteComment(String commentId, String postId) {
         Comment commentInDb = commentRepository.findById(commentId)
-                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, "Comment", commentId)));
+                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, DocumentName.COMMENT, commentId)));
 
         Author loggedInAuthor = (Author) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Set<RoleName> roles = loggedInAuthor.getRoles()
@@ -113,7 +114,7 @@ public class CommentServiceImpl implements CommentService {
         postService.deleteCommentFromPost(postId, commentId);
         commentRepository.deleteById(commentId);
 
-        return "Comment " + commentId + " is successfully deleted";
+        return DocumentName.COMMENT + " " + commentId + " is successfully deleted";
     }
 
 }

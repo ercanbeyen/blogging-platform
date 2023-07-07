@@ -1,6 +1,6 @@
 package com.ercanbeyen.bloggingplatform.dto.request.update;
 
-import com.ercanbeyen.bloggingplatform.constant.RoleName;
+import com.ercanbeyen.bloggingplatform.constant.enums.RoleName;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
 import lombok.Setter;

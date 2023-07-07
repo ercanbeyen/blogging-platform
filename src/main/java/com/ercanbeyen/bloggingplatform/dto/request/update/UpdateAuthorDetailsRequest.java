@@ -1,6 +1,6 @@
 package com.ercanbeyen.bloggingplatform.dto.request.update;
 
-import com.ercanbeyen.bloggingplatform.constant.Gender;
+import com.ercanbeyen.bloggingplatform.constant.enums.Gender;
 import com.ercanbeyen.bloggingplatform.constant.Location;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
