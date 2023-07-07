@@ -58,6 +58,7 @@ public class PostServiceImpl implements PostService {
             NotificationDto notificationDto = NotificationDto.builder()
                     .authorId(follower.getId())
                     .description(receiverMessage)
+                    .topic(NotificationMessage.POST_NOTIFICATION)
                     .build();
 
             kafkaTemplate.send(NotificationMessage.POST_NOTIFICATION, notificationDto);
@@ -93,6 +94,7 @@ public class PostServiceImpl implements PostService {
             NotificationDto notificationDto = NotificationDto.builder()
                     .authorId(follower.getId())
                     .description(receiverMessage)
+                    .topic(NotificationMessage.POST_NOTIFICATION)
                     .build();
 
             kafkaTemplate.send(NotificationMessage.POST_NOTIFICATION, notificationDto);
@@ -139,6 +141,7 @@ public class PostServiceImpl implements PostService {
         return "Post " + id + " is successfully deleted";
     }
 
+    @Transactional
     @Override
     public void addCommentToPost(String id, Comment comment) {
         Post postInDb = postRepository.findById(id)

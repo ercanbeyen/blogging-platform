@@ -62,7 +62,7 @@ public class JwtService {
 
         Algorithm algorithm = Algorithm.HMAC256(JwtMessage.SECRET_KEY.getBytes());
 
-        String access_token = JWT.create()
+        String accessToken = JWT.create()
                 .withSubject(userDetails.getUsername())
                 .withExpiresAt(JwtUtils.calculateExpirationDate(TokenTimes.ACCESS_TOKEN))
                 .withClaim(JwtMessage.PAYLOAD_ROLES_KEY, userDetails.getAuthorities()
@@ -71,14 +71,14 @@ public class JwtService {
                         .collect(Collectors.toList()))
                 .sign(algorithm);
 
-        tokenMap.put(JwtMessage.TOKEN_MAP_KEY_ACCESS_TOKEN, access_token);
+        tokenMap.put(JwtMessage.TOKEN_MAP_KEY_ACCESS_TOKEN, accessToken);
 
-        String refresh_token = JWT.create()
+        String refreshToken = JWT.create()
                 .withSubject(userDetails.getUsername())
                 .withExpiresAt(JwtUtils.calculateExpirationDate(TokenTimes.REFRESH_TOKEN))
                 .sign(algorithm);
 
-        tokenMap.put(JwtMessage.TOKEN_MAP_KEY_REFRESH_TOKEN, refresh_token);
+        tokenMap.put(JwtMessage.TOKEN_MAP_KEY_REFRESH_TOKEN, refreshToken);
 
         return tokenMap;
     }
@@ -93,7 +93,6 @@ public class JwtService {
     }
 
     private Key getSigningKey() {
-        //byte[] keyBytes = Decoders.BASE64.decode(TokenMessage.SECRET_KEY);
         byte[] keyBytes = JwtMessage.SECRET_KEY.getBytes();
         return Keys.hmacShaKeyFor(keyBytes);
     }
@@ -118,6 +117,7 @@ public class JwtService {
                 .sign(algorithm);
 
         tokenMap.put(JwtMessage.TOKEN_MAP_KEY_ACCESS_TOKEN, accessToken);
+
         return tokenMap;
     }
 }

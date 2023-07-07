@@ -17,11 +17,12 @@ import java.time.LocalDateTime;
 public class NotificationServiceImpl {
     private final NotificationRepository notificationRepository;
 
-    @KafkaListener(topics = NotificationMessage.POST_NOTIFICATION, groupId = "group-id")
+    @KafkaListener(topics = {NotificationMessage.POST_NOTIFICATION, NotificationMessage.COMMENT_NOTIFICATION}, groupId = "group-id")
     public void listen(NotificationDto notificationDto) {
         Notification newNotification = Notification.builder()
                 .authorId(notificationDto.getAuthorId())
                 .description(notificationDto.getDescription())
+                .topic(notificationDto.getTopic())
                 .createdAt(LocalDateTime.now())
                 .build();
         notificationRepository.save(newNotification);

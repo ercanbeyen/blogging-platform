@@ -23,5 +23,6 @@ public class Notification implements Serializable {
     //@DocumentReference
     private String authorId;
     private String description;
+    private String topic;
     private LocalDateTime createdAt;
 }
