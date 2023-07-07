@@ -48,7 +48,8 @@ public class CommentServiceImpl implements CommentService {
         postService.addCommentToPost(request.getPostId(), commentInDb);
 
         NotificationDto notificationDto = NotificationDto.builder()
-                .authorId(commentInDb.getAuthor().getId())
+                .fromAuthorId(loggedInAuthor.getId())
+                .toAuthorId(postService.getPost(request.getPostId()).getAuthorId())
                 .description(commentInDb.getText())
                 .topic(NotificationMessage.COMMENT_NOTIFICATION)
                 .build();

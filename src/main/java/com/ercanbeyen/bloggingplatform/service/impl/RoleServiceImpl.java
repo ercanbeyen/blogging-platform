@@ -59,7 +59,7 @@ public class RoleServiceImpl implements RoleService {
     @Transactional
     @Override
     public String deleteRole(String id) {
-        boolean isIdFound = roleRepository.findById(id)
+        boolean isIdFound = roleRepository.findAll()
                 .stream()
                 .anyMatch(role -> role.getId().equals(id));
 

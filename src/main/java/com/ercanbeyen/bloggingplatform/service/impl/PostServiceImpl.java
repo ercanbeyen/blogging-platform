@@ -56,7 +56,8 @@ public class PostServiceImpl implements PostService {
             String receiverMessage = "Dear " + follower.getUsername() + ", author " + loggedInAuthor.getUsername() + " posted a new article.";
 
             NotificationDto notificationDto = NotificationDto.builder()
-                    .authorId(follower.getId())
+                    .fromAuthorId(loggedInAuthor.getId())
+                    .toAuthorId(follower.getId())
                     .description(receiverMessage)
                     .topic(NotificationMessage.POST_NOTIFICATION)
                     .build();
@@ -92,7 +93,8 @@ public class PostServiceImpl implements PostService {
         for (Author follower: followers) {
             String receiverMessage = "Dear " + follower.getUsername() + ", author " + loggedIn_author.getUsername() + " updated the article " + postInDb.getTitle() + ".";
             NotificationDto notificationDto = NotificationDto.builder()
-                    .authorId(follower.getId())
+                    .fromAuthorId(loggedIn_author.getId())
+                    .toAuthorId(follower.getId())
                     .description(receiverMessage)
                     .topic(NotificationMessage.POST_NOTIFICATION)
                     .build();

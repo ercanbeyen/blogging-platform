@@ -22,32 +22,52 @@ import java.util.List;
 import java.util.Set;
 
 
-@Setter
-@Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Document
 public class Author implements UserDetails {
+    @Getter
     @MongoId(FieldType.OBJECT_ID)
-    //@Id
     private String id;
+    @Getter
+    @Setter
     private String firstName;
+    @Getter
+    @Setter
     private String lastName;
+    @Getter
+    @Setter
     @Indexed(unique = true)
     private String email;
+    @Setter
     @Indexed(unique = true)
     private String username;
+    @Setter
     private String password;
+    @Getter
+    @Setter
     @DocumentReference
     private Set<Role> roles;
+    @Getter
+    @Setter
     private String about;
+    @Getter
+    @Setter
     private Gender gender;
+    @Getter
+    @Setter
     private Location location;
+    @Getter
+    @Setter
     private List<String> favoriteTopics;
+    @Getter
+    @Setter
     private LocalDateTime createdAt;
+    @Getter
     @DocumentReference
     private List<Author> followed;
+    @Getter
     @DocumentReference
     private List<Author> followers;
 
@@ -97,11 +117,11 @@ public class Author implements UserDetails {
 
     @Override
     public String toString() {
-        List<String> followerIds = followers.stream()
-                .map(Author::getId)
+        List<String> follower_usernames = followers.stream()
+                .map(Author::getUsername)
                 .toList();
-        List<String> followedIds = followed.stream()
-                .map(Author::getId)
+        List<String> followed_usernames = followed.stream()
+                .map(Author::getUsername)
                 .toList();
 
         return "Author{" +
@@ -117,8 +137,8 @@ public class Author implements UserDetails {
                 ", location=" + location +
                 ", favoriteTopics=" + favoriteTopics +
                 ", createdAt=" + createdAt +
-                ", followed=" + followedIds +
-                ", followers=" + followerIds +
+                ", followed=" + followed_usernames +
+                ", followers=" + follower_usernames +
                 '}';
     }
 

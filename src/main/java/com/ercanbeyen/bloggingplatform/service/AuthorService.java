@@ -2,6 +2,7 @@ package com.ercanbeyen.bloggingplatform.service;
 
 import com.ercanbeyen.bloggingplatform.document.Author;
 import com.ercanbeyen.bloggingplatform.dto.AuthorDto;
+import com.ercanbeyen.bloggingplatform.dto.NotificationDto;
 import com.ercanbeyen.bloggingplatform.dto.request.auth.RegistrationRequest;
 import com.ercanbeyen.bloggingplatform.dto.request.update.UpdateAuthorDetailsRequest;
 import com.ercanbeyen.bloggingplatform.dto.request.update.UpdateAuthorRolesRequest;
@@ -20,4 +21,5 @@ public interface AuthorService {
     String unFollowAuthor(String id, String authorId);
     List<String> getFollowedAuthors(String id);
     List<String> getFollowers(String id);
+    List<NotificationDto> getNotifications(String toAuthorId);
 }

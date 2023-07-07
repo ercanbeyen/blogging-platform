@@ -1,5 +1,6 @@
 package com.ercanbeyen.bloggingplatform.security;
 
+import com.ercanbeyen.bloggingplatform.constant.RoleName;
 import com.ercanbeyen.bloggingplatform.security.jwt.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -25,8 +26,7 @@ public class SecurityConfig {
                 .disable()
                 .authorizeHttpRequests()
                 .requestMatchers("/api/v1/auth/**", "/api/v1/tokens/refresh/**").permitAll()
-                //.requestMatchers("/api/v1/tokens/refresh/**").permitAll()
-                .requestMatchers("/api/v1/roles/**").hasAnyAuthority("ADMIN")
+                .requestMatchers("/api/v1/roles/**").hasAnyAuthority(RoleName.ADMIN.name())
                 .anyRequest()
                 .authenticated()
                 .and()

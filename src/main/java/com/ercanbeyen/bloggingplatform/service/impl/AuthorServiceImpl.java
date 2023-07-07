@@ -4,6 +4,8 @@ import com.ercanbeyen.bloggingplatform.constant.messages.ResponseMessage;
 import com.ercanbeyen.bloggingplatform.constant.RoleName;
 import com.ercanbeyen.bloggingplatform.document.Role;
 import com.ercanbeyen.bloggingplatform.dto.AuthorDto;
+import com.ercanbeyen.bloggingplatform.dto.NotificationDto;
+import com.ercanbeyen.bloggingplatform.dto.converter.NotificationDtoConverter;
 import com.ercanbeyen.bloggingplatform.dto.request.auth.RegistrationRequest;
 import com.ercanbeyen.bloggingplatform.dto.request.update.UpdateAuthorDetailsRequest;
 import com.ercanbeyen.bloggingplatform.dto.request.update.UpdateAuthorRolesRequest;
@@ -14,6 +16,7 @@ import com.ercanbeyen.bloggingplatform.dto.converter.AuthorDtoConverter;
 import com.ercanbeyen.bloggingplatform.document.Author;
 import com.ercanbeyen.bloggingplatform.repository.AuthorRepository;
 import com.ercanbeyen.bloggingplatform.service.AuthorService;
+import com.ercanbeyen.bloggingplatform.service.NotificationService;
 import com.ercanbeyen.bloggingplatform.service.RoleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -35,6 +38,7 @@ public class AuthorServiceImpl implements AuthorService {
     private final AuthorDtoConverter authorDtoConverter;
     private final PasswordEncoder passwordEncoder;
     private final RoleService roleService;
+    private final NotificationService notificationService;
 
     @Transactional
     @Override
@@ -232,6 +236,26 @@ public class AuthorServiceImpl implements AuthorService {
                 .stream()
                 .map(Author::getId)
                 .toList();
+    }
+
+    @Override
+    public List<NotificationDto> getNotifications(String toAuthorId) {
+        Author loggedIn_author = (Author) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String loggedIn_authorId = loggedIn_author.getId();
+
+        if (!loggedIn_authorId.equals(toAuthorId)) {
+            throw new DataForbidden(ResponseMessage.NOT_AUTHORIZED);
+        }
+
+        boolean isAuthorInDb = authorRepository.findAll()
+                .stream()
+                .anyMatch(author -> author.getId().equals(toAuthorId));
+
+        if (!isAuthorInDb) {
+            throw new DataNotFound(String.format(ResponseMessage.NOT_FOUND, "Author", toAuthorId));
+        }
+
+        return notificationService.getNotifications(toAuthorId);
     }
 
 }

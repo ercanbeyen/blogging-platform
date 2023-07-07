@@ -62,4 +62,9 @@ public class AuthorController {
     public ResponseEntity<Object> getFollowedAuthors(@PathVariable("id") String id) {
         return ResponseEntity.ok(authorService.getFollowedAuthors(id));
     }
+
+    @GetMapping("/{id}/notifications")
+    public ResponseEntity<Object> getNotifications(@PathVariable("id") String id) {
+        return ResponseEntity.ok(authorService.getNotifications(id));
+    }
 }
