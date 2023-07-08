@@ -1,6 +1,6 @@
 package com.ercanbeyen.bloggingplatform.service.impl;
 
-import com.ercanbeyen.bloggingplatform.constant.DocumentName;
+import com.ercanbeyen.bloggingplatform.constant.values.DocumentName;
 import com.ercanbeyen.bloggingplatform.constant.messages.ResponseMessage;
 import com.ercanbeyen.bloggingplatform.constant.enums.RoleName;
 import com.ercanbeyen.bloggingplatform.document.Role;
@@ -70,7 +70,7 @@ public class RoleServiceImpl implements RoleService {
 
         roleRepository.deleteById(id);
 
-        return DocumentName.ROLE + " " + id + " is successfully deleted";
+        return String.format(ResponseMessage.SUCCESSFULLY_DELETED, DocumentName.ROLE, id);
     }
 
     @Override

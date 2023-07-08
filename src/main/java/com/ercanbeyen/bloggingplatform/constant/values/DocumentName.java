@@ -1,4 +1,4 @@
-package com.ercanbeyen.bloggingplatform.constant;
+package com.ercanbeyen.bloggingplatform.constant.values;
 
 public class DocumentName {
     public static final String AUTHOR = "Author";

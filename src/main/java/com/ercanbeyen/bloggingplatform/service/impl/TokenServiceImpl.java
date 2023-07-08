@@ -4,7 +4,7 @@ import com.ercanbeyen.bloggingplatform.constant.messages.JwtMessage;
 import com.ercanbeyen.bloggingplatform.exception.DataNotFound;
 import com.ercanbeyen.bloggingplatform.security.jwt.JwtService;
 import com.ercanbeyen.bloggingplatform.service.TokenService;
-import com.ercanbeyen.bloggingplatform.util.JwtUtils;
+import com.ercanbeyen.bloggingplatform.util.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +27,7 @@ public class TokenServiceImpl implements TokenService {
     public void refreshToken(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException {
         String authorizationHeader = httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION);
 
-        if (!JwtUtils.doesTokenExist(authorizationHeader)) {
+        if (JwtUtil.doesTokenNotExist(authorizationHeader)) {
             throw new DataNotFound("Refresh token is missing");
         }
 

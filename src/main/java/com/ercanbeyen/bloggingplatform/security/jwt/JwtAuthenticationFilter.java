@@ -2,7 +2,7 @@ package com.ercanbeyen.bloggingplatform.security.jwt;
 
 
 import com.ercanbeyen.bloggingplatform.constant.messages.JwtMessage;
-import com.ercanbeyen.bloggingplatform.util.JwtUtils;
+import com.ercanbeyen.bloggingplatform.util.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -33,7 +33,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         final String authenticationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-        if (!JwtUtils.doesTokenExist(authenticationHeader)) {
+        if (JwtUtil.doesTokenNotExist(authenticationHeader)) {
             filterChain.doFilter(request, response);
             return;
         }

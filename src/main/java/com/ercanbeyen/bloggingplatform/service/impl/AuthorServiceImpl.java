@@ -1,6 +1,6 @@
 package com.ercanbeyen.bloggingplatform.service.impl;
 
-import com.ercanbeyen.bloggingplatform.constant.DocumentName;
+import com.ercanbeyen.bloggingplatform.constant.values.DocumentName;
 import com.ercanbeyen.bloggingplatform.constant.messages.ResponseMessage;
 import com.ercanbeyen.bloggingplatform.constant.enums.RoleName;
 import com.ercanbeyen.bloggingplatform.document.Role;
@@ -18,9 +18,8 @@ import com.ercanbeyen.bloggingplatform.repository.AuthorRepository;
 import com.ercanbeyen.bloggingplatform.service.AuthorService;
 import com.ercanbeyen.bloggingplatform.service.NotificationService;
 import com.ercanbeyen.bloggingplatform.service.RoleService;
+import com.ercanbeyen.bloggingplatform.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -66,15 +65,14 @@ public class AuthorServiceImpl implements AuthorService {
     @Transactional
     @Override
     public AuthorDto updateAuthor(String id, UpdateAuthorDetailsRequest request) {
-        Author loggedIn_author = (Author) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Author loggedIn_author = SecurityUtil.getLoggedInAuthor();
         String loggedIn_authorId = loggedIn_author.getId();
 
         if (!loggedIn_authorId.equals(id)) {
             throw new DataForbidden(ResponseMessage.NOT_AUTHORIZED);
         }
 
-        Author authorInDb = authorRepository.findById(id)
-                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, DocumentName.AUTHOR, id)));
+        Author authorInDb = findAuthorById(id);
 
         authorInDb.setFirstName(request.getFirstName());
         authorInDb.setLastName(request.getLastName());
@@ -90,9 +88,7 @@ public class AuthorServiceImpl implements AuthorService {
 
     @Override
     public AuthorDto getAuthor(String id) {
-        Author authorInDb = authorRepository.findById(id)
-                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, DocumentName.AUTHOR, id)));
-
+        Author authorInDb = findAuthorById(id);
         authorInDb.getRoles().forEach(System.out::println);
 
         return authorDtoConverter.convert(authorInDb);
@@ -109,15 +105,21 @@ public class AuthorServiceImpl implements AuthorService {
     @Transactional
     @Override
     public void deleteAuthor(String id) {
+        boolean doesExist = authorRepository.findAll()
+                .stream()
+                .anyMatch(author -> author.getId().equals(id));
+
+        if (!doesExist) {
+            throw new DataNotFound(String.format(ResponseMessage.NOT_FOUND, DocumentName.AUTHOR, id));
+        }
+
         authorRepository.deleteById(id);
     }
 
     @Transactional
     @Override
     public AuthorDto updateRolesOfAuthor(String id, UpdateAuthorRolesRequest request) {
-        Author authorInDb = authorRepository.findById(id)
-                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, DocumentName.AUTHOR, id)));
-
+        Author authorInDb = findAuthorById(id);
         Set<Role> roles = new HashSet<>();
         Set<RoleName> roleNames = request.getRoles();
 
@@ -147,10 +149,8 @@ public class AuthorServiceImpl implements AuthorService {
     @Transactional
     @Override
     public String followAuthor(String id, String authorId) {
-        Author loggedInAuthor = (Author) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        Author follower = authorRepository.findById(id)
-                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, DocumentName.AUTHOR, id)));
+        Author loggedInAuthor = SecurityUtil.getLoggedInAuthor();
+        Author follower = findAuthorById(id);
 
         if (!follower.getId().equals(loggedInAuthor.getId())) {
             throw new DataConflict(ResponseMessage.NOT_AUTHORIZED);
@@ -183,10 +183,8 @@ public class AuthorServiceImpl implements AuthorService {
     @Transactional
     @Override
     public String unFollowAuthor(String id, String authorId) {
-        Author loggedInAuthor = (Author) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        Author follower = authorRepository.findById(id)
-                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, DocumentName.AUTHOR, id)));
+        Author loggedInAuthor = SecurityUtil.getLoggedInAuthor();
+        Author follower = findAuthorById(id);
 
         if (!follower.getId().equals(loggedInAuthor.getId())) {
             throw new DataConflict(ResponseMessage.NOT_AUTHORIZED);
@@ -218,9 +216,7 @@ public class AuthorServiceImpl implements AuthorService {
 
     @Override
     public List<String> getFollowedAuthors(String id) {
-        Author follower = authorRepository
-                .findById(id)
-                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, DocumentName.AUTHOR, id)));
+        Author follower = findAuthorById(id);
 
         return follower.getFollowed()
                 .stream()
@@ -230,8 +226,7 @@ public class AuthorServiceImpl implements AuthorService {
 
     @Override
     public List<String> getFollowers(String id) {
-        Author followed = authorRepository.findById(id)
-                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, DocumentName.AUTHOR, id)));
+        Author followed = findAuthorById(id);
 
         return followed.getFollowers()
                 .stream()
@@ -241,7 +236,7 @@ public class AuthorServiceImpl implements AuthorService {
 
     @Override
     public List<NotificationDto> getNotifications(String toAuthorId) {
-        Author loggedInAuthor = (Author) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Author loggedInAuthor = SecurityUtil.getLoggedInAuthor();
         String loggedInAuthorId = loggedInAuthor.getId();
 
         if (!loggedInAuthorId.equals(toAuthorId)) {
@@ -259,4 +254,8 @@ public class AuthorServiceImpl implements AuthorService {
         return notificationService.getNotifications(null, toAuthorId);
     }
 
+    private Author findAuthorById(String id) {
+        return authorRepository.findById(id)
+                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, DocumentName.AUTHOR, id)));
+    }
 }

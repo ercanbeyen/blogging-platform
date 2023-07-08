@@ -1,6 +1,6 @@
 package com.ercanbeyen.bloggingplatform.service.impl;
 
-import com.ercanbeyen.bloggingplatform.constant.DocumentName;
+import com.ercanbeyen.bloggingplatform.constant.values.DocumentName;
 import com.ercanbeyen.bloggingplatform.constant.messages.NotificationMessage;
 import com.ercanbeyen.bloggingplatform.constant.messages.ResponseMessage;
 import com.ercanbeyen.bloggingplatform.constant.enums.RoleName;
@@ -15,9 +15,9 @@ import com.ercanbeyen.bloggingplatform.exception.DataNotFound;
 import com.ercanbeyen.bloggingplatform.repository.CommentRepository;
 import com.ercanbeyen.bloggingplatform.service.CommentService;
 import com.ercanbeyen.bloggingplatform.service.PostService;
+import com.ercanbeyen.bloggingplatform.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,7 +37,7 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     @Override
     public CommentDto createComment(CreateCommentRequest request) {
-        Author loggedInAuthor = (Author) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Author loggedInAuthor = SecurityUtil.getLoggedInAuthor();
 
         Comment newComment = Comment.builder()
                 .author(loggedInAuthor)
@@ -63,11 +63,9 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     @Override
     public CommentDto updateComment(String id, UpdateCommentRequest request) {
-        Comment commentInDb = commentRepository.findById(id)
-                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, DocumentName.COMMENT, id)));
-
+        Comment commentInDb = findCommentById(id);
         Author author_commented = commentInDb.getAuthor();
-        Author loggedIn_author = (Author) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Author loggedIn_author = SecurityUtil.getLoggedInAuthor();
 
         if (!author_commented.getId().equals(loggedIn_author.getId())) {
             throw new DataForbidden(ResponseMessage.NOT_AUTHORIZED);
@@ -89,19 +87,15 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public CommentDto getComment(String id) {
-        Comment commentInDb = commentRepository.findById(id)
-                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, DocumentName.COMMENT, id)));
-
+        Comment commentInDb = findCommentById(id);
         return commentDtoConverter.convert(commentInDb);
     }
 
     @Transactional
     @Override
     public String deleteComment(String commentId, String postId) {
-        Comment commentInDb = commentRepository.findById(commentId)
-                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, DocumentName.COMMENT, commentId)));
-
-        Author loggedInAuthor = (Author) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Comment commentInDb = findCommentById(commentId);
+        Author loggedInAuthor = SecurityUtil.getLoggedInAuthor();
         Set<RoleName> roles = loggedInAuthor.getRoles()
                 .stream()
                 .map(Role::getRoleName)
@@ -112,9 +106,13 @@ public class CommentServiceImpl implements CommentService {
         }
 
         postService.deleteCommentFromPost(postId, commentId);
-        commentRepository.deleteById(commentId);
+        commentRepository.delete(commentInDb);
 
-        return DocumentName.COMMENT + " " + commentId + " is successfully deleted";
+        return String.format(ResponseMessage.SUCCESSFULLY_DELETED, DocumentName.COMMENT, commentId);
     }
 
+    private Comment findCommentById(String id) {
+        return commentRepository.findById(id)
+                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, DocumentName.COMMENT, id)));
+    }
 }

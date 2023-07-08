@@ -4,9 +4,9 @@ import com.ercanbeyen.bloggingplatform.constant.messages.JwtMessage;
 
 import java.util.Date;
 
-public class JwtUtils {
-    public static boolean doesTokenExist(String authorizationHeader) {
-        return authorizationHeader != null && authorizationHeader.startsWith(JwtMessage.BEARER);
+public class JwtUtil {
+    public static boolean doesTokenNotExist(String authorizationHeader) {
+        return authorizationHeader == null || !authorizationHeader.startsWith(JwtMessage.BEARER);
     }
 
     private static long calculateTokenTime(int validTime) {
