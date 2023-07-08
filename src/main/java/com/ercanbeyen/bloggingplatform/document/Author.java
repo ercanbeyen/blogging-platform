@@ -1,6 +1,6 @@
 package com.ercanbeyen.bloggingplatform.document;
 
-import com.ercanbeyen.bloggingplatform.constant.Location;
+import com.ercanbeyen.bloggingplatform.util.Location;
 import com.ercanbeyen.bloggingplatform.constant.enums.Gender;
 import lombok.*;
 

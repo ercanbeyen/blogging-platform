@@ -1,18 +1,28 @@
 package com.ercanbeyen.bloggingplatform.service.impl;
 
+import com.ercanbeyen.bloggingplatform.constant.DocumentName;
+import com.ercanbeyen.bloggingplatform.constant.enums.RoleName;
 import com.ercanbeyen.bloggingplatform.constant.messages.NotificationMessage;
+import com.ercanbeyen.bloggingplatform.constant.messages.ResponseMessage;
+import com.ercanbeyen.bloggingplatform.document.Author;
 import com.ercanbeyen.bloggingplatform.document.Notification;
 import com.ercanbeyen.bloggingplatform.dto.NotificationDto;
 import com.ercanbeyen.bloggingplatform.dto.converter.NotificationDtoConverter;
+import com.ercanbeyen.bloggingplatform.exception.DataForbidden;
+import com.ercanbeyen.bloggingplatform.exception.DataNotFound;
 import com.ercanbeyen.bloggingplatform.repository.NotificationRepository;
 import com.ercanbeyen.bloggingplatform.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.function.Predicate;
 
 @Service
 @Slf4j
@@ -35,14 +45,59 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public List<NotificationDto> getNotifications(String authorId) {
+    public List<NotificationDto> getNotifications(String fromAuthorId, String toAuthorId) {
+        Predicate<Notification> filteringAuthors;
+
+        if (fromAuthorId == null && toAuthorId != null)  { // User Condition
+            filteringAuthors = notification -> notification.getToAuthorId().equals(toAuthorId);
+        } else { // Admin Condition
+            Author loggedInAuthor = (Author) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+            boolean isAdmin = loggedInAuthor.getAuthorities()
+                    .stream()
+                    .map(GrantedAuthority::getAuthority)
+                    .anyMatch(roleName -> roleName.equals(RoleName.ADMIN.name()));
+
+            if (!isAdmin) {
+                throw new DataForbidden(ResponseMessage.NOT_AUTHORIZED);
+            }
+
+            filteringAuthors = (notification) ->
+                    (StringUtils.isBlank(fromAuthorId) || notification.getFromAuthorId().equals(fromAuthorId)) &&
+                            (StringUtils.isBlank(toAuthorId) || notification.getToAuthorId().equals(toAuthorId));
+        }
+
+
         List<Notification> notifications = notificationRepository.findAll()
                 .stream()
-                .filter(notification -> notification.getToAuthorId().equals(authorId))
+                .filter(filteringAuthors)
                 .toList();
 
         return notifications.stream()
                 .map(notificationDtoConverter::convert)
                 .toList();
+    }
+
+    @Override
+    public NotificationDto getNotification(String id) {
+        Notification notificationInDb = notificationRepository.findById(id)
+                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, DocumentName.NOTIFICATION, id)));
+
+        return notificationDtoConverter.convert(notificationInDb);
+    }
+
+    @Override
+    public String deleteNotification(String id) {
+        boolean doesExist = notificationRepository.findAll()
+                .stream()
+                .anyMatch(notification -> notification.getId().equals(id));
+
+        if (!doesExist) {
+            throw new DataNotFound(String.format(ResponseMessage.NOT_FOUND, DocumentName.NOTIFICATION, id));
+        }
+
+        notificationRepository.deleteById(id);
+
+        return DocumentName.NOTIFICATION + " " + id + " is successfully deleted";
     }
 }

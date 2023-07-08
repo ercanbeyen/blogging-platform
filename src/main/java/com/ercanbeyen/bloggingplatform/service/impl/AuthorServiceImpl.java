@@ -19,6 +19,7 @@ import com.ercanbeyen.bloggingplatform.service.AuthorService;
 import com.ercanbeyen.bloggingplatform.service.NotificationService;
 import com.ercanbeyen.bloggingplatform.service.RoleService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -212,7 +213,7 @@ public class AuthorServiceImpl implements AuthorService {
         authorRepository.save(follower);
         authorRepository.save(followed);
 
-        return "Author " + authorId + " is removed from your followed authors";
+        return DocumentName.AUTHOR + " " + authorId + " is removed from your followed authors";
     }
 
     @Override
@@ -240,10 +241,10 @@ public class AuthorServiceImpl implements AuthorService {
 
     @Override
     public List<NotificationDto> getNotifications(String toAuthorId) {
-        Author loggedIn_author = (Author) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String loggedIn_authorId = loggedIn_author.getId();
+        Author loggedInAuthor = (Author) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String loggedInAuthorId = loggedInAuthor.getId();
 
-        if (!loggedIn_authorId.equals(toAuthorId)) {
+        if (!loggedInAuthorId.equals(toAuthorId)) {
             throw new DataForbidden(ResponseMessage.NOT_AUTHORIZED);
         }
 
@@ -255,7 +256,7 @@ public class AuthorServiceImpl implements AuthorService {
             throw new DataNotFound(String.format(ResponseMessage.NOT_FOUND, DocumentName.AUTHOR, toAuthorId));
         }
 
-        return notificationService.getNotifications(toAuthorId);
+        return notificationService.getNotifications(null, toAuthorId);
     }
 
 }

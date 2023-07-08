@@ -1,4 +1,4 @@
-package com.ercanbeyen.bloggingplatform.constant;
+package com.ercanbeyen.bloggingplatform.util;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
