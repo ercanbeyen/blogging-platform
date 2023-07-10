@@ -7,6 +7,7 @@ import com.ercanbeyen.bloggingplatform.dto.request.auth.RegistrationRequest;
 import com.ercanbeyen.bloggingplatform.security.jwt.JwtService;
 import com.ercanbeyen.bloggingplatform.service.AuthenticationService;
 import com.ercanbeyen.bloggingplatform.service.AuthorService;
+import com.ercanbeyen.bloggingplatform.service.EmailService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -19,9 +20,10 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 public class AuthenticationServiceImpl implements AuthenticationService {
+    private final AuthenticationManager authenticationManager;
     private final AuthorService authorService;
     private final JwtService jwtService;
-    private final AuthenticationManager authenticationManager;
+    private final EmailService emailService;
 
     @Override
     public void authenticate(AuthenticationRequest authenticationRequest, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
@@ -43,6 +45,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public void register(RegistrationRequest request, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         Author newAuthor = authorService.createAuthor(request);
+
+        emailService.send(request.getEmail(), emailService.getEmailTemplate(request.getFirstName()));
 
         Map<String, String> tokenMap = jwtService.generateTokens(newAuthor);
 
