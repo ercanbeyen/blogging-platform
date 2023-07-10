@@ -68,6 +68,9 @@ public class Author implements UserDetails {
     @Getter
     @DocumentReference
     private List<Author> followers;
+    @Getter
+    @Setter
+    private Boolean enabled = false;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -110,7 +113,7 @@ public class Author implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return enabled;
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.ercanbeyen.bloggingplatform.service.impl;
 import com.ercanbeyen.bloggingplatform.constant.values.DocumentName;
 import com.ercanbeyen.bloggingplatform.constant.messages.ResponseMessage;
 import com.ercanbeyen.bloggingplatform.constant.enums.RoleName;
+import com.ercanbeyen.bloggingplatform.document.ConfirmationToken;
 import com.ercanbeyen.bloggingplatform.document.Role;
 import com.ercanbeyen.bloggingplatform.dto.AuthorDto;
 import com.ercanbeyen.bloggingplatform.dto.NotificationDto;
@@ -16,6 +17,7 @@ import com.ercanbeyen.bloggingplatform.dto.converter.AuthorDtoConverter;
 import com.ercanbeyen.bloggingplatform.document.Author;
 import com.ercanbeyen.bloggingplatform.repository.AuthorRepository;
 import com.ercanbeyen.bloggingplatform.service.AuthorService;
+import com.ercanbeyen.bloggingplatform.service.ConfirmationTokenService;
 import com.ercanbeyen.bloggingplatform.service.NotificationService;
 import com.ercanbeyen.bloggingplatform.service.RoleService;
 import com.ercanbeyen.bloggingplatform.util.SecurityUtil;
@@ -25,10 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -39,6 +38,7 @@ public class AuthorServiceImpl implements AuthorService {
     private final PasswordEncoder passwordEncoder;
     private final RoleService roleService;
     private final NotificationService notificationService;
+    private final ConfirmationTokenService confirmationTokenService;
 
     @Transactional
     @Override
@@ -252,6 +252,19 @@ public class AuthorServiceImpl implements AuthorService {
         }
 
         return notificationService.getNotifications(null, toAuthorId);
+    }
+
+    @Override
+    public boolean enableAuthor(String id) {
+        Author authorInDb = authorRepository.findById(id)
+                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, DocumentName.AUTHOR, id)));
+
+        boolean isEnabled = true;
+
+        authorInDb.setEnabled(isEnabled);
+        authorRepository.save(authorInDb);
+
+        return isEnabled;
     }
 
     private Author findAuthorById(String id) {

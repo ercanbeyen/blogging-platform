@@ -42,15 +42,4 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         httpServletResponse.setHeader(JwtMessage.TOKEN_MAP_KEY_REFRESH_TOKEN, tokenMap.get(JwtMessage.TOKEN_MAP_KEY_REFRESH_TOKEN));
     }
 
-    @Override
-    public void register(RegistrationRequest request, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
-        Author newAuthor = authorService.createAuthor(request);
-
-        emailService.send(request.getEmail(), emailService.getEmailTemplate(request.getFirstName()));
-
-        Map<String, String> tokenMap = jwtService.generateTokens(newAuthor);
-
-        httpServletResponse.setHeader(JwtMessage.TOKEN_MAP_KEY_ACCESS_TOKEN, tokenMap.get(JwtMessage.TOKEN_MAP_KEY_ACCESS_TOKEN));
-        httpServletResponse.setHeader(JwtMessage.TOKEN_MAP_KEY_REFRESH_TOKEN, tokenMap.get(JwtMessage.TOKEN_MAP_KEY_REFRESH_TOKEN));
-    }
 }

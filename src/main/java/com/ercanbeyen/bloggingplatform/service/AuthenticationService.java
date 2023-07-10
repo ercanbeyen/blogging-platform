@@ -7,5 +7,4 @@ import jakarta.servlet.http.HttpServletResponse;
 
 public interface AuthenticationService {
     void authenticate(AuthenticationRequest authenticationRequest, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse);
-    void register(RegistrationRequest request, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse);
 }
