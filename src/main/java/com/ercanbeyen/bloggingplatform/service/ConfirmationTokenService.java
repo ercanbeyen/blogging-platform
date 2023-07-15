@@ -7,7 +7,7 @@ import java.util.List;
 public interface ConfirmationTokenService {
     void createConfirmationToken(ConfirmationToken confirmationToken);
     ConfirmationToken getConfirmationToken(String token);
-    List<ConfirmationToken> getConfirmationTokens(String authorId);
+    List<ConfirmationToken> getConfirmationTokens(String username);
     void updateConfirmationToken(String token);
     String deleteConfirmationToken(String id);
 }

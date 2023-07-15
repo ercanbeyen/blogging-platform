@@ -252,20 +252,26 @@ public class AuthorServiceImpl implements AuthorService {
     }
 
     @Override
-    public boolean enableAuthor(String id) {
-        Author authorInDb = authorRepository.findById(id)
-                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, DocumentName.AUTHOR, id)));
+    public void enableAuthor(String authorId) {
+        Author authorInDb = authorRepository.findById(authorId)
+                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, DocumentName.AUTHOR, authorId)));
 
         boolean isEnabled = true;
 
         authorInDb.setEnabled(isEnabled);
         authorRepository.save(authorInDb);
-
-        return isEnabled;
     }
 
     private Author findAuthorById(String id) {
         return authorRepository.findById(id)
                 .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, DocumentName.AUTHOR, id)));
     }
+
+    @Override
+    public boolean doesAuthorExist(String username) {
+        return authorRepository.findAll()
+                .stream()
+                .anyMatch(author -> author.getUsername().equals(username));
+    }
+
 }

@@ -36,7 +36,6 @@ public class Author implements UserDetails {
     private String lastName;
     @Getter
     @Setter
-    @Indexed(unique = true)
     private String email;
     @Setter
     @Indexed(unique = true)

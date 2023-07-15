@@ -22,5 +22,6 @@ public interface AuthorService {
     List<String> getFollowedAuthors(String id);
     List<String> getFollowers(String id);
     List<NotificationDto> getNotifications(String toAuthorId);
-    boolean enableAuthor(String username);
+    void enableAuthor(String authorId);
+    boolean doesAuthorExist(String username);
 }
