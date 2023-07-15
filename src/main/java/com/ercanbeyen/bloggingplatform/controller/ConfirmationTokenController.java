@@ -1,6 +1,6 @@
 package com.ercanbeyen.bloggingplatform.controller;
 
-import com.ercanbeyen.bloggingplatform.document.ConfirmationToken;
+import com.ercanbeyen.bloggingplatform.dto.ConfirmationTokenDto;
 import com.ercanbeyen.bloggingplatform.service.ConfirmationTokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,8 +16,8 @@ public class ConfirmationTokenController {
 
     @GetMapping
     public ResponseEntity<Object> getConfirmationTokens(@RequestParam(required = false) String authorId) {
-        List<ConfirmationToken> confirmationTokens = confirmationTokenService.getConfirmationTokens(authorId);
-        return ResponseEntity.ok(confirmationTokens);
+        List<ConfirmationTokenDto> confirmationTokenDtoList = confirmationTokenService.getConfirmationTokens(authorId);
+        return ResponseEntity.ok(confirmationTokenDtoList);
     }
 
     @DeleteMapping("/{id}")

@@ -8,6 +8,7 @@ import com.ercanbeyen.bloggingplatform.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,12 +30,12 @@ public class PostController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> createPost(@RequestBody CreatePostRequest request) {
+    public ResponseEntity<Object> createPost(@RequestBody @Validated CreatePostRequest request) {
         return new ResponseEntity<>(postService.createPost(request), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updatePost(@PathVariable("id") String id, @RequestBody UpdatePostRequest request) {
+    public ResponseEntity<Object> updatePost(@PathVariable("id") String id, @RequestBody @Validated UpdatePostRequest request) {
         return ResponseEntity.ok(postService.updatePost(id, request));
     }
 

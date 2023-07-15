@@ -3,10 +3,10 @@ package com.ercanbeyen.bloggingplatform.service.impl;
 import com.ercanbeyen.bloggingplatform.constant.messages.ResponseMessage;
 import com.ercanbeyen.bloggingplatform.constant.values.DocumentName;
 import com.ercanbeyen.bloggingplatform.document.ConfirmationToken;
-import com.ercanbeyen.bloggingplatform.dto.AuthorDto;
+import com.ercanbeyen.bloggingplatform.dto.ConfirmationTokenDto;
+import com.ercanbeyen.bloggingplatform.dto.converter.ConfirmationTokenDtoConverter;
 import com.ercanbeyen.bloggingplatform.exception.data.DataNotFound;
 import com.ercanbeyen.bloggingplatform.repository.ConfirmationTokenRepository;
-import com.ercanbeyen.bloggingplatform.service.AuthorService;
 import com.ercanbeyen.bloggingplatform.service.ConfirmationTokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,6 +20,7 @@ import java.util.function.Predicate;
 @RequiredArgsConstructor
 public class ConfirmationTokenServiceImpl implements ConfirmationTokenService {
     private final ConfirmationTokenRepository confirmationTokenRepository;
+    private final ConfirmationTokenDtoConverter converter;
 
     @Override
     public void createConfirmationToken(ConfirmationToken confirmationToken) {
@@ -27,25 +28,29 @@ public class ConfirmationTokenServiceImpl implements ConfirmationTokenService {
     }
 
     @Override
-    public ConfirmationToken getConfirmationToken(String token) {
-        return confirmationTokenRepository.findByToken(token)
+    public ConfirmationTokenDto getConfirmationToken(String token) {
+        ConfirmationToken confirmationToken = confirmationTokenRepository.findByToken(token)
                 .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, DocumentName.CONFIRMATION_TOKEN, token)));
+        return converter.convert(confirmationToken);
     }
 
     @Override
-    public List<ConfirmationToken> getConfirmationTokens(String authorId) {
+    public List<ConfirmationTokenDto> getConfirmationTokens(String authorId) {
         Predicate<ConfirmationToken> authorPredicate = (confirmationToken) -> (authorId == null || confirmationToken.getAuthorId().equals(authorId));
 
         return confirmationTokenRepository.findAll()
                 .stream()
                 .filter(authorPredicate)
+                .map(converter::convert)
                 .toList();
     }
 
     @Transactional
     @Override
     public void updateConfirmationToken(String token) {
-        ConfirmationToken confirmationTokenInDb = getConfirmationToken(token);
+        ConfirmationToken confirmationTokenInDb = confirmationTokenRepository.findByToken(token)
+                        .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, DocumentName.CONFIRMATION_TOKEN, token)));
+
         confirmationTokenInDb.setConfirmedAt(LocalDateTime.now());
 
         confirmationTokenRepository.save(confirmationTokenInDb);

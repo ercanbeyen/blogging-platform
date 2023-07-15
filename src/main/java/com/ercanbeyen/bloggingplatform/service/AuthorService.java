@@ -4,14 +4,14 @@ import com.ercanbeyen.bloggingplatform.document.Author;
 import com.ercanbeyen.bloggingplatform.dto.AuthorDto;
 import com.ercanbeyen.bloggingplatform.dto.NotificationDto;
 import com.ercanbeyen.bloggingplatform.dto.request.auth.RegistrationRequest;
-import com.ercanbeyen.bloggingplatform.dto.request.update.UpdateAuthorDetailsRequest;
+import com.ercanbeyen.bloggingplatform.dto.request.update.UpdateAuthorRequest;
 import com.ercanbeyen.bloggingplatform.dto.request.update.UpdateAuthorRolesRequest;
 
 import java.util.List;
 
 public interface AuthorService {
     Author createAuthor(RegistrationRequest request);
-    AuthorDto updateAuthor(String id, UpdateAuthorDetailsRequest request);
+    AuthorDto updateAuthor(String id, UpdateAuthorRequest request);
     AuthorDto getAuthor(String id);
     List<AuthorDto> getAuthors();
     void deleteAuthor(String id);

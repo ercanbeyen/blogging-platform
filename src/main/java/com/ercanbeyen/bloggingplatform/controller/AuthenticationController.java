@@ -5,6 +5,7 @@ import com.ercanbeyen.bloggingplatform.service.AuthenticationService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -16,7 +17,7 @@ public class AuthenticationController {
     private final AuthenticationService authenticationService;
 
     @PostMapping("/login")
-    public void login(@RequestBody LoginRequest request, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+    public void login(@RequestBody @Validated LoginRequest request, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         authenticationService.authenticate(request, httpServletRequest, httpServletResponse);
     }
 

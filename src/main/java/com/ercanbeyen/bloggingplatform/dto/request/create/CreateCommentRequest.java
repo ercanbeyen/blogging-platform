@@ -1,5 +1,6 @@
 package com.ercanbeyen.bloggingplatform.dto.request.create;
 
+import com.ercanbeyen.bloggingplatform.constant.messages.ResponseMessage;
 import com.ercanbeyen.bloggingplatform.dto.request.base.BaseCommentRequest;
 
 import jakarta.validation.constraints.NotBlank;
@@ -11,6 +12,6 @@ import lombok.ToString;
 @Setter
 @ToString
 public class CreateCommentRequest extends BaseCommentRequest {
-    @NotBlank(message = "Post id should be blank")
+    @NotBlank(message = "Post id" + ResponseMessage.SHOULD_NOT_BLANK)
     private String postId;
 }

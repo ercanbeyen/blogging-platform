@@ -1,14 +1,12 @@
 package com.ercanbeyen.bloggingplatform.controller;
 
-import com.ercanbeyen.bloggingplatform.dto.AuthorDto;
-import com.ercanbeyen.bloggingplatform.dto.request.update.UpdateAuthorDetailsRequest;
+import com.ercanbeyen.bloggingplatform.dto.request.update.UpdateAuthorRequest;
 import com.ercanbeyen.bloggingplatform.dto.request.update.UpdateAuthorRolesRequest;
 import com.ercanbeyen.bloggingplatform.service.AuthorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/authors")
@@ -28,7 +26,7 @@ public class AuthorController {
 
 
     @PutMapping("/{id}/details")
-    public ResponseEntity<Object> updateAuthorDetails(@PathVariable("id") String id, @RequestBody UpdateAuthorDetailsRequest request) {
+    public ResponseEntity<Object> updateAuthor(@PathVariable("id") String id, @RequestBody @Validated UpdateAuthorRequest request) {
         return ResponseEntity.ok(authorService.updateAuthor(id, request));
     }
 
@@ -39,7 +37,7 @@ public class AuthorController {
     }
 
     @PutMapping("/{id}/roles")
-    public ResponseEntity<Object> updateRolesOfAuthor(@PathVariable("id") String id, @RequestBody UpdateAuthorRolesRequest request) {
+    public ResponseEntity<Object> updateRolesOfAuthor(@PathVariable("id") String id, @RequestBody @Validated UpdateAuthorRolesRequest request) {
         return ResponseEntity.ok(authorService.updateRolesOfAuthor(id, request));
     }
 

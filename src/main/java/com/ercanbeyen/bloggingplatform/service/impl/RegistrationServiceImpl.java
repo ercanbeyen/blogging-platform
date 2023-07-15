@@ -3,6 +3,7 @@ package com.ercanbeyen.bloggingplatform.service.impl;
 import com.ercanbeyen.bloggingplatform.constant.messages.ResponseMessage;
 import com.ercanbeyen.bloggingplatform.document.Author;
 import com.ercanbeyen.bloggingplatform.document.ConfirmationToken;
+import com.ercanbeyen.bloggingplatform.dto.ConfirmationTokenDto;
 import com.ercanbeyen.bloggingplatform.dto.request.auth.RegistrationRequest;
 import com.ercanbeyen.bloggingplatform.exception.data.DataConflict;
 import com.ercanbeyen.bloggingplatform.service.AuthorService;
@@ -39,10 +40,10 @@ public class RegistrationServiceImpl implements RegistrationService {
             log.info("Author " + registeredAuthor.getId() + " is created");
         } else {
             registeredAuthor = authorService.getAuthorByUsername(request.getUsername());
-            List<ConfirmationToken> confirmationTokens = confirmationTokenService.getConfirmationTokens(registeredAuthor.getId());
+            List<ConfirmationTokenDto> confirmationTokenDtoList = confirmationTokenService.getConfirmationTokens(registeredAuthor.getId());
 
-            for (ConfirmationToken confirmationToken : confirmationTokens) {
-                if (confirmationToken.getConfirmedAt() != null) {
+            for (ConfirmationTokenDto confirmationTokenDto : confirmationTokenDtoList) {
+                if (confirmationTokenDto.getConfirmedAt() != null) {
                     throw new DataConflict(ResponseMessage.ALREADY_CONFIRMED);
                 }
             }
@@ -68,7 +69,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     @Override
     public String confirmToken(String token) {
-        ConfirmationToken confirmationTokenInDb = confirmationTokenService.getConfirmationToken(token);
+        ConfirmationTokenDto confirmationTokenInDb = confirmationTokenService.getConfirmationToken(token);
 
         if (confirmationTokenInDb.getConfirmedAt() != null) {
             throw new DataConflict(ResponseMessage.ALREADY_CONFIRMED);

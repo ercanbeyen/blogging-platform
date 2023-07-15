@@ -8,6 +8,8 @@ import org.springframework.stereotype.Component;
 public class AuthorDtoConverter {
     public AuthorDto convert(Author author) {
         return AuthorDto.builder()
+                .username(author.getUsername())
+                .email(author.getEmail())
                 .firstName(author.getFirstName())
                 .lastName(author.getLastName())
                 .username(author.getUsername())

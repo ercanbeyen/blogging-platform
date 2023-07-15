@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -15,7 +16,7 @@ public class RegistrationController {
     private final RegistrationService registrationService;
 
     @PostMapping
-    public void register(@RequestBody RegistrationRequest request, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+    public void register(@RequestBody @Validated RegistrationRequest request, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         registrationService.register(request, httpServletRequest, httpServletResponse);
     }
 

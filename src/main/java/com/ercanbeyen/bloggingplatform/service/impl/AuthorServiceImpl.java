@@ -7,7 +7,7 @@ import com.ercanbeyen.bloggingplatform.document.Role;
 import com.ercanbeyen.bloggingplatform.dto.AuthorDto;
 import com.ercanbeyen.bloggingplatform.dto.NotificationDto;
 import com.ercanbeyen.bloggingplatform.dto.request.auth.RegistrationRequest;
-import com.ercanbeyen.bloggingplatform.dto.request.update.UpdateAuthorDetailsRequest;
+import com.ercanbeyen.bloggingplatform.dto.request.update.UpdateAuthorRequest;
 import com.ercanbeyen.bloggingplatform.dto.request.update.UpdateAuthorRolesRequest;
 import com.ercanbeyen.bloggingplatform.exception.data.DataConflict;
 import com.ercanbeyen.bloggingplatform.exception.data.DataForbidden;
@@ -61,24 +61,32 @@ public class AuthorServiceImpl implements AuthorService {
 
     @Transactional
     @Override
-    public AuthorDto updateAuthor(String id, UpdateAuthorDetailsRequest request) {
-        Author loggedIn_author = SecurityUtil.getLoggedInAuthor();
-        String loggedIn_authorId = loggedIn_author.getId();
+    public AuthorDto updateAuthor(String id, UpdateAuthorRequest request) {
+        Author loggedInAuthor = SecurityUtil.getLoggedInAuthor();
+        String loggedIn_authorId = loggedInAuthor.getId();
 
         if (!loggedIn_authorId.equals(id)) {
             throw new DataForbidden(ResponseMessage.NOT_AUTHORIZED);
         }
 
-        Author authorInDb = findAuthorById(id);
+        String username = request.getUsername();
 
-        authorInDb.setFirstName(request.getFirstName());
-        authorInDb.setLastName(request.getLastName());
-        authorInDb.setAbout(request.getAbout());
-        authorInDb.setGender(request.getGender());
-        authorInDb.setFavoriteTopics(request.getFavoriteTopics());
-        authorInDb.setLocation(request.getLocation());
+        Optional<Author> optionalAuthor = authorRepository.findByUsername(username);
 
-        Author updatedAuthor = authorRepository.save(authorInDb);
+        if (optionalAuthor.isPresent() && !optionalAuthor.get().getId().equals(id)) {
+            throw new DataConflict("Username is already in use");
+        }
+
+        loggedInAuthor.setUsername(request.getUsername());
+        loggedInAuthor.setEmail(request.getEmail());
+        loggedInAuthor.setFirstName(request.getFirstName());
+        loggedInAuthor.setLastName(request.getLastName());
+        loggedInAuthor.setAbout(request.getAbout());
+        loggedInAuthor.setGender(request.getGender());
+        loggedInAuthor.setFavoriteTopics(request.getFavoriteTopics());
+        loggedInAuthor.setLocation(request.getLocation());
+
+        Author updatedAuthor = authorRepository.save(loggedInAuthor);
 
         return authorDtoConverter.convert(updatedAuthor);
     }
