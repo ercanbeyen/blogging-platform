@@ -1,5 +1,8 @@
 package com.ercanbeyen.bloggingplatform.exception;
 
+import com.ercanbeyen.bloggingplatform.exception.data.DataConflict;
+import com.ercanbeyen.bloggingplatform.exception.data.DataForbidden;
+import com.ercanbeyen.bloggingplatform.exception.data.DataNotFound;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;

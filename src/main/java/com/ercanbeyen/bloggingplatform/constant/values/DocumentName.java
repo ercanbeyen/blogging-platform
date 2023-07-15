@@ -6,4 +6,5 @@ public class DocumentName {
     public static final String COMMENT = "Comment";
     public static final String ROLE = "Role";
     public static final String NOTIFICATION = "Notification";
+    public static final String CONFIRMATION_TOKEN = "Confirmation Token";
 }

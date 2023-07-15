@@ -3,21 +3,19 @@ package com.ercanbeyen.bloggingplatform.service.impl;
 import com.ercanbeyen.bloggingplatform.constant.values.DocumentName;
 import com.ercanbeyen.bloggingplatform.constant.messages.ResponseMessage;
 import com.ercanbeyen.bloggingplatform.constant.enums.RoleName;
-import com.ercanbeyen.bloggingplatform.document.ConfirmationToken;
 import com.ercanbeyen.bloggingplatform.document.Role;
 import com.ercanbeyen.bloggingplatform.dto.AuthorDto;
 import com.ercanbeyen.bloggingplatform.dto.NotificationDto;
 import com.ercanbeyen.bloggingplatform.dto.request.auth.RegistrationRequest;
 import com.ercanbeyen.bloggingplatform.dto.request.update.UpdateAuthorDetailsRequest;
 import com.ercanbeyen.bloggingplatform.dto.request.update.UpdateAuthorRolesRequest;
-import com.ercanbeyen.bloggingplatform.exception.DataConflict;
-import com.ercanbeyen.bloggingplatform.exception.DataForbidden;
-import com.ercanbeyen.bloggingplatform.exception.DataNotFound;
+import com.ercanbeyen.bloggingplatform.exception.data.DataConflict;
+import com.ercanbeyen.bloggingplatform.exception.data.DataForbidden;
+import com.ercanbeyen.bloggingplatform.exception.data.DataNotFound;
 import com.ercanbeyen.bloggingplatform.dto.converter.AuthorDtoConverter;
 import com.ercanbeyen.bloggingplatform.document.Author;
 import com.ercanbeyen.bloggingplatform.repository.AuthorRepository;
 import com.ercanbeyen.bloggingplatform.service.AuthorService;
-import com.ercanbeyen.bloggingplatform.service.ConfirmationTokenService;
 import com.ercanbeyen.bloggingplatform.service.NotificationService;
 import com.ercanbeyen.bloggingplatform.service.RoleService;
 import com.ercanbeyen.bloggingplatform.util.SecurityUtil;
@@ -38,7 +36,6 @@ public class AuthorServiceImpl implements AuthorService {
     private final PasswordEncoder passwordEncoder;
     private final RoleService roleService;
     private final NotificationService notificationService;
-    private final ConfirmationTokenService confirmationTokenService;
 
     @Transactional
     @Override

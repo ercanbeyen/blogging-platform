@@ -2,9 +2,8 @@ package com.ercanbeyen.bloggingplatform.service.impl;
 
 import com.ercanbeyen.bloggingplatform.document.Author;
 import com.ercanbeyen.bloggingplatform.document.ConfirmationToken;
-import com.ercanbeyen.bloggingplatform.dto.AuthorDto;
 import com.ercanbeyen.bloggingplatform.dto.request.auth.RegistrationRequest;
-import com.ercanbeyen.bloggingplatform.exception.DataConflict;
+import com.ercanbeyen.bloggingplatform.exception.data.DataConflict;
 import com.ercanbeyen.bloggingplatform.service.AuthorService;
 import com.ercanbeyen.bloggingplatform.service.ConfirmationTokenService;
 import com.ercanbeyen.bloggingplatform.service.EmailService;

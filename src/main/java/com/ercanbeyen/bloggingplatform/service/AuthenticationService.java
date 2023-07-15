@@ -1,10 +1,12 @@
 package com.ercanbeyen.bloggingplatform.service;
 
-import com.ercanbeyen.bloggingplatform.dto.request.auth.AuthenticationRequest;
-import com.ercanbeyen.bloggingplatform.dto.request.auth.RegistrationRequest;
+import com.ercanbeyen.bloggingplatform.dto.request.auth.LoginRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import java.io.IOException;
+
 public interface AuthenticationService {
-    void authenticate(AuthenticationRequest authenticationRequest, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse);
+    void authenticate(LoginRequest loginRequest, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse);
+    void refreshToken(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException;
 }
