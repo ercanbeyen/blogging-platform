@@ -26,5 +26,10 @@ public class ConfirmationTokenController {
         return ResponseEntity.ok(message);
     }
 
+    @DeleteMapping
+    public ResponseEntity<Object> deleteConfirmationTokens(@RequestParam("authorId") String authorId) {
+        String message = confirmationTokenService.deleteConfirmationTokens(authorId);
+        return ResponseEntity.ok(message);
+    }
 
 }

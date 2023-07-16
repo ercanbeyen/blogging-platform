@@ -149,6 +149,7 @@ public class PostServiceImpl implements PostService {
         postRepository.save(postInDb);
     }
 
+    @Transactional
     @Override
     public void deleteCommentFromPost(String postId, String commentId) {
         Post postInDb = findPostById(postId);
@@ -163,6 +164,7 @@ public class PostServiceImpl implements PostService {
         postRepository.save(postInDb);
     }
 
+    @Transactional
     @Override
     public String likePost(String id) {
         Post postInDb = findPostById(id);
@@ -183,6 +185,7 @@ public class PostServiceImpl implements PostService {
         return "You liked post " + postInDb.getId();
     }
 
+    @Transactional
     @Override
     public String dislikePost(String id) {
         Post postInDb = postRepository.findById(id)
@@ -205,6 +208,7 @@ public class PostServiceImpl implements PostService {
         return "You disliked post " + postInDb.getId();
     }
 
+    @Transactional
     @Override
     public String removeStatus(String id) {
         Post postInDb = findPostById(id);

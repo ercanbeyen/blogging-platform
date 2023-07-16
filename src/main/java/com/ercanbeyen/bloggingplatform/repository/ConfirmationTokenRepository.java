@@ -7,4 +7,5 @@ import java.util.Optional;
 
 public interface ConfirmationTokenRepository extends MongoRepository<ConfirmationToken, String> {
     Optional<ConfirmationToken> findByToken(String token);
+    void deleteAllByAuthorId(String authorId);
 }

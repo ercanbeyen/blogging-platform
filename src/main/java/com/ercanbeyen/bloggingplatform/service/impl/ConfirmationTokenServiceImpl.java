@@ -72,4 +72,19 @@ public class ConfirmationTokenServiceImpl implements ConfirmationTokenService {
         return String.format(ResponseMessage.SUCCESSFULLY_DELETED, DocumentName.CONFIRMATION_TOKEN, id);
     }
 
+    @Override
+    public String deleteConfirmationTokens(String authorId) {
+        boolean authorIdExistsInConfirmationTokens = confirmationTokenRepository.findAll()
+                .stream()
+                .anyMatch(confirmationToken -> confirmationToken.getAuthorId().equals(authorId));
+
+        if (!authorIdExistsInConfirmationTokens) {
+            throw new DataNotFound(String.format(ResponseMessage.NOT_FOUND, DocumentName.AUTHOR, authorId));
+        }
+
+        confirmationTokenRepository.deleteAllByAuthorId(authorId);
+
+        return DocumentName.CONFIRMATION_TOKEN + "s of "+ authorId + " are successfully deleted";
+    }
+
 }

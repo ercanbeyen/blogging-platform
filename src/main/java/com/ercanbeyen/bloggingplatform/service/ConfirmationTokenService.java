@@ -11,4 +11,5 @@ public interface ConfirmationTokenService {
     List<ConfirmationTokenDto> getConfirmationTokens(String username);
     void updateConfirmationToken(String token);
     String deleteConfirmationToken(String id);
+    String deleteConfirmationTokens(String authorId);
 }
