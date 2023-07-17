@@ -9,8 +9,9 @@ There are 5 documents in this project
 - Author
 - Post
 - Comment
-- Confirmation Token
 - Role
+- Confirmation Token
+- Notification
 
 There are 2 roles among authors
 - Admin
@@ -19,10 +20,13 @@ There are 2 roles among authors
 ### Requirements
 - Each author must have a unique username and email address.
 - Author's essential fields are first name, last name, username, password and email address. Other fields are optional.
-- Each author must activate their account with the activation link sent to their e-mail address in order to register on the platform.
+- Each author must activate their account with the activation link sent to their email address in order to register on the platform.
 - Each post must have title, text and category.
 - Each comment must belongs to a specific post.
 - Each author has an User role.
+- Authors may follow or unfollow each other.
+- Followers may receive a notification when the author creates a new post.
+- Authors may receive notifications when comments are posted on their posts.
 
 ### Tech Stack
 - Java 18
