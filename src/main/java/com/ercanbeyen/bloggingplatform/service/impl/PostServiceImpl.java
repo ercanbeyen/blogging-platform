@@ -17,6 +17,7 @@ import com.ercanbeyen.bloggingplatform.exception.data.DataForbidden;
 import com.ercanbeyen.bloggingplatform.exception.data.DataNotFound;
 import com.ercanbeyen.bloggingplatform.repository.PostRepository;
 import com.ercanbeyen.bloggingplatform.service.PostService;
+import com.ercanbeyen.bloggingplatform.util.RoleUtil;
 import com.ercanbeyen.bloggingplatform.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -39,6 +40,8 @@ public class PostServiceImpl implements PostService {
     @Override
     public PostDto createPost(CreatePostRequest request) {
         Author loggedInAuthor = SecurityUtil.getLoggedInAuthor();
+
+        RoleUtil.checkIsBanned(loggedInAuthor);
 
         Post createdPost = Post.builder()
                 .author(loggedInAuthor)
@@ -77,6 +80,8 @@ public class PostServiceImpl implements PostService {
         Author author_posted = postInDb.getAuthor();
         Author loggedIn_author = SecurityUtil.getLoggedInAuthor();
 
+        RoleUtil.checkIsBanned(author_posted);
+
         if (!author_posted.getId().equals(loggedIn_author.getId())) {
             throw new DataForbidden(ResponseMessage.NOT_AUTHORIZED);
         }
@@ -88,19 +93,6 @@ public class PostServiceImpl implements PostService {
         postInDb.setLatestChangeAt(LocalDateTime.now());
 
         Post savedPost = postRepository.save(postInDb);
-        List<Author> followers = loggedIn_author.getFollowers();
-
-        for (Author follower: followers) {
-            String receiverMessage = "Dear " + follower.getUsername() + ", author " + loggedIn_author.getUsername() + " updated the article " + postInDb.getTitle() + ".";
-            NotificationDto notificationDto = NotificationDto.builder()
-                    .fromAuthorId(loggedIn_author.getId())
-                    .toAuthorId(follower.getId())
-                    .description(receiverMessage)
-                    .topic(NotificationMessage.POST_NOTIFICATION)
-                    .build();
-
-            kafkaTemplate.send(NotificationMessage.POST_NOTIFICATION, notificationDto);
-        }
 
         return postDtoConverter.convert(savedPost);
     }

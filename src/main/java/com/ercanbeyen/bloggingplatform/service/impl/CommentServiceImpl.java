@@ -15,6 +15,7 @@ import com.ercanbeyen.bloggingplatform.exception.data.DataNotFound;
 import com.ercanbeyen.bloggingplatform.repository.CommentRepository;
 import com.ercanbeyen.bloggingplatform.service.CommentService;
 import com.ercanbeyen.bloggingplatform.service.PostService;
+import com.ercanbeyen.bloggingplatform.util.RoleUtil;
 import com.ercanbeyen.bloggingplatform.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -38,6 +39,8 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public CommentDto createComment(CreateCommentRequest request) {
         Author loggedInAuthor = SecurityUtil.getLoggedInAuthor();
+
+        RoleUtil.checkIsBanned(loggedInAuthor);
 
         Comment newComment = Comment.builder()
                 .author(loggedInAuthor)
@@ -64,10 +67,12 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public CommentDto updateComment(String id, UpdateCommentRequest request) {
         Comment commentInDb = findCommentById(id);
-        Author author_commented = commentInDb.getAuthor();
-        Author loggedIn_author = SecurityUtil.getLoggedInAuthor();
+        Author authorCommented = commentInDb.getAuthor();
+        Author loggedInAuthor = SecurityUtil.getLoggedInAuthor();
 
-        if (!author_commented.getId().equals(loggedIn_author.getId())) {
+        RoleUtil.checkIsBanned(loggedInAuthor);
+
+        if (!authorCommented.getId().equals(loggedInAuthor.getId())) {
             throw new DataForbidden(ResponseMessage.NOT_AUTHORIZED);
         }
 
