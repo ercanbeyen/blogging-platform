@@ -16,7 +16,7 @@ public interface AuthorService {
     List<AuthorDto> getAuthors();
     void deleteAuthor(String id);
     AuthorDto updateRolesOfAuthor(String id, UpdateAuthorRolesRequest request);
-    Author getAuthorByUsername(String username);
+    Author findAuthorByUsername(String username);
     String followAuthor(String id, String authorId);
     String unFollowAuthor(String id, String authorId);
     List<String> getFollowedAuthors(String id);
@@ -24,4 +24,5 @@ public interface AuthorService {
     List<NotificationDto> getNotifications(String toAuthorId);
     void enableAuthor(String authorId);
     boolean doesAuthorExist(String username);
+    void updatePassword(String username, String password);
 }

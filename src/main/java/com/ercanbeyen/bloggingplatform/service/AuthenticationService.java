@@ -9,4 +9,5 @@ import java.io.IOException;
 public interface AuthenticationService {
     void authenticate(LoginRequest loginRequest, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse);
     void refreshToken(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException;
+    void updatePassword(String username);
 }

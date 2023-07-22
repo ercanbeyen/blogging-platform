@@ -26,4 +26,9 @@ public class AuthenticationController {
         authenticationService.refreshToken(request, response);
     }
 
+    @GetMapping("/update-password")
+    public void updatePassword(@RequestParam(value = "user") String username) {
+        authenticationService.updatePassword(username);
+    }
+
 }

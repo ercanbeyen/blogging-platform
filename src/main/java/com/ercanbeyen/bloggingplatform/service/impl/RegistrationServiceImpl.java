@@ -1,5 +1,6 @@
 package com.ercanbeyen.bloggingplatform.service.impl;
 
+import com.ercanbeyen.bloggingplatform.constant.enums.EmailTemplate;
 import com.ercanbeyen.bloggingplatform.constant.messages.ResponseMessage;
 import com.ercanbeyen.bloggingplatform.document.Author;
 import com.ercanbeyen.bloggingplatform.document.ConfirmationToken;
@@ -39,7 +40,7 @@ public class RegistrationServiceImpl implements RegistrationService {
             registeredAuthor = authorService.createAuthor(request);
             log.info("Author " + registeredAuthor.getId() + " is created");
         } else {
-            registeredAuthor = authorService.getAuthorByUsername(request.getUsername());
+            registeredAuthor = authorService.findAuthorByUsername(request.getUsername());
             List<ConfirmationTokenDto> confirmationTokenDtoList = confirmationTokenService.getConfirmationTokens(registeredAuthor.getId());
 
             for (ConfirmationTokenDto confirmationTokenDto : confirmationTokenDtoList) {
@@ -62,7 +63,7 @@ public class RegistrationServiceImpl implements RegistrationService {
         confirmationTokenService.createConfirmationToken(confirmationToken);
 
         String link = "http://localhost:8080/api/v1/registration/confirm?token=" + token;
-        emailService.send(request.getEmail(), emailService.buildEmail(request.getFirstName(), link));
+        emailService.send("Registration", request.getEmail(), emailService.buildEmail(request.getFirstName(), link, EmailTemplate.REGISTRATION));
 
         httpServletResponse.setHeader("confirmation_token", token);
     }

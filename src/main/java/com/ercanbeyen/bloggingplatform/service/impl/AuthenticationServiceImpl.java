@@ -1,5 +1,6 @@
 package com.ercanbeyen.bloggingplatform.service.impl;
 
+import com.ercanbeyen.bloggingplatform.constant.enums.EmailTemplate;
 import com.ercanbeyen.bloggingplatform.constant.messages.JwtMessage;
 import com.ercanbeyen.bloggingplatform.document.Author;
 import com.ercanbeyen.bloggingplatform.dto.request.auth.LoginRequest;
@@ -7,6 +8,7 @@ import com.ercanbeyen.bloggingplatform.exception.data.DataNotFound;
 import com.ercanbeyen.bloggingplatform.security.jwt.JwtService;
 import com.ercanbeyen.bloggingplatform.service.AuthenticationService;
 import com.ercanbeyen.bloggingplatform.service.AuthorService;
+import com.ercanbeyen.bloggingplatform.service.EmailService;
 import com.ercanbeyen.bloggingplatform.util.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -20,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +31,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final AuthenticationManager authenticationManager;
     private final AuthorService authorService;
     private final JwtService jwtService;
+    private final EmailService emailService;
 
     @Override
     public void authenticate(LoginRequest loginRequest, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
@@ -38,7 +42,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 )
         );
 
-        Author author = authorService.getAuthorByUsername(loginRequest.getUsername());
+        Author author = authorService.findAuthorByUsername(loginRequest.getUsername());
 
         Map<String, String> tokenMap = jwtService.generateTokens(author);
 
@@ -65,6 +69,15 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         } finally {
             log.info("Refresh method is terminated");
         }
+    }
+
+    @Override
+    public void updatePassword(String username) {
+        Author authorInDb = authorService.findAuthorByUsername(username);
+        String newPassword = UUID.randomUUID().toString();
+        authorService.updatePassword(username, newPassword);
+
+        emailService.send("Password Update", authorInDb.getEmail(), emailService.buildEmail(authorInDb.getFirstName(), newPassword, EmailTemplate.UPDATE_PASSWORD));
     }
 
 }

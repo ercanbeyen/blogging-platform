@@ -47,7 +47,7 @@ public class AuthorServiceImpl implements AuthorService {
         Author newAuthor = Author.builder()
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
-                .password(passwordEncoder.encode(request.getPassword()))
+                .password(encodePassword(request.getPassword()))
                 .username(request.getUsername())
                 .roles(roles)
                 .email(request.getEmail())
@@ -146,7 +146,7 @@ public class AuthorServiceImpl implements AuthorService {
     }
 
     @Override
-    public Author getAuthorByUsername(String username) {
+    public Author findAuthorByUsername(String username) {
         return authorRepository.findByUsername(username)
                 .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, DocumentName.AUTHOR, username)));
     }
@@ -282,4 +282,14 @@ public class AuthorServiceImpl implements AuthorService {
                 .anyMatch(author -> author.getUsername().equals(username));
     }
 
+    @Override
+    public void updatePassword(String username, String password) {
+        Author authorInDb = findAuthorByUsername(username);
+        authorInDb.setPassword(encodePassword(password));
+        authorRepository.save(authorInDb);
+    }
+
+    private String encodePassword(String password) {
+        return passwordEncoder.encode(password);
+    }
 }

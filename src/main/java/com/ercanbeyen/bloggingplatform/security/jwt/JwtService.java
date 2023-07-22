@@ -107,7 +107,7 @@ public class JwtService {
         tokenMap.put(JwtMessage.TOKEN_MAP_KEY_REFRESH_TOKEN, refreshToken);
 
         String username = decodedJWT.getSubject();
-        Author author = authorService.getAuthorByUsername(username);
+        Author author = authorService.findAuthorByUsername(username);
 
         String accessToken = JWT.create()
                 .withSubject(author.getUsername())
