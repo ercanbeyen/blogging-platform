@@ -2,6 +2,7 @@ package com.ercanbeyen.bloggingplatform.controller;
 
 import com.ercanbeyen.bloggingplatform.dto.request.update.UpdateAuthorRequest;
 import com.ercanbeyen.bloggingplatform.dto.request.update.UpdateAuthorRolesRequest;
+import com.ercanbeyen.bloggingplatform.dto.request.update.UpdatePasswordRequest;
 import com.ercanbeyen.bloggingplatform.service.AuthorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -64,5 +65,10 @@ public class AuthorController {
     @GetMapping("/{id}/notifications")
     public ResponseEntity<Object> getNotifications(@PathVariable("id") String id) {
         return ResponseEntity.ok(authorService.getNotifications(id));
+    }
+
+    @PutMapping("/{id}/password-update")
+    public ResponseEntity<Object> updatePassword(@PathVariable(value = "id") String id, @RequestBody UpdatePasswordRequest request) {
+        return ResponseEntity.ok(authorService.updatePassword(id, request));
     }
 }

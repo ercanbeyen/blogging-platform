@@ -33,7 +33,7 @@ public class RegistrationServiceImpl implements RegistrationService {
     @Transactional
     @Override
     public void register(RegistrationRequest request, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
-        boolean authorExists = authorService.doesAuthorExist(request.getUsername());
+        boolean authorExists = authorService.authorExists(request.getUsername());
         Author registeredAuthor;
 
         if (!authorExists) {

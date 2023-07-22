@@ -6,8 +6,14 @@ import com.ercanbeyen.bloggingplatform.dto.NotificationDto;
 import com.ercanbeyen.bloggingplatform.dto.request.auth.RegistrationRequest;
 import com.ercanbeyen.bloggingplatform.dto.request.update.UpdateAuthorRequest;
 import com.ercanbeyen.bloggingplatform.dto.request.update.UpdateAuthorRolesRequest;
+import com.ercanbeyen.bloggingplatform.dto.request.update.UpdatePasswordRequest;
 
 import java.util.List;
+
+/*
+TODO: Add password update
+TODO: Add password validation (It must contain at least one letter, number and minimum length is 5)
+ */
 
 public interface AuthorService {
     Author createAuthor(RegistrationRequest request);
@@ -23,6 +29,7 @@ public interface AuthorService {
     List<String> getFollowers(String id);
     List<NotificationDto> getNotifications(String toAuthorId);
     void enableAuthor(String authorId);
-    boolean doesAuthorExist(String username);
+    boolean authorExists(String username);
+    String updatePassword(String id, UpdatePasswordRequest request);
     void updatePassword(String username, String password);
 }

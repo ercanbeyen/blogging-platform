@@ -9,6 +9,7 @@ import com.ercanbeyen.bloggingplatform.dto.NotificationDto;
 import com.ercanbeyen.bloggingplatform.dto.request.auth.RegistrationRequest;
 import com.ercanbeyen.bloggingplatform.dto.request.update.UpdateAuthorRequest;
 import com.ercanbeyen.bloggingplatform.dto.request.update.UpdateAuthorRolesRequest;
+import com.ercanbeyen.bloggingplatform.dto.request.update.UpdatePasswordRequest;
 import com.ercanbeyen.bloggingplatform.exception.data.DataConflict;
 import com.ercanbeyen.bloggingplatform.exception.data.DataForbidden;
 import com.ercanbeyen.bloggingplatform.exception.data.DataNotFound;
@@ -276,10 +277,28 @@ public class AuthorServiceImpl implements AuthorService {
     }
 
     @Override
-    public boolean doesAuthorExist(String username) {
+    public boolean authorExists(String username) {
         return authorRepository.findAll()
                 .stream()
                 .anyMatch(author -> author.getUsername().equals(username));
+    }
+
+    @Override
+    public String updatePassword(String id, UpdatePasswordRequest request) {
+        Author loggedInAuthor = SecurityUtil.getLoggedInAuthor();
+
+        if (!loggedInAuthor.getId().equals(id)) {
+            throw new DataForbidden(ResponseMessage.NOT_AUTHORIZED);
+        }
+
+
+        if (!request.getPassword().equals(request.getValidationPassword())) {
+            throw new DataConflict("Password mismatch");
+        }
+
+        updatePassword(loggedInAuthor.getUsername(), request.getPassword());
+
+        return "Password is successfully updated";
     }
 
     @Override
