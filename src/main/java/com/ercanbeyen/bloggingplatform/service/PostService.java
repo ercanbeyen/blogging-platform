@@ -2,6 +2,7 @@ package com.ercanbeyen.bloggingplatform.service;
 
 import com.ercanbeyen.bloggingplatform.document.Comment;
 import com.ercanbeyen.bloggingplatform.dto.AuthorDto;
+import com.ercanbeyen.bloggingplatform.dto.CommentDto;
 import com.ercanbeyen.bloggingplatform.dto.PostDto;
 import com.ercanbeyen.bloggingplatform.dto.request.create.CreatePostRequest;
 import com.ercanbeyen.bloggingplatform.dto.request.update.UpdatePostRequest;
@@ -21,4 +22,5 @@ public interface PostService {
     String removeStatus(String id);
     List<AuthorDto> getAuthorsLiked(String id);
     List<AuthorDto> getAuthorsDisliked(String id);
+    List<CommentDto> getComments(String id);
 }

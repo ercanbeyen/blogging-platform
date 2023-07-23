@@ -1,12 +1,14 @@
 package com.ercanbeyen.bloggingplatform.controller;
 
-import com.ercanbeyen.bloggingplatform.dto.AuthorDto;
 import com.ercanbeyen.bloggingplatform.dto.PostDto;
 import com.ercanbeyen.bloggingplatform.dto.request.create.CreatePostRequest;
 import com.ercanbeyen.bloggingplatform.dto.request.update.UpdatePostRequest;
 import com.ercanbeyen.bloggingplatform.service.PostService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.MediaTypes;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
+import org.springframework.http.HttpStatus;;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -19,14 +21,30 @@ import java.util.List;
 public class PostController {
     private final PostService postService;
 
-    @GetMapping
+    @GetMapping(produces = MediaTypes.HAL_JSON_VALUE)
     public ResponseEntity<Object> getPosts() {
-        return ResponseEntity.ok(postService.getPosts());
+        List<PostDto> postDtoList = postService.getPosts();
+
+        postDtoList.forEach(postDto -> {
+            Link postLink = WebMvcLinkBuilder.linkTo(PostController.class).slash(postDto.getId()).withSelfRel();
+            postDto.add(postLink);
+        });
+
+        return ResponseEntity.ok(postDtoList);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping(value = "/{id}", produces = MediaTypes.HAL_JSON_VALUE)
     public ResponseEntity<Object> getPost(@PathVariable("id") String id) {
-        return ResponseEntity.ok(postService.getPost(id));
+        PostDto postDto = postService.getPost(id);
+
+        Link postLink = WebMvcLinkBuilder.linkTo(PostController.class).slash(postDto.getId()).withSelfRel();
+        Link commentsLink = WebMvcLinkBuilder.linkTo(PostController.class).slash(postDto.getId()).slash("comments").withRel("comments");
+        Link authorsLikedLink = WebMvcLinkBuilder.linkTo(PostController.class).slash(postDto.getId()).slash("likes").withRel("likes");
+        Link authorsDislikedLink = WebMvcLinkBuilder.linkTo(PostController.class).slash(postDto.getId()).slash("dislikes").withRel("dislikes");
+
+        postDto.add(postLink, commentsLink, authorsLikedLink, authorsDislikedLink);
+
+        return ResponseEntity.ok(postDto);
     }
 
     @PostMapping
@@ -67,6 +85,11 @@ public class PostController {
     @GetMapping("/{id}/dislikes")
     public ResponseEntity<Object> getAuthorsDisliked(@PathVariable("id") String id) {
         return ResponseEntity.ok(postService.getAuthorsDisliked(id));
+    }
+
+    @GetMapping(value = "/{id}/comments")
+    public ResponseEntity<Object> getComments(@PathVariable("id") String id) {
+        return ResponseEntity.ok(postService.getComments(id));
     }
 
 }

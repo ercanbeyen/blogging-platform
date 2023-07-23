@@ -77,7 +77,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         String newPassword = UUID.randomUUID().toString();
         authorService.updatePassword(username, newPassword);
 
-        emailService.send("Password Update", authorInDb.getEmail(), emailService.buildEmail(authorInDb.getFirstName(), newPassword, EmailTemplate.UPDATE_PASSWORD));
+        emailService.send("Password Update", authorInDb.getEmail(), emailService.buildEmail(authorInDb.getFirstName(), newPassword, EmailTemplate.PASSWORD_UPDATE));
     }
 
 }

@@ -8,12 +8,12 @@ import org.springframework.stereotype.Component;
 public class PostDtoConverter {
     public PostDto convert(Post post) {
         return PostDto.builder()
+                .id(post.getId())
                 .authorId(post.getAuthor().getId())
                 .title(post.getTitle())
                 .text(post.getText())
                 .category(post.getCategory())
                 .tags(post.getTags())
-                .comments(post.getComments())
                 .latestChangeAt(post.getLatestChangeAt())
                 .build();
     }

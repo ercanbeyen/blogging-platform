@@ -5,14 +5,19 @@ import com.ercanbeyen.bloggingplatform.util.Location;
 import com.ercanbeyen.bloggingplatform.document.Role;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.RepresentationModel;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @Builder
-public class AuthorDto {
+public class AuthorDto extends RepresentationModel<EntityModel<AuthorDto>> {
+    private String id;
     private String firstName;
     private String lastName;
     private String username;

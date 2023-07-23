@@ -6,9 +6,11 @@ import com.ercanbeyen.bloggingplatform.constant.enums.RoleName;
 import com.ercanbeyen.bloggingplatform.constant.messages.NotificationMessage;
 import com.ercanbeyen.bloggingplatform.document.*;
 import com.ercanbeyen.bloggingplatform.dto.AuthorDto;
+import com.ercanbeyen.bloggingplatform.dto.CommentDto;
 import com.ercanbeyen.bloggingplatform.dto.NotificationDto;
 import com.ercanbeyen.bloggingplatform.dto.PostDto;
 import com.ercanbeyen.bloggingplatform.dto.converter.AuthorDtoConverter;
+import com.ercanbeyen.bloggingplatform.dto.converter.CommentDtoConverter;
 import com.ercanbeyen.bloggingplatform.dto.converter.PostDtoConverter;
 import com.ercanbeyen.bloggingplatform.dto.request.create.CreatePostRequest;
 import com.ercanbeyen.bloggingplatform.dto.request.update.UpdatePostRequest;
@@ -34,6 +36,7 @@ public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
     private final PostDtoConverter postDtoConverter;
     private final AuthorDtoConverter authorDtoConverter;
+    private final CommentDtoConverter commentDtoConverter;
     private final KafkaTemplate<String, NotificationDto> kafkaTemplate;
 
     @Transactional
@@ -261,6 +264,16 @@ public class PostServiceImpl implements PostService {
                 .stream()
                 .map(authorDtoConverter::convert)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<CommentDto> getComments(String id) {
+        Post postInDb = findPostById(id);
+
+        return postInDb.getComments()
+                .stream()
+                .map(commentDtoConverter::convert)
+                .toList();
     }
 
     private Post findPostById(String id) {
