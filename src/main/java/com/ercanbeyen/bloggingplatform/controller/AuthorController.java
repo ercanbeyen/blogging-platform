@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -33,16 +34,23 @@ public class AuthorController {
         return ResponseEntity.ok(authorDtoList);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping(value = "/{id}", produces = MediaTypes.HAL_JSON_VALUE)
     public ResponseEntity<Object> getAuthor(@PathVariable("id") String id) {
         AuthorDto authorDto = authorService.getAuthor(id);
 
-        Link authorLink = WebMvcLinkBuilder.linkTo(AuthorController.class).slash(authorDto.getId()).withSelfRel();
-        Link followersLink = WebMvcLinkBuilder.linkTo(AuthorController.class).slash(authorDto.getId()).slash("followers").withRel("followers");
-        Link followedLink = WebMvcLinkBuilder.linkTo(AuthorController.class).slash(authorDto.getId()).slash("followed").withRel("followed");
-        Link notificationsLink = WebMvcLinkBuilder.linkTo(AuthorController.class).slash(authorDto.getId()).slash("notifications").withRel("notifications");
+        List<Link> linkList = new ArrayList<>();
 
-        authorDto.add(authorLink, followersLink, followedLink, notificationsLink);
+        Link authorLink = WebMvcLinkBuilder.linkTo(AuthorController.class).slash(authorDto.getId()).withSelfRel();
+        linkList.add(authorLink);
+
+        String[] fields = {"followers", "followed", "notifications"};
+
+        for (String field : fields) {
+            Link link = WebMvcLinkBuilder.linkTo(AuthorController.class).slash(authorDto.getId()).slash(field).withRel(field);
+            linkList.add(link);
+        }
+
+        authorDto.add(linkList);
 
         return ResponseEntity.ok(authorDto);
     }

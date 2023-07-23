@@ -19,7 +19,6 @@ import java.time.LocalDateTime;
 public class Notification {
     @MongoId(FieldType.OBJECT_ID)
     private String id;
-    //@DocumentReference
     private String fromAuthorId;
     private String toAuthorId;
     private String description;

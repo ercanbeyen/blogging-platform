@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -36,13 +37,19 @@ public class PostController {
     @GetMapping(value = "/{id}", produces = MediaTypes.HAL_JSON_VALUE)
     public ResponseEntity<Object> getPost(@PathVariable("id") String id) {
         PostDto postDto = postService.getPost(id);
+        List<Link> linkList = new ArrayList<>();
 
         Link postLink = WebMvcLinkBuilder.linkTo(PostController.class).slash(postDto.getId()).withSelfRel();
-        Link commentsLink = WebMvcLinkBuilder.linkTo(PostController.class).slash(postDto.getId()).slash("comments").withRel("comments");
-        Link authorsLikedLink = WebMvcLinkBuilder.linkTo(PostController.class).slash(postDto.getId()).slash("likes").withRel("likes");
-        Link authorsDislikedLink = WebMvcLinkBuilder.linkTo(PostController.class).slash(postDto.getId()).slash("dislikes").withRel("dislikes");
+        linkList.add(postLink);
 
-        postDto.add(postLink, commentsLink, authorsLikedLink, authorsDislikedLink);
+        String[] fields = {"comments", "likes", "dislikes"};
+
+        for (String field : fields) {
+            Link link = WebMvcLinkBuilder.linkTo(PostController.class).slash(postDto.getId()).slash(field).withRel(field);
+            linkList.add(link);
+        }
+
+        postDto.add(linkList);
 
         return ResponseEntity.ok(postDto);
     }
