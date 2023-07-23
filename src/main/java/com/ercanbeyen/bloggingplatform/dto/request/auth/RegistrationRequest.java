@@ -1,5 +1,6 @@
 package com.ercanbeyen.bloggingplatform.dto.request.auth;
 
+import com.ercanbeyen.bloggingplatform.annotation.PasswordRequest;
 import com.ercanbeyen.bloggingplatform.constant.messages.ResponseMessage;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -23,6 +24,6 @@ public class RegistrationRequest {
             flags = Pattern.Flag.CASE_INSENSITIVE,
             message = ResponseMessage.INVALID_EMAIL_FORMAT)
     private String email;
-    @NotBlank(message = "Password" + ResponseMessage.SHOULD_NOT_BLANK)
+    @PasswordRequest
     private String password;
 }

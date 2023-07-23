@@ -68,7 +68,7 @@ public class AuthorController {
     }
 
     @PutMapping("/{id}/password-update")
-    public ResponseEntity<Object> updatePassword(@PathVariable(value = "id") String id, @RequestBody UpdatePasswordRequest request) {
+    public ResponseEntity<Object> updatePassword(@PathVariable(value = "id") String id, @RequestBody @Validated UpdatePasswordRequest request) {
         return ResponseEntity.ok(authorService.updatePassword(id, request));
     }
 }

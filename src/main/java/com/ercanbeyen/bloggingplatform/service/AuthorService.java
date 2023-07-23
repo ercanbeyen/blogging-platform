@@ -10,11 +10,6 @@ import com.ercanbeyen.bloggingplatform.dto.request.update.UpdatePasswordRequest;
 
 import java.util.List;
 
-/*
-TODO: Add password update
-TODO: Add password validation (It must contain at least one letter, number and minimum length is 5)
- */
-
 public interface AuthorService {
     Author createAuthor(RegistrationRequest request);
     AuthorDto updateAuthor(String id, UpdateAuthorRequest request);
