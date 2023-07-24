@@ -2,6 +2,7 @@ package com.ercanbeyen.bloggingplatform.service.impl;
 
 import com.ercanbeyen.bloggingplatform.constant.enums.EmailTemplate;
 import com.ercanbeyen.bloggingplatform.service.EmailService;
+import com.ercanbeyen.bloggingplatform.util.EmailUtil;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.AllArgsConstructor;
@@ -26,7 +27,7 @@ public class EmailServiceImpl implements EmailService {
             mimeMessageHelper.setText(text, true);
             mimeMessageHelper.setTo(to);
             mimeMessageHelper.setSubject(subject);
-            mimeMessageHelper.setFrom("support@bloggingplatform.com");
+            mimeMessageHelper.setFrom(EmailUtil.SUPPORT_EMAIL);
             javaMailSender.send(mimeMessage);
         } catch (MessagingException messagingException) {
             log.error("Error while sending email: {}", messagingException.getMessage());
@@ -35,7 +36,7 @@ public class EmailServiceImpl implements EmailService {
 
 
     public String buildEmail(String name, String item, EmailTemplate emailTemplate) {
-        String template = "";
+        String template;
 
         switch (emailTemplate) {
             case REGISTRATION:
@@ -169,6 +170,9 @@ public class EmailServiceImpl implements EmailService {
                         "  </tbody></table><div class=\"yj6qo\"></div><div class=\"adL\">\n" +
                         "\n" +
                         "</div></div>";
+                break;
+            default:
+                template = "";
                 break;
         }
 
