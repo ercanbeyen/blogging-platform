@@ -20,7 +20,8 @@ There are 2 roles among authors
 ### Requirements
 - Each author must have a unique username and email address.
 - Author's essential fields are first name, last name, username, password and email address. Other fields are optional.
-- Each author must activate their account with the activation link sent to their email address in order to register on the platform.
+- Each author must activate their account with the activation link sent to their email address within 15 minutes in order to register on the platform.
+- If author does not verify the account, author may try to register again with the same credentials.
 - Each post must have title, text and category.
 - Each comment must belongs to a specific post.
 - Each author has an User role.
@@ -30,12 +31,15 @@ There are 2 roles among authors
 
 ### Tech Stack
 - Java 18
-- Spring 
+- Spring Boot
 - Spring Security
+- Spring Email
 - Kafka
 - Spring Data MongoDB
 - MongoDB
 - Docker
+- Hateoas
+- OpenAPI Documentation
 
 ### Prerequisties
 ---
@@ -70,5 +74,9 @@ http://0.0.0.0:1080
 http://127.0.0.1:1080
 ```
 
+### Api Documentation
+---
 
+You may use swagger-ui with the port of the application to access the project's api documentation.<br/>
+`http://localhost:${PORT}/swagger-ui.html`
 
