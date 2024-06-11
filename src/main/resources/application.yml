@@ -32,3 +32,7 @@ spring:
           connectiontimeout: 5000
           timeout: 3000
           writetimeout: 5000
+  datasource:
+    url: jdbc:mysql://localhost:3306/blogging_platform
+    username: root
+    password: mysql12345

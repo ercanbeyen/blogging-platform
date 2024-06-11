@@ -1,11 +1,13 @@
 package com.ercanbeyen.bloggingplatform;
 
-import com.ercanbeyen.bloggingplatform.constant.values.DocumentName;
+import com.ercanbeyen.bloggingplatform.entity.Ticket;
 import com.ercanbeyen.bloggingplatform.util.EmailUtil;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Contact;
 import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.info.License;
+import org.apache.ibatis.type.MappedTypes;
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -25,6 +27,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 				)
 		)
 )
+@MapperScan("com.ercanbeyen.bloggingplatform.mapper")
+@MappedTypes({Ticket.class})
 public class BloggingPlatformApplication {
 
 	public static void main(String[] args) {

@@ -1,7 +1,7 @@
 package com.ercanbeyen.bloggingplatform.annotation;
 
 
-import com.ercanbeyen.bloggingplatform.validatior.PasswordValidator;
+import com.ercanbeyen.bloggingplatform.validator.PasswordValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
