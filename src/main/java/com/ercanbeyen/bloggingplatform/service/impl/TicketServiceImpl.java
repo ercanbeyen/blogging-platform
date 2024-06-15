@@ -31,8 +31,8 @@ public class TicketServiceImpl implements TicketService {
     }
 
     @Override
-    public List<Ticket> getTickets() {
-        return ticketMapper.findTickets();
+    public List<Ticket> getTickets(Integer createdYear, Integer updatedYear) {
+        return ticketMapper.findTickets(createdYear, updatedYear);
     }
 
     @Override

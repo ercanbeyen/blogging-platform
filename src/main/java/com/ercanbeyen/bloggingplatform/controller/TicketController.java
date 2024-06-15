@@ -30,8 +30,10 @@ public class TicketController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Ticket>> getTickets() {
-        return ResponseEntity.ok(ticketService.getTickets());
+    public ResponseEntity<List<Ticket>> getTickets(
+            @RequestParam(name = "createdAt", required = false) Integer createdYear,
+            @RequestParam(name = "updatedAt", required = false) Integer updatedYear) {
+        return ResponseEntity.ok(ticketService.getTickets(createdYear, updatedYear));
     }
 
     @DeleteMapping("/{id}")

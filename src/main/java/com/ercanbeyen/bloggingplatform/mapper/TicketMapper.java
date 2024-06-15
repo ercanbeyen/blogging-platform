@@ -37,10 +37,20 @@ public interface TicketMapper {
 
     @ResultMap("ticketResultMap")
     @Select("""
-            SELECT *
-            FROM TICKETS
+            <script>
+                SELECT *
+                FROM TICKETS
+                <where>
+                    <if test = "createdYear != null">
+                        YEAR(CREATED_AT) = #{createdYear}
+                    </if>
+                    <if test = "updatedYear != null">
+                        AND YEAR(UPDATED_AT) = #{updatedYear}
+                    </if>
+                </where>
+            </script>
             """)
-    List<Ticket> findTickets();
+    List<Ticket> findTickets(@Param("createdYear") Integer createdYear, @Param("updatedYear") Integer updatedYear);
 
     @Delete("""
             DELETE
