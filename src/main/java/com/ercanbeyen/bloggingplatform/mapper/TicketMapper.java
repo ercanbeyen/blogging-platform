@@ -16,9 +16,16 @@ public interface TicketMapper {
     void insertTicket(Ticket ticket);
 
     @Update("""
-            UPDATE TICKETS
-            SET DESCRIPTION = #{ticket.description}, UPDATED_AT = LOCALTIMESTAMP()
-            WHERE ID = #{id}
+            <script>
+                UPDATE TICKETS
+                <set>
+                    <if test = "ticket.description != null">
+                        DESCRIPTION = #{ticket.description}
+                    </if>,
+                    UPDATED_AT = LOCALTIMESTAMP()
+                </set>
+                WHERE ID = #{id}
+            </script>
             """)
     void updateTicket(@Param("id") Integer id, @Param("ticket") Ticket ticket);
 
