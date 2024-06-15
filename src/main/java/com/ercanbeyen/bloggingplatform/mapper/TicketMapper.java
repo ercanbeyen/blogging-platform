@@ -9,22 +9,24 @@ import java.util.List;
 public interface TicketMapper {
 
     @Insert("""
-            INSERT INTO TICKETS (DESCRIPTION)
-            VALUES (#{description})
+            INSERT INTO TICKETS (DESCRIPTION, CREATED_AT, UPDATED_AT)
+            VALUES (#{description}, LOCALTIMESTAMP(), LOCALTIMESTAMP())
             """)
     @Options(useGeneratedKeys = true, keyProperty = "id")
     void insertTicket(Ticket ticket);
 
     @Update("""
             UPDATE TICKETS
-            SET DESCRIPTION = #{ticket.description}
+            SET DESCRIPTION = #{ticket.description}, UPDATED_AT = LOCALTIMESTAMP()
             WHERE ID = #{id}
             """)
     void updateTicket(@Param("id") Integer id, @Param("ticket") Ticket ticket);
 
     @Results(id = "ticketResultMap", value = {
             @Result(property = "id", column = "ID"),
-            @Result(property = "description", column = "DESCRIPTION")
+            @Result(property = "description", column = "DESCRIPTION"),
+            @Result(property = "createdAt", column = "CREATED_AT"),
+            @Result(property = "updatedAt", column = "UPDATED_AT")
     })
     @Select("""
             SELECT *
