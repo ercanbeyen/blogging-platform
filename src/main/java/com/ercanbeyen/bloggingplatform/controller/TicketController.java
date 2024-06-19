@@ -40,5 +40,4 @@ public class TicketController {
     public ResponseEntity<String> deleteTicket(@PathVariable("id") Integer id) {
         return ResponseEntity.ok(ticketService.deleteTicket(id));
     }
-
 }

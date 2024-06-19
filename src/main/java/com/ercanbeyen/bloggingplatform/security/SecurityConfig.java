@@ -25,7 +25,7 @@ public class SecurityConfig {
                 .csrf()
                 .disable()
                 .authorizeHttpRequests()
-                .requestMatchers("/api/v1/tickets/**", "/api/v1/auth/**", "/api/v1/registration/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                .requestMatchers("/api/v1/approvals/**", "/api/v1/tickets/**", "/api/v1/auth/**", "/api/v1/registration/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 .requestMatchers("/api/v1/roles/**", "/api/v1/notifications/**", "/api/v1/confirmation-tokens/**").hasAnyAuthority(RoleName.ADMIN.name())
                 .anyRequest()
                 .authenticated()

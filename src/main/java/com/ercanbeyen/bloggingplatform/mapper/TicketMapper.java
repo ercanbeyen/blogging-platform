@@ -2,6 +2,7 @@ package com.ercanbeyen.bloggingplatform.mapper;
 
 import com.ercanbeyen.bloggingplatform.entity.Ticket;
 import org.apache.ibatis.annotations.*;
+import org.apache.ibatis.mapping.FetchType;
 
 import java.util.List;
 
@@ -33,14 +34,23 @@ public interface TicketMapper {
             @Result(property = "id", column = "ID"),
             @Result(property = "description", column = "DESCRIPTION"),
             @Result(property = "createdAt", column = "CREATED_AT"),
-            @Result(property = "updatedAt", column = "UPDATED_AT")
+            @Result(property = "updatedAt", column = "UPDATED_AT"),
+            @Result(property = "approvals",
+                    //column = "TICKET_ID",
+                    column = "ID",
+                    //column = "ticketId",
+                    javaType = List.class,
+                    many = @Many(
+                            select = "com.ercanbeyen.bloggingplatform.mapper.ApprovalMapper.findAllApprovals",
+                            fetchType = FetchType.LAZY)
+            )
     })
     @Select("""
             SELECT *
             FROM TICKETS
             WHERE ID = #{id}
             """)
-    Ticket findTicket(@Param("id") Integer id);
+    Ticket findTicketById(@Param("id") Integer id);
 
     @ResultMap("ticketResultMap")
     @Select("""
@@ -57,12 +67,12 @@ public interface TicketMapper {
                 </where>
             </script>
             """)
-    List<Ticket> findTickets(@Param("createdYear") Integer createdYear, @Param("updatedYear") Integer updatedYear);
+    List<Ticket> findAllTickets(@Param("createdYear") Integer createdYear, @Param("updatedYear") Integer updatedYear);
 
     @Delete("""
             DELETE
             FROM TICKETS
             WHERE ID = #{id}
             """)
-    void deleteTicket(@Param("id") Integer id);
+    void deleteTicketById(@Param("id") Integer id);
 }

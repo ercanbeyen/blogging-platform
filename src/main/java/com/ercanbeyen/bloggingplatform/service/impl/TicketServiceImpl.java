@@ -27,17 +27,17 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     public Ticket getTicket(Integer id) {
-        return ticketMapper.findTicket(id);
+        return ticketMapper.findTicketById(id);
     }
 
     @Override
     public List<Ticket> getTickets(Integer createdYear, Integer updatedYear) {
-        return ticketMapper.findTickets(createdYear, updatedYear);
+        return ticketMapper.findAllTickets(createdYear, updatedYear);
     }
 
     @Override
     public String deleteTicket(Integer id) {
-        ticketMapper.deleteTicket(id);
+        ticketMapper.deleteTicketById(id);
         return "Ticket " + id + " is deleted successfully";
     }
 }

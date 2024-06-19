@@ -36,3 +36,6 @@ spring:
     url: jdbc:mysql://localhost:3306/blogging_platform
     username: root
     password: mysql12345
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
