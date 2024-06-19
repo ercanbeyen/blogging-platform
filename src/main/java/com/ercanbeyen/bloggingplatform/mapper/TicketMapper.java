@@ -36,13 +36,12 @@ public interface TicketMapper {
             @Result(property = "createdAt", column = "CREATED_AT"),
             @Result(property = "updatedAt", column = "UPDATED_AT"),
             @Result(property = "approvals",
-                    //column = "TICKET_ID",
                     column = "ID",
-                    //column = "ticketId",
                     javaType = List.class,
                     many = @Many(
-                            select = "com.ercanbeyen.bloggingplatform.mapper.ApprovalMapper.findAllApprovals",
-                            fetchType = FetchType.LAZY)
+                            select = "com.ercanbeyen.bloggingplatform.mapper.ApprovalMapper.findAllApprovalsByTicketId",
+                            fetchType = FetchType.LAZY
+                    )
             )
     })
     @Select("""

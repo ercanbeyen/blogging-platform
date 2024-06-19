@@ -1,5 +1,8 @@
 package com.ercanbeyen.bloggingplatform.service.impl;
 
+import com.ercanbeyen.bloggingplatform.dto.ApprovalDto;
+import com.ercanbeyen.bloggingplatform.dto.converter.ApprovalDtoConverter;
+import com.ercanbeyen.bloggingplatform.dto.request.create.CreateApprovalRequest;
 import com.ercanbeyen.bloggingplatform.entity.Approval;
 import com.ercanbeyen.bloggingplatform.entity.Ticket;
 import com.ercanbeyen.bloggingplatform.mapper.ApprovalMapper;
@@ -14,24 +17,30 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ApprovalServiceImpl implements ApprovalService {
     private final ApprovalMapper approvalMapper;
+    private final ApprovalDtoConverter converter;
     private final TicketService ticketService;
 
     @Override
-    public String createApproval(Approval approval) {
-        Ticket ticket = ticketService.getTicket(approval.getTicketId());
-        approval.setTicket(ticket);
+    public String createApproval(CreateApprovalRequest request) {
+        Ticket ticket = ticketService.getTicketById(request.ticketId());
+        Approval approval = new Approval(request.authorId(), ticket);
         approvalMapper.insertApproval(approval);
         return "Approval is successfully created";
     }
 
     @Override
-    public Approval getApproval(Integer id) {
-        return approvalMapper.findApprovalById(id);
+    public ApprovalDto getApproval(Integer id) {
+        Approval approval = approvalMapper.findApprovalById(id);
+        return converter.convert(approval);
     }
 
     @Override
-    public List<Approval> getApprovals() {
-        return approvalMapper.findAllApprovals();
+    public List<ApprovalDto> getApprovals() {
+        List<Approval> approvals = approvalMapper.findAllApprovals();
+        return approvals
+                .stream()
+                .map(converter::convert)
+                .toList();
     }
 
     @Override

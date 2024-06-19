@@ -1,12 +1,13 @@
 package com.ercanbeyen.bloggingplatform.service;
 
-import com.ercanbeyen.bloggingplatform.entity.Approval;
+import com.ercanbeyen.bloggingplatform.dto.ApprovalDto;
+import com.ercanbeyen.bloggingplatform.dto.request.create.CreateApprovalRequest;
 
 import java.util.List;
 
 public interface ApprovalService {
-    String createApproval(Approval approval);
-    Approval getApproval(Integer id);
-    List<Approval> getApprovals();
+    String createApproval(CreateApprovalRequest request);
+    ApprovalDto getApproval(Integer id);
+    List<ApprovalDto> getApprovals();
     String deleteApproval(Integer id);
 }

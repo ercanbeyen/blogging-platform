@@ -20,14 +20,13 @@ public interface ApprovalMapper {
     @Results(id = "approvalResultMap", value = {
             @Result(property = "id", column = "ID"),
             @Result(property = "authorId", column = "AUTHOR_ID"),
-            @Result(property = "ticketId", column = "TICKET_ID"),
             @Result(property = "ticket",
                     column = "TICKET_ID",
-                    //column = "ticketId",
                     javaType = Ticket.class,
                     one = @One(
                             select = "com.ercanbeyen.bloggingplatform.mapper.TicketMapper.findTicketById",
-                            fetchType = FetchType.LAZY)
+                            fetchType = FetchType.LAZY
+                    )
             )
     })
     @Select("""
@@ -50,4 +49,12 @@ public interface ApprovalMapper {
             WHERE ID = #{id}
             """)
     void deleteApprovalById(Integer id);
+
+    @ResultMap("approvalResultMap")
+    @Select("""
+            SELECT *
+            FROM APPROVALS
+            WHERE TICKET_ID = #{ticketId}
+            """)
+    List<Approval> findAllApprovalsByTicketId(@Param("ticketId") Integer ticketId);
 }
