@@ -21,7 +21,7 @@ public class Ticket {
 
     @Override
     public String toString() {
-        List<Integer> approvalIds = approvals.stream()
+        List<String> approvalIds = approvals.stream()
                 .map(Approval::getId)
                 .toList();
 

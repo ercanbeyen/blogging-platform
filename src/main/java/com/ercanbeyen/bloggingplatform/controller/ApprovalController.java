@@ -22,7 +22,7 @@ public class ApprovalController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApprovalDto> getApproval(@PathVariable("id") Integer id) {
+    public ResponseEntity<ApprovalDto> getApproval(@PathVariable("id") String id) {
         return ResponseEntity.ok(approvalService.getApproval(id));
     }
 
@@ -32,7 +32,7 @@ public class ApprovalController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteApproval(@PathVariable("id") Integer id) {
+    public ResponseEntity<String> deleteApproval(@PathVariable("id") String id) {
         return ResponseEntity.ok(approvalService.deleteApproval(id));
     }
 }

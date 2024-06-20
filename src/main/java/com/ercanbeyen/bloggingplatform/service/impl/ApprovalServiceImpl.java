@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -23,13 +24,13 @@ public class ApprovalServiceImpl implements ApprovalService {
     @Override
     public String createApproval(CreateApprovalRequest request) {
         Ticket ticket = ticketService.getTicketById(request.ticketId());
-        Approval approval = new Approval(request.authorId(), ticket);
+        Approval approval = new Approval(UUID.randomUUID().toString(), request.authorId(), ticket);
         approvalMapper.insertApproval(approval);
         return "Approval is successfully created";
     }
 
     @Override
-    public ApprovalDto getApproval(Integer id) {
+    public ApprovalDto getApproval(String id) {
         Approval approval = approvalMapper.findApprovalById(id);
         return converter.convert(approval);
     }
@@ -44,7 +45,7 @@ public class ApprovalServiceImpl implements ApprovalService {
     }
 
     @Override
-    public String deleteApproval(Integer id) {
+    public String deleteApproval(String id) {
         approvalMapper.deleteApprovalById(id);
         return "Approval " + id + " is successfully deleted";
     }

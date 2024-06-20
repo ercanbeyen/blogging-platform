@@ -11,10 +11,9 @@ import java.util.List;
 public interface ApprovalMapper {
 
     @Insert("""
-            INSERT INTO APPROVALS (AUTHOR_ID, TICKET_ID)
-            VALUES (#{authorId}, #{ticket.id})
+            INSERT INTO APPROVALS (ID, AUTHOR_ID, TICKET_ID)
+            VALUES (#{id}, #{authorId}, #{ticket.id})
             """)
-    @Options(useGeneratedKeys = true, keyProperty = "id")
     void insertApproval(Approval approval);
 
     @Results(id = "approvalResultMap", value = {
@@ -34,7 +33,7 @@ public interface ApprovalMapper {
             FROM APPROVALS
             WHERE ID = #{id}
             """)
-    Approval findApprovalById(@Param("id") Integer id);
+    Approval findApprovalById(@Param("id") String id);
 
     @ResultMap("approvalResultMap")
     @Select("""
@@ -48,7 +47,7 @@ public interface ApprovalMapper {
             FROM APPROVALS
             WHERE ID = #{id}
             """)
-    void deleteApprovalById(Integer id);
+    void deleteApprovalById(String id);
 
     @ResultMap("approvalResultMap")
     @Select("""

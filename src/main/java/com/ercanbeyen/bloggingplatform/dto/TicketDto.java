@@ -8,6 +8,6 @@ public record TicketDto(
         String description,
         LocalDateTime createdAt,
         LocalDateTime updatedAt,
-        List<Integer> approvalIds) {
+        List<String> approvalIds) {
 
 }

@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface ApprovalService {
     String createApproval(CreateApprovalRequest request);
-    ApprovalDto getApproval(Integer id);
+    ApprovalDto getApproval(String id);
     List<ApprovalDto> getApprovals();
-    String deleteApproval(Integer id);
+    String deleteApproval(String id);
 }

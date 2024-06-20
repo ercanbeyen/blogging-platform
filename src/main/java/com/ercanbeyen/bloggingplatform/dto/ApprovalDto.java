@@ -1,5 +1,5 @@
 package com.ercanbeyen.bloggingplatform.dto;
 
-public record ApprovalDto(Integer id, String authorId, Integer ticketId) {
+public record ApprovalDto(String id, String authorId, Integer ticketId) {
 
 }
