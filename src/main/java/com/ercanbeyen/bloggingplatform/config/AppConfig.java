@@ -1,7 +1,7 @@
 package com.ercanbeyen.bloggingplatform.config;
 
 import com.ercanbeyen.bloggingplatform.constant.messages.ResponseMessage;
-import com.ercanbeyen.bloggingplatform.constant.values.DocumentName;
+import com.ercanbeyen.bloggingplatform.constant.values.EntityName;
 import com.ercanbeyen.bloggingplatform.repository.AuthorRepository;
 import lombok.RequiredArgsConstructor;
 
@@ -25,7 +25,7 @@ public class AppConfig {
     @Bean
     public UserDetailsService userDetailsService() {
         return username -> authorRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException(String.format(ResponseMessage.NOT_FOUND, DocumentName.AUTHOR, username)));
+                .orElseThrow(() -> new UsernameNotFoundException(String.format(ResponseMessage.NOT_FOUND, EntityName.AUTHOR, username)));
     }
 
     @Bean

@@ -1,9 +1,9 @@
 package com.ercanbeyen.bloggingplatform.service.impl;
 
-import com.ercanbeyen.bloggingplatform.constant.values.DocumentName;
+import com.ercanbeyen.bloggingplatform.constant.values.EntityName;
 import com.ercanbeyen.bloggingplatform.constant.messages.ResponseMessage;
 import com.ercanbeyen.bloggingplatform.constant.enums.RoleName;
-import com.ercanbeyen.bloggingplatform.document.Role;
+import com.ercanbeyen.bloggingplatform.entity.Role;
 import com.ercanbeyen.bloggingplatform.dto.AuthorDto;
 import com.ercanbeyen.bloggingplatform.dto.NotificationDto;
 import com.ercanbeyen.bloggingplatform.dto.request.auth.RegistrationRequest;
@@ -14,7 +14,7 @@ import com.ercanbeyen.bloggingplatform.exception.data.DataConflict;
 import com.ercanbeyen.bloggingplatform.exception.data.DataForbidden;
 import com.ercanbeyen.bloggingplatform.exception.data.DataNotFound;
 import com.ercanbeyen.bloggingplatform.dto.converter.AuthorDtoConverter;
-import com.ercanbeyen.bloggingplatform.document.Author;
+import com.ercanbeyen.bloggingplatform.entity.Author;
 import com.ercanbeyen.bloggingplatform.repository.AuthorRepository;
 import com.ercanbeyen.bloggingplatform.service.AuthorService;
 import com.ercanbeyen.bloggingplatform.service.NotificationService;
@@ -116,7 +116,7 @@ public class AuthorServiceImpl implements AuthorService {
                 .anyMatch(author -> author.getId().equals(id));
 
         if (!doesExist) {
-            throw new DataNotFound(String.format(ResponseMessage.NOT_FOUND, DocumentName.AUTHOR, id));
+            throw new DataNotFound(String.format(ResponseMessage.NOT_FOUND, EntityName.AUTHOR, id));
         }
 
         authorRepository.deleteById(id);
@@ -149,7 +149,7 @@ public class AuthorServiceImpl implements AuthorService {
     @Override
     public Author findAuthorByUsername(String username) {
         return authorRepository.findByUsername(username)
-                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, DocumentName.AUTHOR, username)));
+                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, EntityName.AUTHOR, username)));
     }
 
     @Transactional
@@ -163,7 +163,7 @@ public class AuthorServiceImpl implements AuthorService {
         }
 
         Author unfollowed = authorRepository.findById(authorId)
-                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, DocumentName.AUTHOR, authorId)));
+                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, EntityName.AUTHOR, authorId)));
 
         if (follower.getId().equals(unfollowed.getId())) {
             throw new DataConflict("You cannot follow yourself");
@@ -183,7 +183,7 @@ public class AuthorServiceImpl implements AuthorService {
         authorRepository.save(follower);
         authorRepository.save(unfollowed);
 
-        return DocumentName.AUTHOR + " " + authorId + " is added to your followed authors";
+        return EntityName.AUTHOR + " " + authorId + " is added to your followed authors";
     }
 
     @Transactional
@@ -197,7 +197,7 @@ public class AuthorServiceImpl implements AuthorService {
         }
 
         Author followed = authorRepository.findById(authorId)
-                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, DocumentName.AUTHOR, authorId)));
+                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, EntityName.AUTHOR, authorId)));
 
         if (follower.getId().equals(followed.getId())) {
             throw new DataConflict("You cannot unfollow yourself");
@@ -217,7 +217,7 @@ public class AuthorServiceImpl implements AuthorService {
         authorRepository.save(follower);
         authorRepository.save(followed);
 
-        return DocumentName.AUTHOR + " " + authorId + " is removed from your followed authors";
+        return EntityName.AUTHOR + " " + authorId + " is removed from your followed authors";
     }
 
     @Override
@@ -254,7 +254,7 @@ public class AuthorServiceImpl implements AuthorService {
                 .anyMatch(author -> author.getId().equals(toAuthorId));
 
         if (!isAuthorInDb) {
-            throw new DataNotFound(String.format(ResponseMessage.NOT_FOUND, DocumentName.AUTHOR, toAuthorId));
+            throw new DataNotFound(String.format(ResponseMessage.NOT_FOUND, EntityName.AUTHOR, toAuthorId));
         }
 
         return notificationService.getNotifications(null, toAuthorId);
@@ -263,7 +263,7 @@ public class AuthorServiceImpl implements AuthorService {
     @Override
     public void enableAuthor(String authorId) {
         Author authorInDb = authorRepository.findById(authorId)
-                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, DocumentName.AUTHOR, authorId)));
+                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, EntityName.AUTHOR, authorId)));
 
         boolean isEnabled = true;
 
@@ -273,7 +273,7 @@ public class AuthorServiceImpl implements AuthorService {
 
     private Author findAuthorById(String id) {
         return authorRepository.findById(id)
-                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, DocumentName.AUTHOR, id)));
+                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, EntityName.AUTHOR, id)));
     }
 
     @Override

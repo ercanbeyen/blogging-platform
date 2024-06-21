@@ -2,7 +2,7 @@ package com.ercanbeyen.bloggingplatform.service.impl;
 
 import com.ercanbeyen.bloggingplatform.constant.enums.EmailTemplate;
 import com.ercanbeyen.bloggingplatform.constant.messages.JwtMessage;
-import com.ercanbeyen.bloggingplatform.document.Author;
+import com.ercanbeyen.bloggingplatform.entity.Author;
 import com.ercanbeyen.bloggingplatform.dto.request.auth.LoginRequest;
 import com.ercanbeyen.bloggingplatform.exception.data.DataNotFound;
 import com.ercanbeyen.bloggingplatform.security.jwt.JwtService;

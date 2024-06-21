@@ -1,8 +1,8 @@
 package com.ercanbeyen.bloggingplatform.service.impl;
 
 import com.ercanbeyen.bloggingplatform.constant.messages.ResponseMessage;
-import com.ercanbeyen.bloggingplatform.constant.values.DocumentName;
-import com.ercanbeyen.bloggingplatform.document.ConfirmationToken;
+import com.ercanbeyen.bloggingplatform.constant.values.EntityName;
+import com.ercanbeyen.bloggingplatform.entity.ConfirmationToken;
 import com.ercanbeyen.bloggingplatform.dto.ConfirmationTokenDto;
 import com.ercanbeyen.bloggingplatform.dto.converter.ConfirmationTokenDtoConverter;
 import com.ercanbeyen.bloggingplatform.exception.data.DataNotFound;
@@ -30,7 +30,7 @@ public class ConfirmationTokenServiceImpl implements ConfirmationTokenService {
     @Override
     public ConfirmationTokenDto getConfirmationToken(String token) {
         ConfirmationToken confirmationToken = confirmationTokenRepository.findByToken(token)
-                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, DocumentName.CONFIRMATION_TOKEN, token)));
+                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, EntityName.CONFIRMATION_TOKEN, token)));
         return converter.convert(confirmationToken);
     }
 
@@ -49,7 +49,7 @@ public class ConfirmationTokenServiceImpl implements ConfirmationTokenService {
     @Override
     public void updateConfirmationToken(String token) {
         ConfirmationToken confirmationTokenInDb = confirmationTokenRepository.findByToken(token)
-                        .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, DocumentName.CONFIRMATION_TOKEN, token)));
+                        .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, EntityName.CONFIRMATION_TOKEN, token)));
 
         confirmationTokenInDb.setConfirmedAt(LocalDateTime.now());
 
@@ -64,12 +64,12 @@ public class ConfirmationTokenServiceImpl implements ConfirmationTokenService {
                 .anyMatch(confirmationToken -> confirmationToken.getId().equals(id));
 
         if (!doesExist) {
-            throw new DataNotFound(String.format(ResponseMessage.NOT_FOUND, DocumentName.CONFIRMATION_TOKEN, id));
+            throw new DataNotFound(String.format(ResponseMessage.NOT_FOUND, EntityName.CONFIRMATION_TOKEN, id));
         }
 
         confirmationTokenRepository.deleteById(id);
 
-        return String.format(ResponseMessage.SUCCESSFULLY_DELETED, DocumentName.CONFIRMATION_TOKEN, id);
+        return String.format(ResponseMessage.SUCCESS, EntityName.CONFIRMATION_TOKEN, id, ResponseMessage.Operation.DELETED);
     }
 
     @Override
@@ -79,12 +79,12 @@ public class ConfirmationTokenServiceImpl implements ConfirmationTokenService {
                 .anyMatch(confirmationToken -> confirmationToken.getAuthorId().equals(authorId));
 
         if (!authorIdExistsInConfirmationTokens) {
-            throw new DataNotFound(String.format(ResponseMessage.NOT_FOUND, DocumentName.AUTHOR, authorId));
+            throw new DataNotFound(String.format(ResponseMessage.NOT_FOUND, EntityName.AUTHOR, authorId));
         }
 
         confirmationTokenRepository.deleteAllByAuthorId(authorId);
 
-        return DocumentName.CONFIRMATION_TOKEN + "s of "+ authorId + " are successfully deleted";
+        return EntityName.CONFIRMATION_TOKEN + "s of "+ authorId + " are successfully deleted";
     }
 
 }

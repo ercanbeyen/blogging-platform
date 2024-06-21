@@ -1,6 +1,6 @@
 package com.ercanbeyen.bloggingplatform.service;
 
-import com.ercanbeyen.bloggingplatform.document.Comment;
+import com.ercanbeyen.bloggingplatform.entity.Comment;
 import com.ercanbeyen.bloggingplatform.dto.AuthorDto;
 import com.ercanbeyen.bloggingplatform.dto.CommentDto;
 import com.ercanbeyen.bloggingplatform.dto.PostDto;

@@ -2,7 +2,7 @@ package com.ercanbeyen.bloggingplatform.util;
 
 import com.ercanbeyen.bloggingplatform.constant.enums.RoleName;
 import com.ercanbeyen.bloggingplatform.constant.messages.ResponseMessage;
-import com.ercanbeyen.bloggingplatform.document.Author;
+import com.ercanbeyen.bloggingplatform.entity.Author;
 import com.ercanbeyen.bloggingplatform.exception.data.DataForbidden;
 
 public class RoleUtil {

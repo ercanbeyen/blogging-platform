@@ -1,6 +1,6 @@
 package com.ercanbeyen.bloggingplatform.dto.converter;
 
-import com.ercanbeyen.bloggingplatform.document.Role;
+import com.ercanbeyen.bloggingplatform.entity.Role;
 import com.ercanbeyen.bloggingplatform.dto.RoleDto;
 import org.springframework.stereotype.Component;
 

@@ -1,11 +1,11 @@
 package com.ercanbeyen.bloggingplatform.service.impl;
 
-import com.ercanbeyen.bloggingplatform.constant.values.DocumentName;
+import com.ercanbeyen.bloggingplatform.constant.values.EntityName;
 import com.ercanbeyen.bloggingplatform.constant.enums.RoleName;
 import com.ercanbeyen.bloggingplatform.constant.messages.NotificationMessage;
 import com.ercanbeyen.bloggingplatform.constant.messages.ResponseMessage;
-import com.ercanbeyen.bloggingplatform.document.Author;
-import com.ercanbeyen.bloggingplatform.document.Notification;
+import com.ercanbeyen.bloggingplatform.entity.Author;
+import com.ercanbeyen.bloggingplatform.entity.Notification;
 import com.ercanbeyen.bloggingplatform.dto.NotificationDto;
 import com.ercanbeyen.bloggingplatform.dto.converter.NotificationDtoConverter;
 import com.ercanbeyen.bloggingplatform.exception.data.DataForbidden;
@@ -75,7 +75,7 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public NotificationDto getNotification(String id) {
         Notification notificationInDb = notificationRepository.findById(id)
-                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, DocumentName.NOTIFICATION, id)));
+                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, EntityName.NOTIFICATION, id)));
 
         return notificationDtoConverter.convert(notificationInDb);
     }
@@ -87,12 +87,12 @@ public class NotificationServiceImpl implements NotificationService {
                 .anyMatch(notification -> notification.getId().equals(id));
 
         if (!doesExist) {
-            throw new DataNotFound(String.format(ResponseMessage.NOT_FOUND, DocumentName.NOTIFICATION, id));
+            throw new DataNotFound(String.format(ResponseMessage.NOT_FOUND, EntityName.NOTIFICATION, id));
         }
 
         notificationRepository.deleteById(id);
 
-        return String.format(ResponseMessage.SUCCESSFULLY_DELETED, DocumentName.NOTIFICATION, id);
+        return String.format(ResponseMessage.SUCCESS, EntityName.NOTIFICATION, id, ResponseMessage.Operation.DELETED);
     }
 
     @Transactional

@@ -5,8 +5,8 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.ercanbeyen.bloggingplatform.constant.messages.JwtMessage;
-import com.ercanbeyen.bloggingplatform.constant.values.TokenTimes;
-import com.ercanbeyen.bloggingplatform.document.Author;
+import com.ercanbeyen.bloggingplatform.constant.values.TokenTime;
+import com.ercanbeyen.bloggingplatform.entity.Author;
 import com.ercanbeyen.bloggingplatform.service.AuthorService;
 import com.ercanbeyen.bloggingplatform.util.JwtUtil;
 import io.jsonwebtoken.Claims;
@@ -64,7 +64,7 @@ public class JwtService {
 
         String accessToken = JWT.create()
                 .withSubject(userDetails.getUsername())
-                .withExpiresAt(JwtUtil.calculateExpirationDate(TokenTimes.ACCESS_TOKEN))
+                .withExpiresAt(JwtUtil.calculateExpirationDate(TokenTime.ACCESS_TOKEN))
                 .withClaim(JwtMessage.PAYLOAD_ROLES_KEY, userDetails.getAuthorities()
                         .stream()
                         .map(GrantedAuthority::getAuthority)
@@ -75,7 +75,7 @@ public class JwtService {
 
         String refreshToken = JWT.create()
                 .withSubject(userDetails.getUsername())
-                .withExpiresAt(JwtUtil.calculateExpirationDate(TokenTimes.REFRESH_TOKEN))
+                .withExpiresAt(JwtUtil.calculateExpirationDate(TokenTime.REFRESH_TOKEN))
                 .sign(algorithm);
 
         tokenMap.put(JwtMessage.TOKEN_MAP_KEY_REFRESH_TOKEN, refreshToken);
@@ -111,7 +111,7 @@ public class JwtService {
 
         String accessToken = JWT.create()
                 .withSubject(author.getUsername())
-                .withExpiresAt(JwtUtil.calculateExpirationDate(TokenTimes.ACCESS_TOKEN))
+                .withExpiresAt(JwtUtil.calculateExpirationDate(TokenTime.ACCESS_TOKEN))
                 .withClaim(JwtMessage.PAYLOAD_ROLES_KEY, author.getRoles().stream()
                         .map(role -> String.valueOf(role.getRoleName())).toList())
                 .sign(algorithm);

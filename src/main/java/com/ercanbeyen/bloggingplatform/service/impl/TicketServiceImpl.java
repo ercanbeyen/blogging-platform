@@ -1,5 +1,7 @@
 package com.ercanbeyen.bloggingplatform.service.impl;
 
+import com.ercanbeyen.bloggingplatform.constant.messages.ResponseMessage;
+import com.ercanbeyen.bloggingplatform.constant.values.EntityName;
 import com.ercanbeyen.bloggingplatform.dto.TicketDto;
 import com.ercanbeyen.bloggingplatform.dto.converter.TicketDtoConverter;
 import com.ercanbeyen.bloggingplatform.dto.request.create.CreateTicketRequest;
@@ -22,14 +24,14 @@ public class TicketServiceImpl implements TicketService {
     public String createTicket(CreateTicketRequest request) {
         Ticket ticket = new Ticket(request.getDescription());
         ticketMapper.insertTicket(ticket);
-        return "Ticket is added successfully";
+        return String.format(ResponseMessage.SUCCESS, ResponseMessage.State.NEW, EntityName.TICKET, ResponseMessage.Operation.CREATED);
     }
 
     @Override
     public String updateTicket(Integer id, UpdateTicketRequest request) {
         Ticket ticket = new Ticket(request.getDescription());
         ticketMapper.updateTicket(id, ticket);
-        return "Ticket " + id + " is updated successfully";
+        return String.format(ResponseMessage.SUCCESS, EntityName.TICKET, id, ResponseMessage.Operation.UPDATED);
     }
 
     @Override
@@ -50,7 +52,7 @@ public class TicketServiceImpl implements TicketService {
     @Override
     public String deleteTicket(Integer id) {
         ticketMapper.deleteTicketById(id);
-        return "Ticket " + id + " is deleted successfully";
+        return String.format(ResponseMessage.SUCCESS, EntityName.TICKET, id, ResponseMessage.Operation.DELETED);
     }
 
     @Override

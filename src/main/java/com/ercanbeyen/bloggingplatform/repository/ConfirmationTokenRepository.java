@@ -1,6 +1,6 @@
 package com.ercanbeyen.bloggingplatform.repository;
 
-import com.ercanbeyen.bloggingplatform.document.ConfirmationToken;
+import com.ercanbeyen.bloggingplatform.entity.ConfirmationToken;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.Optional;

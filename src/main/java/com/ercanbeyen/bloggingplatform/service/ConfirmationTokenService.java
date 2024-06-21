@@ -1,6 +1,6 @@
 package com.ercanbeyen.bloggingplatform.service;
 
-import com.ercanbeyen.bloggingplatform.document.ConfirmationToken;
+import com.ercanbeyen.bloggingplatform.entity.ConfirmationToken;
 import com.ercanbeyen.bloggingplatform.dto.ConfirmationTokenDto;
 
 import java.util.List;

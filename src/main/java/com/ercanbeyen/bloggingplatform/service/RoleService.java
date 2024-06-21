@@ -1,7 +1,7 @@
 package com.ercanbeyen.bloggingplatform.service;
 
 import com.ercanbeyen.bloggingplatform.constant.enums.RoleName;
-import com.ercanbeyen.bloggingplatform.document.Role;
+import com.ercanbeyen.bloggingplatform.entity.Role;
 import com.ercanbeyen.bloggingplatform.dto.RoleDto;
 import com.ercanbeyen.bloggingplatform.dto.request.create.CreateRoleRequest;
 

@@ -1,4 +1,4 @@
-package com.ercanbeyen.bloggingplatform.document;
+package com.ercanbeyen.bloggingplatform.entity;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

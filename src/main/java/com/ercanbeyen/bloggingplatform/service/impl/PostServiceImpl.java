@@ -1,10 +1,10 @@
 package com.ercanbeyen.bloggingplatform.service.impl;
 
-import com.ercanbeyen.bloggingplatform.constant.values.DocumentName;
+import com.ercanbeyen.bloggingplatform.constant.values.EntityName;
 import com.ercanbeyen.bloggingplatform.constant.messages.ResponseMessage;
 import com.ercanbeyen.bloggingplatform.constant.enums.RoleName;
 import com.ercanbeyen.bloggingplatform.constant.messages.NotificationMessage;
-import com.ercanbeyen.bloggingplatform.document.*;
+import com.ercanbeyen.bloggingplatform.entity.*;
 import com.ercanbeyen.bloggingplatform.dto.AuthorDto;
 import com.ercanbeyen.bloggingplatform.dto.CommentDto;
 import com.ercanbeyen.bloggingplatform.dto.NotificationDto;
@@ -132,7 +132,7 @@ public class PostServiceImpl implements PostService {
 
         postRepository.delete(postInDb);
 
-        return String.format(ResponseMessage.SUCCESSFULLY_DELETED, DocumentName.POST, id);
+        return String.format(ResponseMessage.SUCCESS, EntityName.POST, id, ResponseMessage.Operation.DELETED);
     }
 
     @Transactional
@@ -153,7 +153,7 @@ public class PostServiceImpl implements PostService {
                 .stream()
                 .filter(comment -> comment.getId().equals(commentId))
                 .findAny()
-                .orElseThrow(() -> new DataNotFound( DocumentName.COMMENT + " " + commentId + " is not found inside " + DocumentName.POST + " " + postId));
+                .orElseThrow(() -> new DataNotFound( EntityName.COMMENT + " " + commentId + " is not found inside " + EntityName.POST + " " + postId));
 
         postInDb.getComments().remove(commentInPost);
         postRepository.save(postInDb);
@@ -184,7 +184,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public String dislikePost(String id) {
         Post postInDb = postRepository.findById(id)
-                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, DocumentName.POST, id)));
+                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, EntityName.POST, id)));
 
         Author loggedInAuthor = SecurityUtil.getLoggedInAuthor();
 
@@ -278,6 +278,6 @@ public class PostServiceImpl implements PostService {
 
     private Post findPostById(String id) {
         return postRepository.findById(id)
-                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, DocumentName.POST, id)));
+                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, EntityName.POST, id)));
     }
 }

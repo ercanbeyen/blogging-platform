@@ -1,4 +1,4 @@
-package com.ercanbeyen.bloggingplatform.document;
+package com.ercanbeyen.bloggingplatform.entity;
 
 import com.ercanbeyen.bloggingplatform.constant.enums.RoleName;
 import lombok.Builder;

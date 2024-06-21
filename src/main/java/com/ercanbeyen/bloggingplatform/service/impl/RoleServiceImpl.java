@@ -1,9 +1,9 @@
 package com.ercanbeyen.bloggingplatform.service.impl;
 
-import com.ercanbeyen.bloggingplatform.constant.values.DocumentName;
+import com.ercanbeyen.bloggingplatform.constant.values.EntityName;
 import com.ercanbeyen.bloggingplatform.constant.messages.ResponseMessage;
 import com.ercanbeyen.bloggingplatform.constant.enums.RoleName;
-import com.ercanbeyen.bloggingplatform.document.Role;
+import com.ercanbeyen.bloggingplatform.entity.Role;
 import com.ercanbeyen.bloggingplatform.dto.RoleDto;
 import com.ercanbeyen.bloggingplatform.dto.converter.RoleDtoConverter;
 import com.ercanbeyen.bloggingplatform.dto.request.create.CreateRoleRequest;
@@ -31,7 +31,7 @@ public class RoleServiceImpl implements RoleService {
         Optional<Role> role = roleRepository.findByRoleName(request.getRoleName());
 
         if (role.isPresent()) {
-            throw new DataConflict(DocumentName.ROLE + " " + request.getRoleName().name() + " is present");
+            throw new DataConflict(EntityName.ROLE + " " + request.getRoleName().name() + " is present");
         }
 
         Role newRole = Role.builder()
@@ -52,7 +52,7 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public RoleDto getRole(String id) {
         Role roleInDb = roleRepository.findById(id)
-                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, DocumentName.ROLE, id)));
+                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, EntityName.ROLE, id)));
 
         return roleDtoConverter.convert(roleInDb);
     }
@@ -65,17 +65,17 @@ public class RoleServiceImpl implements RoleService {
                 .anyMatch(role -> role.getId().equals(id));
 
         if (!isIdFound) {
-            throw new DataNotFound(String.format(ResponseMessage.NOT_FOUND, DocumentName.ROLE, id));
+            throw new DataNotFound(String.format(ResponseMessage.NOT_FOUND, EntityName.ROLE, id));
         }
 
         roleRepository.deleteById(id);
 
-        return String.format(ResponseMessage.SUCCESSFULLY_DELETED, DocumentName.ROLE, id);
+        return String.format(ResponseMessage.SUCCESS, EntityName.ROLE, id, ResponseMessage.Operation.DELETED);
     }
 
     @Override
     public Role getRoleByRoleName(RoleName roleName) {
         return roleRepository.findByRoleName(roleName)
-                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, DocumentName.ROLE, roleName)));
+                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, EntityName.ROLE, roleName)));
     }
 }

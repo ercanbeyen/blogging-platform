@@ -1,10 +1,10 @@
 package com.ercanbeyen.bloggingplatform.service.impl;
 
-import com.ercanbeyen.bloggingplatform.constant.values.DocumentName;
+import com.ercanbeyen.bloggingplatform.constant.values.EntityName;
 import com.ercanbeyen.bloggingplatform.constant.messages.NotificationMessage;
 import com.ercanbeyen.bloggingplatform.constant.messages.ResponseMessage;
 import com.ercanbeyen.bloggingplatform.constant.enums.RoleName;
-import com.ercanbeyen.bloggingplatform.document.*;
+import com.ercanbeyen.bloggingplatform.entity.*;
 import com.ercanbeyen.bloggingplatform.dto.CommentDto;
 import com.ercanbeyen.bloggingplatform.dto.NotificationDto;
 import com.ercanbeyen.bloggingplatform.dto.converter.CommentDtoConverter;
@@ -113,11 +113,11 @@ public class CommentServiceImpl implements CommentService {
         postService.deleteCommentFromPost(postId, commentId);
         commentRepository.delete(commentInDb);
 
-        return String.format(ResponseMessage.SUCCESSFULLY_DELETED, DocumentName.COMMENT, commentId);
+        return String.format(ResponseMessage.SUCCESS, EntityName.COMMENT, commentId, ResponseMessage.Operation.DELETED);
     }
 
     private Comment findCommentById(String id) {
         return commentRepository.findById(id)
-                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, DocumentName.COMMENT, id)));
+                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, EntityName.COMMENT, id)));
     }
 }

@@ -1,6 +1,6 @@
 package com.ercanbeyen.bloggingplatform.dto.converter;
 
-import com.ercanbeyen.bloggingplatform.document.Notification;
+import com.ercanbeyen.bloggingplatform.entity.Notification;
 import com.ercanbeyen.bloggingplatform.dto.NotificationDto;
 import org.springframework.stereotype.Component;
 

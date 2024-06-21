@@ -1,7 +1,7 @@
 package com.ercanbeyen.bloggingplatform.dto.converter;
 
 import com.ercanbeyen.bloggingplatform.dto.CommentDto;
-import com.ercanbeyen.bloggingplatform.document.Comment;
+import com.ercanbeyen.bloggingplatform.entity.Comment;
 import org.springframework.stereotype.Component;
 
 @Component

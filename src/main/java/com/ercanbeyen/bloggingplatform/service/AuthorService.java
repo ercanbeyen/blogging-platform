@@ -1,6 +1,6 @@
 package com.ercanbeyen.bloggingplatform.service;
 
-import com.ercanbeyen.bloggingplatform.document.Author;
+import com.ercanbeyen.bloggingplatform.entity.Author;
 import com.ercanbeyen.bloggingplatform.dto.AuthorDto;
 import com.ercanbeyen.bloggingplatform.dto.NotificationDto;
 import com.ercanbeyen.bloggingplatform.dto.request.auth.RegistrationRequest;

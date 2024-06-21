@@ -1,6 +1,6 @@
 package com.ercanbeyen.bloggingplatform.util;
 
-import com.ercanbeyen.bloggingplatform.document.Author;
+import com.ercanbeyen.bloggingplatform.entity.Author;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 public class SecurityUtil {
