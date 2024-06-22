@@ -35,8 +35,9 @@ public class TicketController {
     @GetMapping
     public ResponseEntity<List<TicketDto>> getTickets(
             @RequestParam(name = "createdAt", required = false) Integer createdYear,
-            @RequestParam(name = "updatedAt", required = false) Integer updatedYear) {
-        return ResponseEntity.ok(ticketService.getTickets(createdYear, updatedYear));
+            @RequestParam(name = "updatedAt", required = false) Integer updatedYear,
+            @RequestParam(name = "topApproved", required = false) Integer numberOfTopApprovedTickets) {
+        return ResponseEntity.ok(ticketService.getTickets(createdYear, updatedYear, numberOfTopApprovedTickets));
     }
 
     @DeleteMapping("/{id}")

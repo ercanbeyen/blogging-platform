@@ -41,8 +41,8 @@ public class TicketServiceImpl implements TicketService {
     }
 
     @Override
-    public List<TicketDto> getTickets(Integer createdYear, Integer updatedYear) {
-        List<Ticket> tickets = ticketMapper.findAllTickets(createdYear, updatedYear);
+    public List<TicketDto> getTickets(Integer createdYear, Integer updatedYear, Integer numberOfTopApprovedTickets) {
+        List<Ticket> tickets = ticketMapper.findAllTickets(createdYear, updatedYear, numberOfTopApprovedTickets);
         return tickets
                 .stream()
                 .map(converter::convert)

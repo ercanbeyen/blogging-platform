@@ -54,19 +54,34 @@ public interface TicketMapper {
     @ResultMap("ticketResultMap")
     @Select("""
             <script>
-                SELECT *
-                FROM TICKETS
+                SELECT tickets.ID, tickets.DESCRIPTION, tickets.CREATED_AT, tickets.UPDATED_AT
+                FROM (
+                    <choose>
+                        <when test = "topApproved != null">
+                            SELECT COUNT(*) AS NUMBER_OF_TICKETS, tickets1.ID, tickets1.DESCRIPTION, tickets1.CREATED_AT, tickets1.UPDATED_AT
+                            FROM TICKETS tickets1
+                            INNER JOIN APPROVALS approvals ON tickets1.ID = approvals.TICKET_ID
+                            GROUP BY approvals.TICKET_ID
+                            ORDER BY NUMBER_OF_TICKETS DESC
+                            LIMIT #{topApproved}
+                        </when>
+                        <otherwise>
+                            SELECT *
+                            FROM TICKETS
+                        </otherwise>
+                    </choose>
+                ) AS tickets
                 <where>
                     <if test = "createdYear != null">
-                        YEAR(CREATED_AT) = #{createdYear}
+                        tickets.YEAR(CREATED_AT) = #{createdYear}
                     </if>
                     <if test = "updatedYear != null">
-                        AND YEAR(UPDATED_AT) = #{updatedYear}
+                        AND tickets.YEAR(UPDATED_AT) = #{updatedYear}
                     </if>
                 </where>
             </script>
             """)
-    List<Ticket> findAllTickets(@Param("createdYear") Integer createdYear, @Param("updatedYear") Integer updatedYear);
+    List<Ticket> findAllTickets(@Param("createdYear") Integer createdYear, @Param("updatedYear") Integer updatedYear, @Param("topApproved") Integer numberOfTopApprovedTickets);
 
     @Delete("""
             DELETE

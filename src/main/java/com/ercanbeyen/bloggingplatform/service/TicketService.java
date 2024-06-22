@@ -11,7 +11,7 @@ public interface TicketService {
     String createTicket(CreateTicketRequest request);
     String updateTicket(Integer id, UpdateTicketRequest request);
     TicketDto getTicket(Integer id);
-    List<TicketDto> getTickets(Integer createdYear, Integer updatedYear);
+    List<TicketDto> getTickets(Integer createdYear, Integer updatedYear, Integer numberOfTopApprovedTickets);
     String deleteTicket(Integer id);
     Ticket getTicketById(Integer id);
 }
