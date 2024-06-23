@@ -24,7 +24,8 @@ public interface AuthorService {
     List<String> getFollowers(String id);
     List<NotificationDto> getNotifications(String toAuthorId);
     void enableAuthor(String authorId);
-    boolean authorExists(String username);
+    boolean authorExistsById(String id);
+    boolean authorExistsByUsername(String username);
     String updatePassword(String id, UpdatePasswordRequest request);
     void updatePassword(String username, String password);
 }

@@ -2,6 +2,7 @@ package com.ercanbeyen.bloggingplatform.service.impl;
 
 import com.ercanbeyen.bloggingplatform.constant.enums.EmailTemplate;
 import com.ercanbeyen.bloggingplatform.constant.messages.ResponseMessage;
+import com.ercanbeyen.bloggingplatform.constant.values.TokenTime;
 import com.ercanbeyen.bloggingplatform.entity.Author;
 import com.ercanbeyen.bloggingplatform.entity.ConfirmationToken;
 import com.ercanbeyen.bloggingplatform.dto.ConfirmationTokenDto;
@@ -33,12 +34,12 @@ public class RegistrationServiceImpl implements RegistrationService {
     @Transactional
     @Override
     public void register(RegistrationRequest request, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
-        boolean authorExists = authorService.authorExists(request.getUsername());
+        boolean authorExists = authorService.authorExistsByUsername(request.getUsername());
         Author registeredAuthor;
 
         if (!authorExists) {
             registeredAuthor = authorService.createAuthor(request);
-            log.info("Author " + registeredAuthor.getId() + " is created");
+            log.info("Author {} is created", registeredAuthor.getId());
         } else {
             registeredAuthor = authorService.findAuthorByUsername(request.getUsername());
             List<ConfirmationTokenDto> confirmationTokenDtoList = confirmationTokenService.getConfirmationTokens(registeredAuthor.getId());
@@ -49,14 +50,14 @@ public class RegistrationServiceImpl implements RegistrationService {
                 }
             }
 
-            log.info("Author " + registeredAuthor.getId()  + " has not been confirmed. So, registration process continues");
+            log.info("Author {} has not been confirmed. So, registration process continues", registeredAuthor.getId());
         }
 
         String token = UUID.randomUUID().toString();
         ConfirmationToken confirmationToken = new ConfirmationToken(
                 token,
                 LocalDateTime.now(),
-                LocalDateTime.now().plusMinutes(15),
+                LocalDateTime.now().plusMinutes(TokenTime.CONFIRMATION_TOKEN),
                 registeredAuthor.getId()
         );
 
@@ -81,7 +82,6 @@ public class RegistrationServiceImpl implements RegistrationService {
         if (expiredAt.isBefore(LocalDateTime.now())) {
             throw new DataConflict("Confirmation token expired");
         }
-
 
         confirmationTokenService.updateConfirmationToken(token);
         authorService.enableAuthor(confirmationTokenInDb.getAuthorId());

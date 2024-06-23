@@ -265,22 +265,20 @@ public class AuthorServiceImpl implements AuthorService {
         Author authorInDb = authorRepository.findById(authorId)
                 .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, EntityName.AUTHOR, authorId)));
 
-        boolean isEnabled = true;
-
-        authorInDb.setEnabled(isEnabled);
+        authorInDb.setEnabled(true);
         authorRepository.save(authorInDb);
     }
 
-    private Author findAuthorById(String id) {
+    @Override
+    public boolean authorExistsById(String id) {
         return authorRepository.findById(id)
-                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, EntityName.AUTHOR, id)));
+                .isPresent();
     }
 
     @Override
-    public boolean authorExists(String username) {
-        return authorRepository.findAll()
-                .stream()
-                .anyMatch(author -> author.getUsername().equals(username));
+    public boolean authorExistsByUsername(String username) {
+        return authorRepository.findByUsername(username)
+                .isPresent();
     }
 
     @Override
@@ -306,6 +304,11 @@ public class AuthorServiceImpl implements AuthorService {
         Author authorInDb = findAuthorByUsername(username);
         authorInDb.setPassword(encodePassword(password));
         authorRepository.save(authorInDb);
+    }
+
+    private Author findAuthorById(String id) {
+        return authorRepository.findById(id)
+                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, EntityName.AUTHOR, id)));
     }
 
     private String encodePassword(String password) {

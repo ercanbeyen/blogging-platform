@@ -7,8 +7,11 @@ import com.ercanbeyen.bloggingplatform.dto.converter.ApprovalDtoConverter;
 import com.ercanbeyen.bloggingplatform.dto.request.create.CreateApprovalRequest;
 import com.ercanbeyen.bloggingplatform.entity.Approval;
 import com.ercanbeyen.bloggingplatform.entity.Ticket;
+import com.ercanbeyen.bloggingplatform.exception.data.DataConflict;
+import com.ercanbeyen.bloggingplatform.exception.data.DataNotFound;
 import com.ercanbeyen.bloggingplatform.mapper.ApprovalMapper;
 import com.ercanbeyen.bloggingplatform.service.ApprovalService;
+import com.ercanbeyen.bloggingplatform.service.AuthorService;
 import com.ercanbeyen.bloggingplatform.service.TicketService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,11 +24,13 @@ import java.util.UUID;
 public class ApprovalServiceImpl implements ApprovalService {
     private final ApprovalMapper approvalMapper;
     private final ApprovalDtoConverter converter;
+    private final AuthorService authorService;
     private final TicketService ticketService;
 
     @Override
     public String createApproval(CreateApprovalRequest request) {
         Ticket ticket = ticketService.getTicketById(request.ticketId());
+        checkTicketBeforeApprove(request, ticket);
         Approval approval = new Approval(UUID.randomUUID().toString(), request.authorId(), ticket);
         approvalMapper.insertApproval(approval);
         return String.format(ResponseMessage.SUCCESS, ResponseMessage.State.NEW, EntityName.APPROVAL, ResponseMessage.Operation.CREATED);
@@ -50,5 +55,20 @@ public class ApprovalServiceImpl implements ApprovalService {
     public String deleteApproval(String id) {
         approvalMapper.deleteApprovalById(id);
         return String.format(ResponseMessage.SUCCESS, EntityName.APPROVAL, id, ResponseMessage.Operation.DELETED);
+    }
+
+    private void checkTicketBeforeApprove(CreateApprovalRequest request, Ticket ticket) {
+        if (!authorService.authorExistsById(request.authorId())) {
+            throw new DataNotFound(String.format(ResponseMessage.NOT_FOUND, EntityName.AUTHOR, request.authorId()));
+        }
+
+        boolean doesAuthorApproved = ticket.getApprovals()
+                .stream()
+                .map(Approval::getAuthorId)
+                .anyMatch(authorId -> authorId.equals(request.authorId()));
+
+        if (doesAuthorApproved) {
+            throw new DataConflict(String.format("Author %s already approved ticket %s", request.authorId(), request.ticketId()));
+        }
     }
 }

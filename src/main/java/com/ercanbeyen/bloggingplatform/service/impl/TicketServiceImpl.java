@@ -7,12 +7,14 @@ import com.ercanbeyen.bloggingplatform.dto.converter.TicketDtoConverter;
 import com.ercanbeyen.bloggingplatform.dto.request.create.CreateTicketRequest;
 import com.ercanbeyen.bloggingplatform.dto.request.update.UpdateTicketRequest;
 import com.ercanbeyen.bloggingplatform.entity.Ticket;
+import com.ercanbeyen.bloggingplatform.exception.data.DataNotFound;
 import com.ercanbeyen.bloggingplatform.mapper.TicketMapper;
 import com.ercanbeyen.bloggingplatform.service.TicketService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -57,6 +59,7 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     public Ticket getTicketById(Integer id) {
-        return ticketMapper.findTicketById(id);
+        return Optional.ofNullable(ticketMapper.findTicketById(id))
+                .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, EntityName.TICKET, id)));
     }
 }
