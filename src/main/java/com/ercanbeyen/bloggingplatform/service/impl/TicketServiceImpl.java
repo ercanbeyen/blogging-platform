@@ -43,8 +43,8 @@ public class TicketServiceImpl implements TicketService {
     }
 
     @Override
-    public List<TicketDto> getTickets(Integer createdYear, Integer updatedYear, Integer numberOfTopApprovedTickets) {
-        List<Ticket> tickets = ticketMapper.findAllTickets(createdYear, updatedYear, numberOfTopApprovedTickets);
+    public List<TicketDto> getTickets(Integer createdYear, Integer updatedYear, String sortedField, String order, Integer numberOfTopApprovedTickets) {
+        List<Ticket> tickets = ticketMapper.findAllTickets(createdYear, updatedYear, sortedField, order, numberOfTopApprovedTickets);
         return tickets
                 .stream()
                 .map(converter::convert)

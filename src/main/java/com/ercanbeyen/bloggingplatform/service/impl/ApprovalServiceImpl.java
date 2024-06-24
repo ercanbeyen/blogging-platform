@@ -38,14 +38,12 @@ public class ApprovalServiceImpl implements ApprovalService {
 
     @Override
     public ApprovalDto getApproval(String id) {
-        Approval approval = approvalMapper.findApprovalById(id);
-        return converter.convert(approval);
+        return converter.convert(approvalMapper.findApprovalById(id));
     }
 
     @Override
     public List<ApprovalDto> getApprovals() {
-        List<Approval> approvals = approvalMapper.findAllApprovals();
-        return approvals
+        return approvalMapper.findAllApprovals()
                 .stream()
                 .map(converter::convert)
                 .toList();
@@ -62,13 +60,13 @@ public class ApprovalServiceImpl implements ApprovalService {
             throw new DataNotFound(String.format(ResponseMessage.NOT_FOUND, EntityName.AUTHOR, request.authorId()));
         }
 
-        boolean doesAuthorApproved = ticket.getApprovals()
+        boolean doesAuthorApprovedTicket = ticket.getApprovals()
                 .stream()
                 .map(Approval::getAuthorId)
                 .anyMatch(authorId -> authorId.equals(request.authorId()));
 
-        if (doesAuthorApproved) {
-            throw new DataConflict(String.format("Author %s already approved ticket %s", request.authorId(), request.ticketId()));
+        if (doesAuthorApprovedTicket) {
+            throw new DataConflict(String.format("Author %s already approved ticket %d", request.authorId(), request.ticketId()));
         }
     }
 }

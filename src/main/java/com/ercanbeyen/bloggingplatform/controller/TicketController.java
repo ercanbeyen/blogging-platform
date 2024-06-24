@@ -36,8 +36,10 @@ public class TicketController {
     public ResponseEntity<List<TicketDto>> getTickets(
             @RequestParam(name = "createdAt", required = false) Integer createdYear,
             @RequestParam(name = "updatedAt", required = false) Integer updatedYear,
-            @RequestParam(name = "topApproved", required = false) Integer numberOfTopApprovedTickets) {
-        return ResponseEntity.ok(ticketService.getTickets(createdYear, updatedYear, numberOfTopApprovedTickets));
+            @RequestParam(name = "sort", required = false) String sortedField,
+            @RequestParam(name = "order", required = false) String order,
+            @RequestParam(name = "top", required = false) Integer numberOfTopApprovedTickets) {
+        return ResponseEntity.ok(ticketService.getTickets(createdYear, updatedYear, sortedField, order, numberOfTopApprovedTickets));
     }
 
     @DeleteMapping("/{id}")
