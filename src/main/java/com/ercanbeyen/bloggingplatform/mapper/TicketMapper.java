@@ -56,10 +56,13 @@ public interface TicketMapper {
             <script>
                 SELECT tickets.ID, tickets.DESCRIPTION, tickets.CREATED_AT, tickets.UPDATED_AT
                 FROM (
-                    SELECT COUNT(*) AS NUMBER_OF_TICKETS, tickets1.ID, tickets1.DESCRIPTION, tickets1.CREATED_AT, tickets1.UPDATED_AT
+                    SELECT COUNT(*) AS NUMBER_OF_APPROVALS, tickets1.ID, tickets1.DESCRIPTION, tickets1.CREATED_AT, tickets1.UPDATED_AT
                     FROM TICKETS tickets1
                     INNER JOIN APPROVALS approvals ON tickets1.ID = approvals.TICKET_ID
                     GROUP BY approvals.TICKET_ID
+                    <if test = "minimumApprovals != null">
+                        HAVING NUMBER_OF_APPROVALS >= #{minimumApprovals}
+                    </if>
                     <if test = "sortBy != null and order != null">
                         ORDER BY
                         <choose>
@@ -96,6 +99,7 @@ public interface TicketMapper {
     List<Ticket> findAllTickets(
             @Param("createdYear") Integer createdYear,
             @Param("updatedYear") Integer updatedYear,
+            @Param("minimumApprovals") Integer minimumNumberOfApprovalsForTicket,
             @Param("sortBy") String sortedField,
             @Param("order") String order,
             @Param("topApproved") Integer numberOfTopApprovedTickets
