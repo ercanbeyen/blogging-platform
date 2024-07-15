@@ -1,15 +1,19 @@
 package com.ercanbeyen.bloggingplatform.service.impl;
 
+import com.ercanbeyen.bloggingplatform.constant.enums.RoleName;
 import com.ercanbeyen.bloggingplatform.constant.messages.ResponseMessage;
 import com.ercanbeyen.bloggingplatform.constant.values.EntityName;
 import com.ercanbeyen.bloggingplatform.dto.TicketDto;
 import com.ercanbeyen.bloggingplatform.dto.converter.TicketDtoConverter;
 import com.ercanbeyen.bloggingplatform.dto.request.create.CreateTicketRequest;
 import com.ercanbeyen.bloggingplatform.dto.request.update.UpdateTicketRequest;
+import com.ercanbeyen.bloggingplatform.entity.Role;
 import com.ercanbeyen.bloggingplatform.entity.Ticket;
+import com.ercanbeyen.bloggingplatform.exception.data.DataForbidden;
 import com.ercanbeyen.bloggingplatform.exception.data.DataNotFound;
 import com.ercanbeyen.bloggingplatform.mapper.TicketMapper;
 import com.ercanbeyen.bloggingplatform.service.TicketService;
+import com.ercanbeyen.bloggingplatform.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -31,8 +35,16 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     public String updateTicket(Integer id, UpdateTicketRequest request) {
-        Ticket ticket = new Ticket(request.getDescription());
+        Ticket ticket = findTicketById(id);
+
+        if (request.getStatus() != null) {
+            checkAdminRole();
+            ticket.setStatus(request.getStatus().name());
+        }
+
+        ticket.setDescription(request.getDescription());
         ticketMapper.updateTicket(id, ticket);
+
         return String.format(ResponseMessage.SUCCESS, EntityName.TICKET, id, ResponseMessage.Operation.UPDATED);
     }
 
@@ -59,7 +71,23 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     public Ticket getTicketById(Integer id) {
+        return findTicketById(id);
+    }
+
+    private Ticket findTicketById(Integer id) {
         return Optional.ofNullable(ticketMapper.findTicketById(id))
                 .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, EntityName.TICKET, id)));
+    }
+
+    private static void checkAdminRole() {
+        boolean isAdmin = SecurityUtil.getLoggedInAuthor()
+                .getRoles()
+                .stream()
+                .map(Role::getRoleName)
+                .anyMatch(roleName -> roleName == RoleName.ADMIN);
+
+        if (!isAdmin) {
+            throw new DataForbidden(ResponseMessage.NOT_AUTHORIZED);
+        }
     }
 }

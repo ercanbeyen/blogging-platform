@@ -8,7 +8,7 @@ import java.util.List;
 public record TicketDto(
         Integer id,
         String description,
-        TicketStatus ticketStatus,
+        TicketStatus status,
         LocalDateTime createdAt,
         LocalDateTime updatedAt,
         List<String> approvalIds) {

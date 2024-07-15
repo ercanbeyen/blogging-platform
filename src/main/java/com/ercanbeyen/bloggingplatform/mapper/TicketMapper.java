@@ -20,9 +20,8 @@ public interface TicketMapper {
             <script>
                 UPDATE TICKETS
                 <set>
-                    <if test = "ticket.description != null">
-                        DESCRIPTION = #{ticket.description}
-                    </if>,
+                    STATUS = #{ticket.status},
+                    DESCRIPTION = #{ticket.description},
                     UPDATED_AT = LOCALTIMESTAMP()
                 </set>
                 WHERE ID = #{id}
@@ -55,9 +54,9 @@ public interface TicketMapper {
     @ResultMap("ticketResultMap")
     @Select("""
             <script>
-                SELECT tickets.ID, tickets.DESCRIPTION, tickets.CREATED_AT, tickets.UPDATED_AT
+                SELECT tickets.ID, tickets.DESCRIPTION, tickets.STATUS, tickets.CREATED_AT, tickets.UPDATED_AT
                 FROM (
-                    SELECT COUNT(*) AS NUMBER_OF_APPROVALS, tickets1.ID, tickets1.DESCRIPTION, tickets1.CREATED_AT, tickets1.UPDATED_AT
+                    SELECT COUNT(*) AS NUMBER_OF_APPROVALS, tickets1.ID, tickets1.DESCRIPTION, tickets1.STATUS, tickets1.CREATED_AT, tickets1.UPDATED_AT
                     FROM TICKETS tickets1
                     INNER JOIN APPROVALS approvals ON tickets1.ID = approvals.TICKET_ID
                     GROUP BY approvals.TICKET_ID

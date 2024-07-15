@@ -75,12 +75,10 @@ public class Author implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorities = new ArrayList<>();
 
-        roles.forEach(
-                role -> {
-                    SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role.getRoleName().name());
-                    authorities.add(authority);
-                }
-        );
+        roles.forEach(role -> {
+            SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role.getRoleName().name());
+            authorities.add(authority);
+        });
 
         return authorities;
     }
