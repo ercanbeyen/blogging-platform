@@ -11,6 +11,7 @@ import java.util.List;
 public class Ticket {
     private Integer id;
     private String description;
+    private String status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private List<Approval> approvals;
@@ -28,6 +29,7 @@ public class Ticket {
         return "Ticket{" +
                 "id=" + id +
                 ", description='" + description + '\'' +
+                ", status='" + status + '\'' +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 ", approvalIds=" + approvalIds +

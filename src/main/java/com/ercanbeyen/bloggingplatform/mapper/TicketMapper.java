@@ -10,8 +10,8 @@ import java.util.List;
 public interface TicketMapper {
 
     @Insert("""
-            INSERT INTO TICKETS (DESCRIPTION, CREATED_AT, UPDATED_AT)
-            VALUES (#{description}, LOCALTIMESTAMP(), LOCALTIMESTAMP())
+            INSERT INTO TICKETS (DESCRIPTION, STATUS, CREATED_AT, UPDATED_AT)
+            VALUES (#{description}, 'TO_DO', LOCALTIMESTAMP(), LOCALTIMESTAMP())
             """)
     @Options(useGeneratedKeys = true, keyProperty = "id")
     void insertTicket(Ticket ticket);
@@ -33,6 +33,7 @@ public interface TicketMapper {
     @Results(id = "ticketResultMap", value = {
             @Result(property = "id", column = "ID"),
             @Result(property = "description", column = "DESCRIPTION"),
+            @Result(property = "status", column = "STATUS"),
             @Result(property = "createdAt", column = "CREATED_AT"),
             @Result(property = "updatedAt", column = "UPDATED_AT"),
             @Result(property = "approvals",
