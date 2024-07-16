@@ -43,7 +43,7 @@ public interface ApprovalMapper {
     List<Approval> findAllApprovals();
 
     @Delete("""
-            DELETE *
+            DELETE
             FROM APPROVALS
             WHERE ID = #{id}
             """)
