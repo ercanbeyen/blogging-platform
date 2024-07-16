@@ -1,5 +1,6 @@
 package com.ercanbeyen.bloggingplatform.controller;
 
+import com.ercanbeyen.bloggingplatform.constant.enums.TicketStatus;
 import com.ercanbeyen.bloggingplatform.dto.TicketDto;
 import com.ercanbeyen.bloggingplatform.dto.request.create.CreateTicketRequest;
 import com.ercanbeyen.bloggingplatform.dto.request.update.UpdateTicketRequest;
@@ -34,6 +35,7 @@ public class TicketController {
 
     @GetMapping
     public ResponseEntity<List<TicketDto>> getTickets(
+            @RequestParam(name = "status", required = false) TicketStatus status,
             @RequestParam(name = "createdAt", required = false) Integer createdYear,
             @RequestParam(name = "updatedAt", required = false) Integer updatedYear,
             @RequestParam(name = "minimumApprovals", required = false) Integer minimumNumberOfApprovals,
@@ -42,6 +44,7 @@ public class TicketController {
             @RequestParam(name = "top", required = false) Integer numberOfTopApprovedTickets) {
         return ResponseEntity.ok(
                 ticketService.getTickets(
+                        status,
                         createdYear,
                         updatedYear,
                         minimumNumberOfApprovals,

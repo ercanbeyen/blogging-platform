@@ -58,7 +58,7 @@ public interface TicketMapper {
                 FROM (
                     SELECT COUNT(*) AS NUMBER_OF_APPROVALS, tickets1.ID, tickets1.DESCRIPTION, tickets1.STATUS, tickets1.CREATED_AT, tickets1.UPDATED_AT
                     FROM TICKETS tickets1
-                    INNER JOIN APPROVALS approvals ON tickets1.ID = approvals.TICKET_ID
+                    LEFT JOIN APPROVALS approvals ON tickets1.ID = approvals.TICKET_ID
                     GROUP BY approvals.TICKET_ID
                     <if test = "minimumApprovals != null">
                         HAVING NUMBER_OF_APPROVALS >= #{minimumApprovals}
@@ -87,16 +87,20 @@ public interface TicketMapper {
                     </if>
                 ) AS tickets
                 <where>
+                    <if test = "status != null">
+                        tickets.STATUS = #{status}
+                    </if>
                     <if test = "createdYear != null">
-                        tickets.YEAR(CREATED_AT) = #{createdYear}
+                        AND YEAR(tickets.CREATED_AT) = #{createdYear}
                     </if>
                     <if test = "updatedYear != null">
-                        AND tickets.YEAR(UPDATED_AT) = #{updatedYear}
+                        AND YEAR(tickets.UPDATED_AT) = #{updatedYear}
                     </if>
                 </where>
             </script>
             """)
     List<Ticket> findAllTickets(
+            @Param("status") String status,
             @Param("createdYear") Integer createdYear,
             @Param("updatedYear") Integer updatedYear,
             @Param("minimumApprovals") Integer minimumNumberOfApprovalsForTicket,

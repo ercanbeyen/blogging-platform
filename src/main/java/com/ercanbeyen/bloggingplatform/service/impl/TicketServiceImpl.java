@@ -1,6 +1,7 @@
 package com.ercanbeyen.bloggingplatform.service.impl;
 
 import com.ercanbeyen.bloggingplatform.constant.enums.RoleName;
+import com.ercanbeyen.bloggingplatform.constant.enums.TicketStatus;
 import com.ercanbeyen.bloggingplatform.constant.messages.ResponseMessage;
 import com.ercanbeyen.bloggingplatform.constant.values.EntityName;
 import com.ercanbeyen.bloggingplatform.dto.TicketDto;
@@ -55,9 +56,27 @@ public class TicketServiceImpl implements TicketService {
     }
 
     @Override
-    public List<TicketDto> getTickets(Integer createdYear, Integer updatedYear, Integer minimumNumberOfApprovals, String sortedField, String order, Integer numberOfTopApprovedTickets) {
-        List<Ticket> tickets = ticketMapper.findAllTickets(createdYear, updatedYear, minimumNumberOfApprovals, sortedField, order, numberOfTopApprovedTickets);
-        return tickets
+    public List<TicketDto> getTickets(TicketStatus status, Integer createdYear, Integer updatedYear, Integer minimumNumberOfApprovals, String sortedField, String order, Integer numberOfTopApprovedTickets) {
+        //String ticketStatus;
+
+//        if (status == null) {
+//            ticketStatus = null;
+//        } else {
+//            ticketStatus = status.name();
+//        }
+
+        String ticketStatus = Optional.ofNullable(status)
+                .map(TicketStatus::name)
+                .orElse(null);
+
+        return ticketMapper.findAllTickets(
+                        ticketStatus,
+                        createdYear,
+                        updatedYear,
+                        minimumNumberOfApprovals,
+                        sortedField,
+                        order,
+                        numberOfTopApprovedTickets)
                 .stream()
                 .map(converter::convert)
                 .toList();
