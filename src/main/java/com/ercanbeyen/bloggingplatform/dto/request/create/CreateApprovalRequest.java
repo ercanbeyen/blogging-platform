@@ -1,10 +1,7 @@
 package com.ercanbeyen.bloggingplatform.dto.request.create;
 
-import com.ercanbeyen.bloggingplatform.constant.messages.ResponseMessage;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
-public record CreateApprovalRequest(
-        @NotBlank(message = "Author id" + ResponseMessage.SHOULD_NOT_BLANK)
-        String authorId,
-        Integer ticketId) {
+public record CreateApprovalRequest(@NotNull(message = "Ticket id should not be null") Integer ticketId) {
+
 }

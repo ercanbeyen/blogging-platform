@@ -33,9 +33,13 @@ public class ApprovalServiceImpl implements ApprovalService {
     @Override
     public String createApproval(CreateApprovalRequest request) {
         Ticket ticket = ticketService.getTicketById(request.ticketId());
-        checkTicketBeforeApprove(request, ticket);
-        Approval approval = new Approval(UUID.randomUUID().toString(), request.authorId(), ticket);
+        String authorId = SecurityUtil.getLoggedInAuthor().getId();
+
+        checkAuthorAndTicketBeforeApprove(request, ticket, authorId);
+
+        Approval approval = new Approval(UUID.randomUUID().toString(), authorId, ticket);
         approvalMapper.insertApproval(approval);
+
         return String.format(ResponseMessage.SUCCESS, ResponseMessage.State.NEW, EntityName.APPROVAL, ResponseMessage.Operation.CREATED);
     }
 
@@ -66,18 +70,18 @@ public class ApprovalServiceImpl implements ApprovalService {
         return String.format(ResponseMessage.SUCCESS, EntityName.APPROVAL, id, ResponseMessage.Operation.DELETED);
     }
 
-    private void checkTicketBeforeApprove(CreateApprovalRequest request, Ticket ticket) {
-        if (!authorService.authorExistsById(request.authorId())) {
-            throw new DataNotFound(String.format(ResponseMessage.NOT_FOUND, EntityName.AUTHOR, request.authorId()));
+    private void checkAuthorAndTicketBeforeApprove(CreateApprovalRequest request, Ticket ticket, String authorId) {
+        if (!authorService.authorExistsById(authorId)) {
+            throw new DataNotFound(String.format(ResponseMessage.NOT_FOUND, EntityName.AUTHOR, authorId));
         }
 
         boolean doesAuthorApprovedTicket = ticket.getApprovals()
                 .stream()
                 .map(Approval::getAuthorId)
-                .anyMatch(authorId -> authorId.equals(request.authorId()));
+                .anyMatch(authorId::equals);
 
         if (doesAuthorApprovedTicket) {
-            throw new DataConflict(String.format("Author %s already approved ticket %d", request.authorId(), request.ticketId()));
+            throw new DataConflict(String.format("Author %s already approved ticket %d", authorId, request.ticketId()));
         }
     }
 }
