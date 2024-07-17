@@ -8,6 +8,10 @@ import com.ercanbeyen.bloggingplatform.exception.data.DataForbidden;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 public class SecurityUtil {
+    private SecurityUtil() {
+        throw new IllegalStateException(ResponseMessage.UTILITY_CLASSES_CANNOT_BE_INSTANTIATED);
+    }
+
     public static Author getLoggedInAuthor() {
         return (Author) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }

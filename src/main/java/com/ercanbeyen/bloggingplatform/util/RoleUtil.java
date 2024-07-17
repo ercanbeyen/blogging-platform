@@ -6,6 +6,10 @@ import com.ercanbeyen.bloggingplatform.entity.Author;
 import com.ercanbeyen.bloggingplatform.exception.data.DataForbidden;
 
 public class RoleUtil {
+    private RoleUtil() {
+        throw new IllegalStateException(ResponseMessage.UTILITY_CLASSES_CANNOT_BE_INSTANTIATED);
+    }
+
     private static boolean isBanned(Author author) {
         return author.getRoles()
                 .stream()
