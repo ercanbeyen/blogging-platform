@@ -1,6 +1,5 @@
 package com.ercanbeyen.bloggingplatform.controller;
 
-import com.ercanbeyen.bloggingplatform.dto.NotificationDto;
 import com.ercanbeyen.bloggingplatform.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

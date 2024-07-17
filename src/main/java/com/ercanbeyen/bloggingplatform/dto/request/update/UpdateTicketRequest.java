@@ -11,4 +11,18 @@ import lombok.ToString;
 @ToString
 public class UpdateTicketRequest extends BaseTicketRequest {
     private TicketStatus status;
+
+    @Override
+    public boolean equals(Object other) {
+        if (!super.equals(other)) {
+            return false;
+        }
+
+        return status == ((UpdateTicketRequest) other).status;
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
 }

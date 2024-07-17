@@ -8,7 +8,6 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.springframework.data.mongodb.core.index.Indexed;
 
 import java.util.List;
 

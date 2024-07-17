@@ -3,9 +3,7 @@ package com.ercanbeyen.bloggingplatform.dto.serialization;
 import com.ercanbeyen.bloggingplatform.dto.NotificationDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.common.errors.SerializationException;
 import org.apache.kafka.common.serialization.Serializer;
-import org.apache.commons.lang3.SerializationUtils;
 
 import java.util.Map;
 
@@ -26,12 +24,8 @@ public class NotificationDtoSerializer implements Serializer<NotificationDto> {
             }
 
             log.info("Serializing...");
-           // byte[] temp = SerializationUtils.serialize(data);
-            /*byte[] temp = objectMapper.writeValueAsBytes(data);
-            return temp;*/
             return objectMapper.writeValueAsBytes(data);
         } catch (Exception exception) {
-            //throw new SerializationException("Error when serializing Notification to byte[]");
             log.error("Unable to deserialize message {}", data);
             return null;
         }
