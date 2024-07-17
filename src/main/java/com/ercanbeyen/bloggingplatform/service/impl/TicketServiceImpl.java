@@ -73,6 +73,7 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     public String deleteTicket(Integer id) {
+        SecurityUtil.checkAdminRole();
         ticketMapper.deleteTicketById(id);
         return String.format(ResponseMessage.SUCCESS, EntityName.TICKET, id, ResponseMessage.Operation.DELETED);
     }
