@@ -21,14 +21,15 @@ import com.ercanbeyen.bloggingplatform.service.NotificationService;
 import com.ercanbeyen.bloggingplatform.service.RoleService;
 import com.ercanbeyen.bloggingplatform.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthorServiceImpl implements AuthorService {
@@ -64,9 +65,9 @@ public class AuthorServiceImpl implements AuthorService {
     @Override
     public AuthorDto updateAuthor(String id, UpdateAuthorRequest request) {
         Author loggedInAuthor = SecurityUtil.getLoggedInAuthor();
-        String loggedIn_authorId = loggedInAuthor.getId();
+        String loggedInAuthorId = loggedInAuthor.getId();
 
-        if (!loggedIn_authorId.equals(id)) {
+        if (!loggedInAuthorId.equals(id)) {
             throw new DataForbidden(ResponseMessage.NOT_AUTHORIZED);
         }
 
@@ -95,7 +96,7 @@ public class AuthorServiceImpl implements AuthorService {
     @Override
     public AuthorDto getAuthor(String id) {
         Author authorInDb = findAuthorById(id);
-        authorInDb.getRoles().forEach(System.out::println);
+        authorInDb.getRoles().forEach(role -> log.info("Role: {}", role));
 
         return authorDtoConverter.convert(authorInDb);
     }
@@ -105,7 +106,7 @@ public class AuthorServiceImpl implements AuthorService {
         return authorRepository.findAll()
                 .stream()
                 .map(authorDtoConverter::convert)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Transactional

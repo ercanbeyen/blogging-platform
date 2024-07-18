@@ -36,7 +36,7 @@ public class ConfirmationTokenServiceImpl implements ConfirmationTokenService {
 
     @Override
     public List<ConfirmationTokenDto> getConfirmationTokens(String authorId) {
-        Predicate<ConfirmationToken> authorPredicate = (confirmationToken) -> (authorId == null || confirmationToken.getAuthorId().equals(authorId));
+        Predicate<ConfirmationToken> authorPredicate = confirmationToken -> (authorId == null || confirmationToken.getAuthorId().equals(authorId));
 
         return confirmationTokenRepository.findAll()
                 .stream()

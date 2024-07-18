@@ -87,7 +87,7 @@ public class CommentServiceImpl implements CommentService {
         return commentRepository.findAll()
                 .stream()
                 .map(commentDtoConverter::convert)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override

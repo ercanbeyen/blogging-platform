@@ -19,7 +19,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -35,7 +34,7 @@ public class NotificationServiceImpl implements NotificationService {
     @KafkaListener(topics = {NotificationMessage.POST_NOTIFICATION, NotificationMessage.COMMENT_NOTIFICATION}, groupId = "group-id")
     public void listen(NotificationDto notificationDto) {
         Notification newNotification = createNotification(notificationDto);
-        log.info(String.format("Message receiver\n %s", newNotification.getDescription()));
+        log.info("Message receiver\n {}", newNotification.getDescription());
     }
 
     @Override
@@ -56,18 +55,15 @@ public class NotificationServiceImpl implements NotificationService {
                 throw new DataForbidden(ResponseMessage.NOT_AUTHORIZED);
             }
 
-            filteringAuthors = (notification) ->
+            filteringAuthors = notification ->
                     (StringUtils.isBlank(fromAuthorId) || notification.getFromAuthorId().equals(fromAuthorId)) &&
                             (StringUtils.isBlank(toAuthorId) || notification.getToAuthorId().equals(toAuthorId));
         }
 
 
-        List<Notification> notifications = notificationRepository.findAll()
+        return notificationRepository.findAll()
                 .stream()
                 .filter(filteringAuthors)
-                .toList();
-
-        return notifications.stream()
                 .map(notificationDtoConverter::convert)
                 .toList();
     }
@@ -95,7 +91,6 @@ public class NotificationServiceImpl implements NotificationService {
         return String.format(ResponseMessage.SUCCESS, EntityName.NOTIFICATION, id, ResponseMessage.Operation.DELETED);
     }
 
-    @Transactional
     private Notification createNotification(NotificationDto notificationDto) {
         Notification newNotification = Notification.builder()
                 .fromAuthorId(notificationDto.getFromAuthorId())

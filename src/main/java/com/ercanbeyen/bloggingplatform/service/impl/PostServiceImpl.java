@@ -80,12 +80,12 @@ public class PostServiceImpl implements PostService {
     public PostDto updatePost(String id, UpdatePostRequest request) {
         Post postInDb = findPostById(id);
 
-        Author author_posted = postInDb.getAuthor();
-        Author loggedIn_author = SecurityUtil.getLoggedInAuthor();
+        Author authorPosted = postInDb.getAuthor();
+        Author loggedInAuthor = SecurityUtil.getLoggedInAuthor();
 
-        RoleUtil.checkIsBanned(author_posted);
+        RoleUtil.checkIsBanned(authorPosted);
 
-        if (!author_posted.getId().equals(loggedIn_author.getId())) {
+        if (!authorPosted.getId().equals(loggedInAuthor.getId())) {
             throw new DataForbidden(ResponseMessage.NOT_AUTHORIZED);
         }
 
@@ -106,7 +106,7 @@ public class PostServiceImpl implements PostService {
 
          return posts.stream()
                  .map(postDtoConverter::convert)
-                 .collect(Collectors.toList());
+                 .toList();
     }
 
     @Override
@@ -248,7 +248,7 @@ public class PostServiceImpl implements PostService {
         return postInDb.getAuthorsLiked()
                 .stream()
                 .map(authorDtoConverter::convert)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
@@ -263,7 +263,7 @@ public class PostServiceImpl implements PostService {
         return postInDb.getAuthorsDisliked()
                 .stream()
                 .map(authorDtoConverter::convert)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
