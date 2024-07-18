@@ -15,12 +15,12 @@ import com.ercanbeyen.bloggingplatform.mapper.ApprovalMapper;
 import com.ercanbeyen.bloggingplatform.service.ApprovalService;
 import com.ercanbeyen.bloggingplatform.service.AuthorService;
 import com.ercanbeyen.bloggingplatform.service.TicketService;
+import com.ercanbeyen.bloggingplatform.util.RandomUtil;
 import com.ercanbeyen.bloggingplatform.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -37,7 +37,7 @@ public class ApprovalServiceImpl implements ApprovalService {
 
         checkAuthorAndTicketBeforeApprove(request, ticket, authorId);
 
-        Approval approval = new Approval(UUID.randomUUID().toString(), authorId, ticket);
+        Approval approval = new Approval(RandomUtil.getRandomString(), authorId, ticket);
         approvalMapper.insertApproval(approval);
 
         return String.format(ResponseMessage.SUCCESS, ResponseMessage.State.NEW, EntityName.APPROVAL, ResponseMessage.Operation.CREATED);

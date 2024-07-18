@@ -2,7 +2,7 @@ package com.ercanbeyen.bloggingplatform.dto.request.update;
 
 import com.ercanbeyen.bloggingplatform.constant.enums.Gender;
 import com.ercanbeyen.bloggingplatform.constant.messages.ResponseMessage;
-import com.ercanbeyen.bloggingplatform.util.Location;
+import com.ercanbeyen.bloggingplatform.embeddable.Location;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;

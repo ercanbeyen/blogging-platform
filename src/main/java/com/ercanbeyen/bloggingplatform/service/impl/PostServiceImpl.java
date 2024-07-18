@@ -21,12 +21,12 @@ import com.ercanbeyen.bloggingplatform.repository.PostRepository;
 import com.ercanbeyen.bloggingplatform.service.PostService;
 import com.ercanbeyen.bloggingplatform.util.RoleUtil;
 import com.ercanbeyen.bloggingplatform.util.SecurityUtil;
+import com.ercanbeyen.bloggingplatform.util.TimeUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -53,7 +53,7 @@ public class PostServiceImpl implements PostService {
                 .category(request.getCategory())
                 .tags(request.getTags())
                 .comments(new ArrayList<>())
-                .latestChangeAt(LocalDateTime.now())
+                .latestChangeAt(TimeUtil.calculateNow())
                 .build();
 
         Post savedPost = postRepository.save(createdPost);
@@ -93,7 +93,7 @@ public class PostServiceImpl implements PostService {
         postInDb.setText(request.getText());
         postInDb.setCategory(request.getCategory());
         postInDb.setTags(request.getTags());
-        postInDb.setLatestChangeAt(LocalDateTime.now());
+        postInDb.setLatestChangeAt(TimeUtil.calculateNow());
 
         Post savedPost = postRepository.save(postInDb);
 

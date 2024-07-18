@@ -1,7 +1,7 @@
 package com.ercanbeyen.bloggingplatform.dto;
 
 import com.ercanbeyen.bloggingplatform.constant.enums.Gender;
-import com.ercanbeyen.bloggingplatform.util.Location;
+import com.ercanbeyen.bloggingplatform.embeddable.Location;
 import com.ercanbeyen.bloggingplatform.entity.Role;
 import lombok.Builder;
 import lombok.Data;

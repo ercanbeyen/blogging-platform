@@ -20,13 +20,13 @@ import com.ercanbeyen.bloggingplatform.service.AuthorService;
 import com.ercanbeyen.bloggingplatform.service.NotificationService;
 import com.ercanbeyen.bloggingplatform.service.RoleService;
 import com.ercanbeyen.bloggingplatform.util.SecurityUtil;
+import com.ercanbeyen.bloggingplatform.util.TimeUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.*;
 
 @Slf4j
@@ -53,7 +53,7 @@ public class AuthorServiceImpl implements AuthorService {
                 .username(request.getUsername())
                 .roles(roles)
                 .email(request.getEmail())
-                .createdAt(LocalDateTime.now())
+                .createdAt(TimeUtil.calculateNow())
                 .followed(new ArrayList<>())
                 .followers(new ArrayList<>())
                 .build();

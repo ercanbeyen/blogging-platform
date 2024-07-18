@@ -1,6 +1,6 @@
 package com.ercanbeyen.bloggingplatform.entity;
 
-import com.ercanbeyen.bloggingplatform.util.Location;
+import com.ercanbeyen.bloggingplatform.embeddable.Location;
 import com.ercanbeyen.bloggingplatform.constant.enums.Gender;
 import lombok.*;
 
@@ -115,10 +115,10 @@ public class Author implements UserDetails {
 
     @Override
     public String toString() {
-        List<String> follower_usernames = followers.stream()
+        List<String> followerUsernames = followers.stream()
                 .map(Author::getUsername)
                 .toList();
-        List<String> followed_usernames = followed.stream()
+        List<String> followedUsernames = followed.stream()
                 .map(Author::getUsername)
                 .toList();
 
@@ -135,8 +135,8 @@ public class Author implements UserDetails {
                 ", location=" + location +
                 ", favoriteTopics=" + favoriteTopics +
                 ", createdAt=" + createdAt +
-                ", followed=" + followed_usernames +
-                ", followers=" + follower_usernames +
+                ", followed=" + followedUsernames +
+                ", followers=" + followerUsernames +
                 '}';
     }
 

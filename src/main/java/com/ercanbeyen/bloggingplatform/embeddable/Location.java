@@ -1,4 +1,4 @@
-package com.ercanbeyen.bloggingplatform.util;
+package com.ercanbeyen.bloggingplatform.embeddable;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

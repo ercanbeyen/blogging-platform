@@ -10,6 +10,7 @@ import com.ercanbeyen.bloggingplatform.service.AuthenticationService;
 import com.ercanbeyen.bloggingplatform.service.AuthorService;
 import com.ercanbeyen.bloggingplatform.service.EmailService;
 import com.ercanbeyen.bloggingplatform.util.JwtUtil;
+import com.ercanbeyen.bloggingplatform.util.RandomUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +23,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -35,15 +35,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public void authenticate(LoginRequest loginRequest, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        loginRequest.getUsername(),
-                        loginRequest.getPassword()
-                )
-        );
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
         Author author = authorService.findAuthorByUsername(loginRequest.getUsername());
-
         Map<String, String> tokenMap = jwtService.generateTokens(author);
 
         httpServletResponse.setHeader(JwtMessage.TOKEN_MAP_KEY_ACCESS_TOKEN, tokenMap.get(JwtMessage.TOKEN_MAP_KEY_ACCESS_TOKEN));
@@ -74,10 +68,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public void updatePassword(String username) {
         Author authorInDb = authorService.findAuthorByUsername(username);
-        String newPassword = UUID.randomUUID().toString();
+        String newPassword = RandomUtil.getRandomString();
         authorService.updatePassword(username, newPassword);
 
-        emailService.send("Password Update", authorInDb.getEmail(), emailService.buildEmail(authorInDb.getFirstName(), newPassword, EmailTemplate.PASSWORD_UPDATE));
+        String email = emailService.buildEmail(authorInDb.getFirstName(), newPassword, EmailTemplate.PASSWORD_UPDATE);
+        emailService.send("Password Update", authorInDb.getEmail(), email);
     }
 
 }

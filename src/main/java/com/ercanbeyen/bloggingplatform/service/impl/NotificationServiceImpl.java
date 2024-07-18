@@ -13,6 +13,7 @@ import com.ercanbeyen.bloggingplatform.exception.data.DataNotFound;
 import com.ercanbeyen.bloggingplatform.repository.NotificationRepository;
 import com.ercanbeyen.bloggingplatform.service.NotificationService;
 import com.ercanbeyen.bloggingplatform.util.SecurityUtil;
+import com.ercanbeyen.bloggingplatform.util.TimeUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -20,7 +21,6 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -97,7 +97,7 @@ public class NotificationServiceImpl implements NotificationService {
                 .toAuthorId(notificationDto.getToAuthorId())
                 .description(notificationDto.getDescription())
                 .topic(notificationDto.getTopic())
-                .createdAt(LocalDateTime.now())
+                .createdAt(TimeUtil.calculateNow())
                 .build();
 
         return notificationRepository.save(newNotification);

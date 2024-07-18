@@ -8,11 +8,11 @@ import com.ercanbeyen.bloggingplatform.dto.converter.ConfirmationTokenDtoConvert
 import com.ercanbeyen.bloggingplatform.exception.data.DataNotFound;
 import com.ercanbeyen.bloggingplatform.repository.ConfirmationTokenRepository;
 import com.ercanbeyen.bloggingplatform.service.ConfirmationTokenService;
+import com.ercanbeyen.bloggingplatform.util.TimeUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -51,7 +51,7 @@ public class ConfirmationTokenServiceImpl implements ConfirmationTokenService {
         ConfirmationToken confirmationTokenInDb = confirmationTokenRepository.findByToken(token)
                         .orElseThrow(() -> new DataNotFound(String.format(ResponseMessage.NOT_FOUND, EntityName.CONFIRMATION_TOKEN, token)));
 
-        confirmationTokenInDb.setConfirmedAt(LocalDateTime.now());
+        confirmationTokenInDb.setConfirmedAt(TimeUtil.calculateNow());
 
         confirmationTokenRepository.save(confirmationTokenInDb);
     }

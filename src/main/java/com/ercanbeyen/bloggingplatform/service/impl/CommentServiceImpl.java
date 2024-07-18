@@ -17,12 +17,12 @@ import com.ercanbeyen.bloggingplatform.service.CommentService;
 import com.ercanbeyen.bloggingplatform.service.PostService;
 import com.ercanbeyen.bloggingplatform.util.RoleUtil;
 import com.ercanbeyen.bloggingplatform.util.SecurityUtil;
+import com.ercanbeyen.bloggingplatform.util.TimeUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -45,7 +45,7 @@ public class CommentServiceImpl implements CommentService {
         Comment newComment = Comment.builder()
                 .author(loggedInAuthor)
                 .text(request.getText())
-                .latestChangeAt(LocalDateTime.now())
+                .latestChangeAt(TimeUtil.calculateNow())
                 .build();
 
         Comment commentInDb = commentRepository.save(newComment);
@@ -77,7 +77,7 @@ public class CommentServiceImpl implements CommentService {
         }
 
         commentInDb.setText(request.getText());
-        commentInDb.setLatestChangeAt(LocalDateTime.now());
+        commentInDb.setLatestChangeAt(TimeUtil.calculateNow());
 
         return commentDtoConverter.convert(commentRepository.save(commentInDb));
     }
