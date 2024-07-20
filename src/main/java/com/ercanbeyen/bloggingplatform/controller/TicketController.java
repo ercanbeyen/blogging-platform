@@ -5,6 +5,7 @@ import com.ercanbeyen.bloggingplatform.dto.TicketDto;
 import com.ercanbeyen.bloggingplatform.dto.request.create.CreateTicketRequest;
 import com.ercanbeyen.bloggingplatform.dto.request.update.UpdateTicketRequest;
 import com.ercanbeyen.bloggingplatform.service.TicketService;
+import com.ercanbeyen.bloggingplatform.util.SecurityUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,7 @@ public class TicketController {
 
     @PostMapping
     public ResponseEntity<String> createTicket(@RequestBody @Valid CreateTicketRequest request) {
+        SecurityUtil.checkBannedRole();
         return ResponseEntity.ok(ticketService.createTicket(request));
     }
 

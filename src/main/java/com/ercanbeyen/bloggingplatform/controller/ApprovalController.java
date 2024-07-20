@@ -3,6 +3,7 @@ package com.ercanbeyen.bloggingplatform.controller;
 import com.ercanbeyen.bloggingplatform.dto.ApprovalDto;
 import com.ercanbeyen.bloggingplatform.dto.request.create.CreateApprovalRequest;
 import com.ercanbeyen.bloggingplatform.service.ApprovalService;
+import com.ercanbeyen.bloggingplatform.util.SecurityUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,7 @@ public class ApprovalController {
 
     @PostMapping
     public ResponseEntity<String> createApproval(@RequestBody @Valid CreateApprovalRequest request) {
+        SecurityUtil.checkBannedRole();
         return ResponseEntity.ok(approvalService.createApproval(request));
     }
 

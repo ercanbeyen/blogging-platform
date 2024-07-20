@@ -3,19 +3,16 @@ package com.ercanbeyen.bloggingplatform.service.impl;
 import com.ercanbeyen.bloggingplatform.constant.values.EntityName;
 import com.ercanbeyen.bloggingplatform.constant.messages.NotificationMessage;
 import com.ercanbeyen.bloggingplatform.constant.messages.ResponseMessage;
-import com.ercanbeyen.bloggingplatform.constant.enums.RoleName;
 import com.ercanbeyen.bloggingplatform.entity.*;
 import com.ercanbeyen.bloggingplatform.dto.CommentDto;
 import com.ercanbeyen.bloggingplatform.dto.NotificationDto;
 import com.ercanbeyen.bloggingplatform.dto.converter.CommentDtoConverter;
 import com.ercanbeyen.bloggingplatform.dto.request.create.CreateCommentRequest;
 import com.ercanbeyen.bloggingplatform.dto.request.update.UpdateCommentRequest;
-import com.ercanbeyen.bloggingplatform.exception.data.DataForbidden;
 import com.ercanbeyen.bloggingplatform.exception.data.DataNotFound;
 import com.ercanbeyen.bloggingplatform.repository.CommentRepository;
 import com.ercanbeyen.bloggingplatform.service.CommentService;
 import com.ercanbeyen.bloggingplatform.service.PostService;
-import com.ercanbeyen.bloggingplatform.util.RoleUtil;
 import com.ercanbeyen.bloggingplatform.util.SecurityUtil;
 import com.ercanbeyen.bloggingplatform.util.TimeUtil;
 import lombok.RequiredArgsConstructor;
@@ -24,8 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -39,8 +34,6 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public CommentDto createComment(CreateCommentRequest request) {
         Author loggedInAuthor = SecurityUtil.getLoggedInAuthor();
-
-        RoleUtil.checkIsBanned(loggedInAuthor);
 
         Comment newComment = Comment.builder()
                 .author(loggedInAuthor)
@@ -68,13 +61,7 @@ public class CommentServiceImpl implements CommentService {
     public CommentDto updateComment(String id, UpdateCommentRequest request) {
         Comment commentInDb = findCommentById(id);
         Author authorCommented = commentInDb.getAuthor();
-        Author loggedInAuthor = SecurityUtil.getLoggedInAuthor();
-
-        RoleUtil.checkIsBanned(loggedInAuthor);
-
-        if (!authorCommented.getId().equals(loggedInAuthor.getId())) {
-            throw new DataForbidden(ResponseMessage.NOT_AUTHORIZED);
-        }
+        SecurityUtil.checkAuthorAuthentication(authorCommented.getId());
 
         commentInDb.setText(request.getText());
         commentInDb.setLatestChangeAt(TimeUtil.calculateNow());
@@ -100,15 +87,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public String deleteComment(String commentId, String postId) {
         Comment commentInDb = findCommentById(commentId);
-        Author loggedInAuthor = SecurityUtil.getLoggedInAuthor();
-        Set<RoleName> roles = loggedInAuthor.getRoles()
-                .stream()
-                .map(Role::getRoleName)
-                .collect(Collectors.toSet());
-
-        if (!roles.contains(RoleName.ADMIN) && !commentInDb.getAuthor().getId().equals(loggedInAuthor.getId())) {
-            throw new DataForbidden(ResponseMessage.NOT_AUTHORIZED);
-        }
+        SecurityUtil.checkAuthorAuthentication(commentInDb.getAuthor().getId());
 
         postService.deleteCommentFromPost(postId, commentId);
         commentRepository.delete(commentInDb);

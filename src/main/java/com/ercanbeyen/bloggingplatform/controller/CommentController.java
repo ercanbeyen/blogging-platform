@@ -3,6 +3,7 @@ package com.ercanbeyen.bloggingplatform.controller;
 import com.ercanbeyen.bloggingplatform.dto.request.create.CreateCommentRequest;
 import com.ercanbeyen.bloggingplatform.dto.request.update.UpdateCommentRequest;
 import com.ercanbeyen.bloggingplatform.service.CommentService;
+import com.ercanbeyen.bloggingplatform.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,16 +28,19 @@ public class CommentController {
 
     @PostMapping
     public ResponseEntity<Object> createComment(@RequestBody @Validated CreateCommentRequest request) {
+        SecurityUtil.checkBannedRole();
         return new ResponseEntity<>(commentService.createComment(request), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Object> updateComment(@PathVariable("id") String id, @RequestBody @Validated UpdateCommentRequest request) {
+        SecurityUtil.checkBannedRole();
         return ResponseEntity.ok(commentService.updateComment(id, request));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> deleteComment(@PathVariable("id") String id, @RequestParam String postId) {
+        SecurityUtil.checkAdminRole();
         return ResponseEntity.ok(commentService.deleteComment(id, postId));
     }
 }

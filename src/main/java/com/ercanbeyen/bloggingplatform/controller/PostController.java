@@ -4,6 +4,7 @@ import com.ercanbeyen.bloggingplatform.dto.PostDto;
 import com.ercanbeyen.bloggingplatform.dto.request.create.CreatePostRequest;
 import com.ercanbeyen.bloggingplatform.dto.request.update.UpdatePostRequest;
 import com.ercanbeyen.bloggingplatform.service.PostService;
+import com.ercanbeyen.bloggingplatform.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.MediaTypes;
@@ -56,16 +57,19 @@ public class PostController {
 
     @PostMapping
     public ResponseEntity<Object> createPost(@RequestBody @Validated CreatePostRequest request) {
+        SecurityUtil.checkBannedRole();
         return new ResponseEntity<>(postService.createPost(request), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Object> updatePost(@PathVariable("id") String id, @RequestBody @Validated UpdatePostRequest request) {
+        SecurityUtil.checkBannedRole();
         return ResponseEntity.ok(postService.updatePost(id, request));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> deletePost(@PathVariable("id") String id) {
+        SecurityUtil.checkAdminRole();
         return ResponseEntity.ok(postService.deletePost(id));
     }
 

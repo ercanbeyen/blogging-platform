@@ -5,6 +5,7 @@ import com.ercanbeyen.bloggingplatform.dto.request.update.UpdateAuthorRequest;
 import com.ercanbeyen.bloggingplatform.dto.request.update.UpdateAuthorRolesRequest;
 import com.ercanbeyen.bloggingplatform.dto.request.update.UpdatePasswordRequest;
 import com.ercanbeyen.bloggingplatform.service.AuthorService;
+import com.ercanbeyen.bloggingplatform.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.MediaTypes;
@@ -58,6 +59,7 @@ public class AuthorController {
 
     @PutMapping("/{id}/details")
     public ResponseEntity<Object> updateAuthor(@PathVariable("id") String id, @RequestBody @Validated UpdateAuthorRequest request) {
+        SecurityUtil.checkAuthorAuthentication(id);
         return ResponseEntity.ok(authorService.updateAuthor(id, request));
     }
 
@@ -94,11 +96,13 @@ public class AuthorController {
 
     @GetMapping("/{id}/notifications")
     public ResponseEntity<Object> getNotifications(@PathVariable("id") String id) {
+        SecurityUtil.checkAuthorAuthentication(id);
         return ResponseEntity.ok(authorService.getNotifications(id));
     }
 
     @PutMapping("/{id}/password-update")
     public ResponseEntity<Object> updatePassword(@PathVariable(value = "id") String id, @RequestBody @Validated UpdatePasswordRequest request) {
+        SecurityUtil.checkAuthorAuthentication(id);
         return ResponseEntity.ok(authorService.updatePassword(id, request));
     }
 }

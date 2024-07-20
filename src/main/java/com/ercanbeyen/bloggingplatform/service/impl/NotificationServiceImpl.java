@@ -1,14 +1,11 @@
 package com.ercanbeyen.bloggingplatform.service.impl;
 
 import com.ercanbeyen.bloggingplatform.constant.values.EntityName;
-import com.ercanbeyen.bloggingplatform.constant.enums.RoleName;
 import com.ercanbeyen.bloggingplatform.constant.messages.NotificationMessage;
 import com.ercanbeyen.bloggingplatform.constant.messages.ResponseMessage;
-import com.ercanbeyen.bloggingplatform.entity.Author;
 import com.ercanbeyen.bloggingplatform.entity.Notification;
 import com.ercanbeyen.bloggingplatform.dto.NotificationDto;
 import com.ercanbeyen.bloggingplatform.dto.converter.NotificationDtoConverter;
-import com.ercanbeyen.bloggingplatform.exception.data.DataForbidden;
 import com.ercanbeyen.bloggingplatform.exception.data.DataNotFound;
 import com.ercanbeyen.bloggingplatform.repository.NotificationRepository;
 import com.ercanbeyen.bloggingplatform.service.NotificationService;
@@ -18,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -44,17 +40,7 @@ public class NotificationServiceImpl implements NotificationService {
         if (fromAuthorId == null && toAuthorId != null)  { // User Condition
             filteringAuthors = notification -> notification.getToAuthorId().equals(toAuthorId);
         } else { // Admin Condition
-            Author loggedInAuthor = SecurityUtil.getLoggedInAuthor();
-
-            boolean isAdmin = loggedInAuthor.getAuthorities()
-                    .stream()
-                    .map(GrantedAuthority::getAuthority)
-                    .anyMatch(roleName -> roleName.equals(RoleName.ADMIN.name()));
-
-            if (!isAdmin) {
-                throw new DataForbidden(ResponseMessage.NOT_AUTHORIZED);
-            }
-
+            SecurityUtil.checkAdminRole();
             filteringAuthors = notification ->
                     (StringUtils.isBlank(fromAuthorId) || notification.getFromAuthorId().equals(fromAuthorId)) &&
                             (StringUtils.isBlank(toAuthorId) || notification.getToAuthorId().equals(toAuthorId));

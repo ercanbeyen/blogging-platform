@@ -2,7 +2,6 @@ package com.ercanbeyen.bloggingplatform.service.impl;
 
 import com.ercanbeyen.bloggingplatform.constant.values.EntityName;
 import com.ercanbeyen.bloggingplatform.constant.messages.ResponseMessage;
-import com.ercanbeyen.bloggingplatform.constant.enums.RoleName;
 import com.ercanbeyen.bloggingplatform.constant.messages.NotificationMessage;
 import com.ercanbeyen.bloggingplatform.entity.*;
 import com.ercanbeyen.bloggingplatform.dto.AuthorDto;
@@ -15,11 +14,9 @@ import com.ercanbeyen.bloggingplatform.dto.converter.PostDtoConverter;
 import com.ercanbeyen.bloggingplatform.dto.request.create.CreatePostRequest;
 import com.ercanbeyen.bloggingplatform.dto.request.update.UpdatePostRequest;
 import com.ercanbeyen.bloggingplatform.exception.data.DataConflict;
-import com.ercanbeyen.bloggingplatform.exception.data.DataForbidden;
 import com.ercanbeyen.bloggingplatform.exception.data.DataNotFound;
 import com.ercanbeyen.bloggingplatform.repository.PostRepository;
 import com.ercanbeyen.bloggingplatform.service.PostService;
-import com.ercanbeyen.bloggingplatform.util.RoleUtil;
 import com.ercanbeyen.bloggingplatform.util.SecurityUtil;
 import com.ercanbeyen.bloggingplatform.util.TimeUtil;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +25,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -43,8 +39,6 @@ public class PostServiceImpl implements PostService {
     @Override
     public PostDto createPost(CreatePostRequest request) {
         Author loggedInAuthor = SecurityUtil.getLoggedInAuthor();
-
-        RoleUtil.checkIsBanned(loggedInAuthor);
 
         Post createdPost = Post.builder()
                 .author(loggedInAuthor)
@@ -79,15 +73,8 @@ public class PostServiceImpl implements PostService {
     @Override
     public PostDto updatePost(String id, UpdatePostRequest request) {
         Post postInDb = findPostById(id);
-
         Author authorPosted = postInDb.getAuthor();
-        Author loggedInAuthor = SecurityUtil.getLoggedInAuthor();
-
-        RoleUtil.checkIsBanned(authorPosted);
-
-        if (!authorPosted.getId().equals(loggedInAuthor.getId())) {
-            throw new DataForbidden(ResponseMessage.NOT_AUTHORIZED);
-        }
+        SecurityUtil.checkAuthorAuthentication(authorPosted.getId());
 
         postInDb.setTitle(request.getTitle());
         postInDb.setText(request.getText());
@@ -119,16 +106,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public String deletePost(String id) {
         Post postInDb = findPostById(id);
-
-        Author loggedInAuthor = SecurityUtil.getLoggedInAuthor();
-        Set<RoleName> roles = loggedInAuthor.getRoles()
-                .stream()
-                .map(Role::getRoleName)
-                .collect(Collectors.toSet());
-
-        if (!roles.contains(RoleName.ADMIN) && postInDb.getAuthor().getId().equals(loggedInAuthor.getId())) {
-            throw new DataForbidden(ResponseMessage.NOT_AUTHORIZED);
-        }
+        SecurityUtil.checkAuthorAuthentication(postInDb.getAuthor().getId());
 
         postRepository.delete(postInDb);
 
@@ -239,11 +217,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public List<AuthorDto> getAuthorsLiked(String id) {
         Post postInDb = findPostById(id);
-        Author loggedInAuthor = SecurityUtil.getLoggedInAuthor();
-
-        if (!postInDb.getAuthor().getId().equals(loggedInAuthor.getId())) {
-            throw new DataForbidden(ResponseMessage.NOT_AUTHORIZED);
-        }
+        SecurityUtil.checkAuthorAuthentication(postInDb.getAuthor().getId());
 
         return postInDb.getAuthorsLiked()
                 .stream()
@@ -254,11 +228,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public List<AuthorDto> getAuthorsDisliked(String id) {
         Post postInDb = findPostById(id);
-        Author loggedInAuthor = SecurityUtil.getLoggedInAuthor();
-
-        if (!postInDb.getAuthor().getId().equals(loggedInAuthor.getId())) {
-            throw new DataForbidden(ResponseMessage.NOT_AUTHORIZED);
-        }
+        SecurityUtil.checkAuthorAuthentication(postInDb.getAuthor().getId());
 
         return postInDb.getAuthorsDisliked()
                 .stream()

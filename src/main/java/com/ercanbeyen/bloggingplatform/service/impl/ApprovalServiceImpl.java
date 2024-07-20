@@ -6,10 +6,8 @@ import com.ercanbeyen.bloggingplatform.dto.ApprovalDto;
 import com.ercanbeyen.bloggingplatform.dto.converter.ApprovalDtoConverter;
 import com.ercanbeyen.bloggingplatform.dto.request.create.CreateApprovalRequest;
 import com.ercanbeyen.bloggingplatform.entity.Approval;
-import com.ercanbeyen.bloggingplatform.entity.Author;
 import com.ercanbeyen.bloggingplatform.entity.Ticket;
 import com.ercanbeyen.bloggingplatform.exception.data.DataConflict;
-import com.ercanbeyen.bloggingplatform.exception.data.DataForbidden;
 import com.ercanbeyen.bloggingplatform.exception.data.DataNotFound;
 import com.ercanbeyen.bloggingplatform.mapper.ApprovalMapper;
 import com.ercanbeyen.bloggingplatform.service.ApprovalService;
@@ -58,12 +56,8 @@ public class ApprovalServiceImpl implements ApprovalService {
 
     @Override
     public String deleteApproval(String id) {
-        Author author = SecurityUtil.getLoggedInAuthor();
         Approval approval = approvalMapper.findApprovalById(id);
-
-        if (!approval.getAuthorId().equals(author.getId())) {
-            throw new DataForbidden(ResponseMessage.NOT_AUTHORIZED);
-        }
+        SecurityUtil.checkAuthorAuthentication(approval.getAuthorId());
 
         approvalMapper.deleteApprovalById(id);
 

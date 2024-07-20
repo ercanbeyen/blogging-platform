@@ -11,7 +11,6 @@ import com.ercanbeyen.bloggingplatform.dto.request.update.UpdateAuthorRequest;
 import com.ercanbeyen.bloggingplatform.dto.request.update.UpdateAuthorRolesRequest;
 import com.ercanbeyen.bloggingplatform.dto.request.update.UpdatePasswordRequest;
 import com.ercanbeyen.bloggingplatform.exception.data.DataConflict;
-import com.ercanbeyen.bloggingplatform.exception.data.DataForbidden;
 import com.ercanbeyen.bloggingplatform.exception.data.DataNotFound;
 import com.ercanbeyen.bloggingplatform.dto.converter.AuthorDtoConverter;
 import com.ercanbeyen.bloggingplatform.entity.Author;
@@ -65,15 +64,7 @@ public class AuthorServiceImpl implements AuthorService {
     @Override
     public AuthorDto updateAuthor(String id, UpdateAuthorRequest request) {
         Author loggedInAuthor = SecurityUtil.getLoggedInAuthor();
-        String loggedInAuthorId = loggedInAuthor.getId();
-
-        if (!loggedInAuthorId.equals(id)) {
-            throw new DataForbidden(ResponseMessage.NOT_AUTHORIZED);
-        }
-
-        String username = request.getUsername();
-
-        Optional<Author> optionalAuthor = authorRepository.findByUsername(username);
+        Optional<Author> optionalAuthor = authorRepository.findByUsername(request.getUsername());
 
         if (optionalAuthor.isPresent() && !optionalAuthor.get().getId().equals(id)) {
             throw new DataConflict("Username is already in use");
@@ -243,13 +234,6 @@ public class AuthorServiceImpl implements AuthorService {
 
     @Override
     public List<NotificationDto> getNotifications(String toAuthorId) {
-        Author loggedInAuthor = SecurityUtil.getLoggedInAuthor();
-        String loggedInAuthorId = loggedInAuthor.getId();
-
-        if (!loggedInAuthorId.equals(toAuthorId)) {
-            throw new DataForbidden(ResponseMessage.NOT_AUTHORIZED);
-        }
-
         boolean isAuthorInDb = authorRepository.findAll()
                 .stream()
                 .anyMatch(author -> author.getId().equals(toAuthorId));
@@ -285,11 +269,6 @@ public class AuthorServiceImpl implements AuthorService {
     @Override
     public String updatePassword(String id, UpdatePasswordRequest request) {
         Author loggedInAuthor = SecurityUtil.getLoggedInAuthor();
-
-        if (!loggedInAuthor.getId().equals(id)) {
-            throw new DataForbidden(ResponseMessage.NOT_AUTHORIZED);
-        }
-
 
         if (!request.getPassword().equals(request.getValidationPassword())) {
             throw new DataConflict("Password mismatch");
