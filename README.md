@@ -5,17 +5,20 @@
 ---
 
 ### Summary
-There are 5 documents in this project
+There are 8 entities in this project
 - Author
 - Post
 - Comment
 - Role
 - Confirmation Token
 - Notification
+- Ticket
+- Approval
 
-There are 2 roles among authors
+There are 3 roles among authors
 - Admin
 - User
+- Banned
 
 ### Requirements
 - Each author must have a unique username and email address.
@@ -28,18 +31,21 @@ There are 2 roles among authors
 - Authors may follow or unfollow each other.
 - Followers may receive a notification when the author creates a new post.
 - Authors may receive notifications when comments are posted on their posts.
+- Authors may create tickets for recommendations.
+- If author feels ticket is useful, then author may approve the related ticket.
+- Banned authors cannot create ticket and approve the tickets.
+- Only Admins may update the status of the tickets.
 
 ### Tech Stack
-- Java 18
+- Java 21
 - Spring Boot
 - Spring Security
-- Spring Email
 - Kafka
+- MyBatis
 - Spring Data MongoDB
 - MongoDB
+- MySQL
 - Docker
-- Hateoas
-- OpenAPI Documentation
 
 ### Prerequisties
 ---
